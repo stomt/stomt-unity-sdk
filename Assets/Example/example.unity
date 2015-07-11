@@ -493,6 +493,7 @@ GameObject:
   - 222: {fileID: 425497556}
   - 114: {fileID: 425497555}
   - 114: {fileID: 425497554}
+  - 223: {fileID: 425497557}
   m_Layer: 5
   m_Name: I like
   m_TagString: Untagged
@@ -586,6 +587,23 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 425497552}
+--- !u!223 &425497557
+Canvas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 425497552}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 1
 --- !u!1 &427245396
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,7 +1260,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1929638777}
   m_RootOrder: 0
-  m_AnchorMin: {x: .190842465, y: 0}
+  m_AnchorMin: {x: .133728325, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
@@ -1452,8 +1470,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1165766734}
   m_RootOrder: 0
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: .800000012}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: .5, y: .5}
@@ -1548,8 +1566,8 @@ RectTransform:
   m_Father: {fileID: 1929638777}
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: .190842465, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMax: {x: .133728325, y: 1}
+  m_AnchoredPosition: {x: 2, y: 0}
   m_SizeDelta: {x: -12, y: -12}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &893145183
@@ -1684,7 +1702,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 916455003}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
   m_Name: 
@@ -1785,7 +1803,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &927626810
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2930,6 +2948,7 @@ GameObject:
   - 222: {fileID: 1504843362}
   - 114: {fileID: 1504843361}
   - 114: {fileID: 1504843360}
+  - 223: {fileID: 1504843363}
   m_Layer: 5
   m_Name: I wish
   m_TagString: Untagged
@@ -3023,6 +3042,23 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1504843358}
+--- !u!223 &1504843363
+Canvas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1504843358}
+  m_Enabled: 1
+  serializedVersion: 2
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 2
 --- !u!1 &1529648172
 GameObject:
   m_ObjectHideFlags: 0
