@@ -1,4 +1,9 @@
 # stomt Unity Plugin
+
+[![GitHub license](https://img.shields.io/github/license/stomt/unity.svg)](http://opensource.org/licenses/MIT)
+[![GitHub release](https://img.shields.io/github/release/stomt/unity.svg)](https://github.com/stomt/unity)
+[![GitHub issues](https://img.shields.io/github/issues/stomt/unity.svg)](https://github.com/stomt/unity/issues)
+
 ![A widget for the Unity3d engine.](http://i.imgur.com/BLIvtaN.png "A widget for the Unity3d engine.")
 
 
