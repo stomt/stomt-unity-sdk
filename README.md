@@ -4,7 +4,7 @@
 [![GitHub release](https://img.shields.io/github/release/stomt/unity.svg)](https://github.com/stomt/unity)
 [![GitHub issues](https://img.shields.io/github/issues/stomt/unity.svg)](https://github.com/stomt/unity/issues)
 
-![A widget for the Unity3d engine.](http://i.imgur.com/BLIvtaN.png "A widget for the Unity3d engine.")
+![A widget for the Unity3d engine.](http://i.imgur.com/LzUt8j1.png "A widget for the Unity3d engine.")
 
 
 
