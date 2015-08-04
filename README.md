@@ -1,6 +1,7 @@
 # stomt Unity Plugin
+![A widget for the Unity3d engine.](http://i.imgur.com/BLIvtaN.png "A widget for the Unity3d engine.")
 
-A widget for the Unity3d engine.
+
 
 ## Installation
 
