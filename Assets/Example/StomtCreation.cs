@@ -1,63 +1,52 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 [RequireComponent(typeof(StomtAPI))]
-public class StomtCreation : MonoBehaviour {
+public class StomtCreation : MonoBehaviour
+{
+	public Canvas _Like, _Wish;
+	public InputField _Message;
+	public Text _WouldBecauseText, _CharacterLimit, _TargetText;
 
-    public GameObject btn_wish, btn_like, toggle;
-    public Text message, counter, target;
+	StomtAPI _API;
 
-    StomtAPI api;
-    Canvas wish, like;
-
-    void Awake()
-    {
-        api = GetComponent<StomtAPI>();
-    }
-
-
+	void Awake()
+	{
+		_API = GetComponent<StomtAPI>();
+	}
 	void Start()
-    {
-        target.text = api.TargetName;
-        wish = btn_wish.GetComponent<Canvas>();
-        like = btn_like.GetComponent<Canvas>();
-    }
-	
+	{
+		_TargetText.text = _API.TargetName;
 
-	void Update()
-    {
-	
+		OnMessageChanged();
 	}
 
-    public void togglePressed()
-    {
-        if(wish.sortingOrder == 1)
-        {
-            like.sortingOrder = 1;
-            wish.sortingOrder = 2;
-        }
-        else
-        {
-            like.sortingOrder = 2;
-            wish.sortingOrder = 1;
-        }
-    }
+	public void OnToggleButtonPressed()
+	{
+		if (_Wish.sortingOrder == 1)
+		{
+			_Like.sortingOrder = 1;
+			_Wish.sortingOrder = 2;
+			_WouldBecauseText.text = "would";
+		}
+		else
+		{
+			_Like.sortingOrder = 2;
+			_Wish.sortingOrder = 1;
+			_WouldBecauseText.text = "because";
+		}
+	}
+	public void OnMessageChanged()
+	{
+		_CharacterLimit.text = (129 - _Message.text.Length).ToString();
+	}
+	public void OnPostButtonPressed()
+	{
+		if (_Message.text.Length <= 10)
+		{
+			return;
+		}
 
-    public void postPressed()
-    {
-        if (message.text.Length <= 10)
-            return;
-
-        api.CreateStomt(wish.sortingOrder == 2, message.text);
-    }
-
-    public void stomtMessageChanged()
-    {
-        string s = message.text;
-        int length = 139 - s.Length;
-        counter.text = length.ToString();
-
-    }
-
+		_API.CreateStomt(_Wish.sortingOrder == 2, _WouldBecauseText.text + " " + _Message.text);
+	}
 }
