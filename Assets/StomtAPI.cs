@@ -5,6 +5,9 @@ using System.IO;
 using System.Net;
 using System.Text;
 
+/// <summary>
+/// Stomt data structure laid out after the JSON representation
+/// </summary>
 public struct Stomt
 {
 	public struct Target
@@ -22,13 +25,19 @@ public struct Stomt
 	public Target creator { get; set; }
 }
 
+/// <summary>
+/// Low-level stomt API component
+/// </summary>
 public class StomtAPI : MonoBehaviour
 {
 	[SerializeField]
+	[Tooltip("The specific ID for your game. Contact Philipp (philipp.zentner@stomt.com) to request your own ID.")]
 	string _AppId = "";
 	[SerializeField]
+	[Tooltip("The name of the target you created for your game on stomt.")]
 	string _TargetName = "";
 	[SerializeField]
+	[Tooltip("An access token used for permissions to request and create stomts. This will be removed once anonymous stomts are working properly.")]
 	string _AccessToken = "";
 
 	public string AppId
@@ -42,6 +51,7 @@ public class StomtAPI : MonoBehaviour
 
 	void Start()
 	{
+		// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
 		ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
 	}
 
