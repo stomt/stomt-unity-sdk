@@ -36,9 +36,6 @@ public class StomtAPI : MonoBehaviour
 	[SerializeField]
 	[Tooltip("The name of the target you created for your game on stomt.")]
 	string _TargetName = "";
-	[SerializeField]
-	[Tooltip("An access token used for permissions to request and create stomts. This will be removed once anonymous stomts are working properly.")]
-	string _AccessToken = "";
 
 	public string AppId
 	{
@@ -67,11 +64,10 @@ public class StomtAPI : MonoBehaviour
 	{
 		const int limit = 15;
 
-		HttpWebRequest request = HttpWebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit)) as HttpWebRequest;
+		HttpWebRequest request = HttpWebRequest.Create(string.Format("https://test.rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit)) as HttpWebRequest;
 		request.Method = "GET";
 		request.ContentType = "application/json";
 		request.Headers["appid"] = _AppId;
-		request.Headers["accesstoken"] = _AccessToken;
 
 		var async1 = request.BeginGetResponse(null, null);
 
@@ -148,11 +144,6 @@ public class StomtAPI : MonoBehaviour
 		writer.Write(target);
 		writer.WritePropertyName("text");
 		writer.Write(text);
-		writer.WritePropertyName("creator");
-		writer.WriteObjectStart();
-		writer.WritePropertyName("id");
-		writer.Write("unity");
-		writer.WriteObjectEnd();
 		writer.WriteObjectEnd();
 
 		StartCoroutine(CreateStomtAsync(json.ToString()));
@@ -161,12 +152,11 @@ public class StomtAPI : MonoBehaviour
 	{
 		byte[] data = Encoding.UTF8.GetBytes(json);
 
-		HttpWebRequest request = HttpWebRequest.Create("https://rest.stomt.com/stomts") as HttpWebRequest;
+		HttpWebRequest request = HttpWebRequest.Create("https://test.rest.stomt.com/stomts") as HttpWebRequest;
 		request.Method = "POST";
 		request.ContentType = "application/json";
 		request.ContentLength = data.Length;
 		request.Headers["appid"] = _AppId;
-		request.Headers["accesstoken"] = _AccessToken;
 
 		var async1 = request.BeginGetRequestStream(null, null);
 
