@@ -64,7 +64,7 @@ public class StomtAPI : MonoBehaviour
 	{
 		const int limit = 15;
 
-		HttpWebRequest request = HttpWebRequest.Create(string.Format("https://test.rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit)) as HttpWebRequest;
+		HttpWebRequest request = HttpWebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit)) as HttpWebRequest;
 		request.Method = "GET";
 		request.ContentType = "application/json";
 		request.Headers["appid"] = _AppId;
@@ -152,7 +152,7 @@ public class StomtAPI : MonoBehaviour
 	{
 		byte[] data = Encoding.UTF8.GetBytes(json);
 
-		HttpWebRequest request = HttpWebRequest.Create("https://test.rest.stomt.com/stomts") as HttpWebRequest;
+		HttpWebRequest request = HttpWebRequest.Create("https://rest.stomt.com/stomts") as HttpWebRequest;
 		request.Method = "POST";
 		request.ContentType = "application/json";
 		request.ContentLength = data.Length;
