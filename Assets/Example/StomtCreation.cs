@@ -57,6 +57,6 @@ public class StomtCreation : MonoBehaviour
 			return;
 		}
 
-		_api.CreateStomt(_wish.sortingOrder == 2, _wouldBecauseText.text + " " + _message.text);
+		_api.CreateStomt(_like.sortingOrder == 2, _wouldBecauseText.text + " " + _message.text);
 	}
 }

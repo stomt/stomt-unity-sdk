@@ -10,14 +10,14 @@ using UnityEngine;
 /// </summary>
 public struct Stomt
 {
-	public struct Target
+	public class Target
 	{
 		public string id { get; set; }
 		public string displayname { get; set; }
 	}
 
 	public string id { get; set; }
-	public bool negative { get; set; }
+	public bool positive { get; set; }
 	public string text { get; set; }
 	public string lang { get; set; }
 	public string created_at { get; set; }
@@ -31,7 +31,7 @@ public struct Stomt
 public class StomtAPI : MonoBehaviour
 {
 	[SerializeField]
-	[Tooltip("The application identifier for your game. Contact Philipp (philipp.zentner@stomt.com) to request your own.")]
+	[Tooltip("The application identifier for your game. Tell us what you want to do (api@stomt.com) to request your own.")]
 	string _appId = "";
 	[SerializeField]
 	[Tooltip("The name of your game's target on stomt.")]
@@ -82,7 +82,8 @@ public class StomtAPI : MonoBehaviour
 
 		var request = (HttpWebRequest)WebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit));
 		request.Method = "GET";
-		request.ContentType = "application/json";
+		request.Accept = "application/json";
+		request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
 		request.Headers["appid"] = _appId;
 
 		var async1 = request.BeginGetResponse(null, null);
@@ -147,28 +148,28 @@ public class StomtAPI : MonoBehaviour
 	/// <summary>
 	/// Creates a new anonymous stomt on the game's target.
 	/// </summary>
-	/// <param name="negative">The stomt type. True for "I wish" and false for "I like".</param>
+	/// <param name="positive">The stomt type. True for "I like" and false for "I wish".</param>
 	/// <param name="text">The stomt message.</param>
-	public void CreateStomt(bool negative, string text)
+	public void CreateStomt(bool positive, string text)
 	{
-		CreateStomt(negative, _targetName, text);
+		CreateStomt(positive, _targetName, text);
 	}
 	/// <summary>
 	/// Creates a new anonymous stomt on the specified target.
 	/// </summary>
-	/// <param name="negative">The stomt type. True for "I wish" and false for "I like".</param>
+	/// <param name="positive">The stomt type. True for "I like" and false for "I wish".</param>
 	/// <param name="target">The target to post the stomt to.</param>
 	/// <param name="text">The stomt message.</param>
-	public void CreateStomt(bool negative, string target, string text)
+	public void CreateStomt(bool positive, string target, string text)
 	{
-		StringBuilder json = new StringBuilder();
-		LitJson.JsonWriter writer = new LitJson.JsonWriter(json);
+		var json = new StringBuilder();
+		var writer = new LitJson.JsonWriter(json);
 
 		writer.WriteObjectStart();
 		writer.WritePropertyName("anonym");
 		writer.Write(true);
-		writer.WritePropertyName("negative");
-		writer.Write(negative);
+		writer.WritePropertyName("positive");
+		writer.Write(positive);
 		writer.WritePropertyName("target_id");
 		writer.Write(target);
 		writer.WritePropertyName("text");
