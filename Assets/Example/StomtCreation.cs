@@ -4,7 +4,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(StomtAPI))]
 public class StomtCreation : MonoBehaviour
 {
-	private Canvas _like, _wish;
+	public Canvas _like, _wish;
 	public InputField _message;
 	public Text _wouldBecauseText, _characterLimit, _targetText;
 
