@@ -8,6 +8,7 @@
 *.pidb.meta
 
 # Generated solution and project files
+ProjectSettings/
 *.csproj
 *.unityproj
 *.sln
