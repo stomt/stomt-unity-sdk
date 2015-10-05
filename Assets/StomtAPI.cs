@@ -76,11 +76,11 @@ public class StomtAPI : MonoBehaviour
 		StartCoroutine(RequestFeedAsync(target, outlist));
 	}
 
-	private IEnumerator RequestFeedAsync(string target, List<Stomt> outlist)
+	private IEnumerator RequestFeedAsync(string target, ICollection<Stomt> outlist)
 	{
 		const int limit = 15;
 
-		HttpWebRequest request = HttpWebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit)) as HttpWebRequest;
+		var request = (HttpWebRequest)WebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit));
 		request.Method = "GET";
 		request.ContentType = "application/json";
 		request.Headers["appid"] = _appId;
@@ -89,12 +89,11 @@ public class StomtAPI : MonoBehaviour
 
 		yield return async1;
 
-		HttpWebResponse response = null;
-		Stream responseStream = null;
+		Stream responseStream;
 
 		try
 		{
-			response = request.EndGetResponse(async1) as HttpWebResponse;
+			var response = (HttpWebResponse)request.EndGetResponse(async1);
 			responseStream = response.GetResponseStream();
 		}
 		catch (WebException ex)
@@ -103,8 +102,13 @@ public class StomtAPI : MonoBehaviour
 			yield break;
 		}
 
-		string dataText = string.Empty;
-		byte[] dataBuffer = new byte[2048];
+		if (responseStream == null)
+		{
+			yield break;
+		}
+
+		var dataText = string.Empty;
+		var dataBuffer = new byte[2048];
 
 		while (true)
 		{
@@ -131,10 +135,8 @@ public class StomtAPI : MonoBehaviour
 			Debug.LogError((string)data["error"]["msg"]);
 			yield break;
 		}
-		else
-		{
-			data = data["data"];
-		}
+
+		data = data["data"];
 
 		for (int i = 0; i < data.Count; i++)
 		{
@@ -178,9 +180,9 @@ public class StomtAPI : MonoBehaviour
 
 	private IEnumerator CreateStomtAsync(string json)
 	{
-		byte[] data = Encoding.UTF8.GetBytes(json);
+		var data = Encoding.UTF8.GetBytes(json);
 
-		HttpWebRequest request = HttpWebRequest.Create("https://rest.stomt.com/stomts") as HttpWebRequest;
+		var request = (HttpWebRequest)WebRequest.Create("https://rest.stomt.com/stomts");
 		request.Method = "POST";
 		request.ContentType = "application/json";
 		request.ContentLength = data.Length;
@@ -199,7 +201,6 @@ public class StomtAPI : MonoBehaviour
 		catch (WebException ex)
 		{
 			Debug.LogException(ex);
-			yield break;
 		}
 	}
 }
