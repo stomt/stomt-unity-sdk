@@ -1,12 +1,12 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using UnityEngine;
 
 /// <summary>
-/// Stomt data structure laid out after the JSON representation
+/// A single stomt item, laid out after the JSON representation.
 /// </summary>
 public struct Stomt
 {
@@ -26,24 +26,30 @@ public struct Stomt
 }
 
 /// <summary>
-/// Low-level stomt API component
+/// Low-level stomt API component.
 /// </summary>
 public class StomtAPI : MonoBehaviour
 {
 	[SerializeField]
-	[Tooltip("The specific ID for your game. Contact Philipp (philipp.zentner@stomt.com) to request your own ID.")]
-	string _AppId = "";
+	[Tooltip("The application identifier for your game. Contact Philipp (philipp.zentner@stomt.com) to request your own.")]
+	string _appId = "";
 	[SerializeField]
-	[Tooltip("The name of the target you created for your game on stomt.")]
-	string _TargetName = "";
+	[Tooltip("The name of your game's target on stomt.")]
+	string _targetName = "";
 
+	/// <summary>
+	/// The application identifier for your game.
+	/// </summary>
 	public string AppId
 	{
-		get { return _AppId; }
+		get { return _appId; }
 	}
+	/// <summary>
+	/// The name of your game's target on stomt.
+	/// </summary>
 	public string TargetName
 	{
-		get { return _TargetName; }
+		get { return _targetName; }
 	}
 
 	void Start()
@@ -52,22 +58,32 @@ public class StomtAPI : MonoBehaviour
 		ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
 	}
 
+	/// <summary>
+	/// Requests the asynchronous feed download from your game's target.
+	/// </summary>
+	/// <param name="outlist">Reference to a list receiving the feed once downloaded.</param>
 	public void RequestFeed(ref List<Stomt> outlist)
 	{
-		RequestFeed(_TargetName, ref outlist);
+		RequestFeed(_targetName, ref outlist);
 	}
+	/// <summary>
+	/// Requests the asynchronous feed download from the specified target.
+	/// </summary>
+	/// <param name="target">The target to download the feed from.</param>
+	/// <param name="outlist">Reference to a list receiving the feed once downloaded.</param>
 	public void RequestFeed(string target, ref List<Stomt> outlist)
 	{
 		StartCoroutine(RequestFeedAsync(target, outlist));
 	}
-	IEnumerator RequestFeedAsync(string target, List<Stomt> outlist)
+
+	private IEnumerator RequestFeedAsync(string target, List<Stomt> outlist)
 	{
 		const int limit = 15;
 
 		HttpWebRequest request = HttpWebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit)) as HttpWebRequest;
 		request.Method = "GET";
 		request.ContentType = "application/json";
-		request.Headers["appid"] = _AppId;
+		request.Headers["appid"] = _appId;
 
 		var async1 = request.BeginGetResponse(null, null);
 
@@ -126,10 +142,21 @@ public class StomtAPI : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Creates a new anonymous stomt on the game's target.
+	/// </summary>
+	/// <param name="negative">The stomt type. True for "I wish" and false for "I like".</param>
+	/// <param name="text">The stomt message.</param>
 	public void CreateStomt(bool negative, string text)
 	{
-		CreateStomt(negative, _TargetName, text);
+		CreateStomt(negative, _targetName, text);
 	}
+	/// <summary>
+	/// Creates a new anonymous stomt on the specified target.
+	/// </summary>
+	/// <param name="negative">The stomt type. True for "I wish" and false for "I like".</param>
+	/// <param name="target">The target to post the stomt to.</param>
+	/// <param name="text">The stomt message.</param>
 	public void CreateStomt(bool negative, string target, string text)
 	{
 		StringBuilder json = new StringBuilder();
@@ -148,7 +175,8 @@ public class StomtAPI : MonoBehaviour
 
 		StartCoroutine(CreateStomtAsync(json.ToString()));
 	}
-	IEnumerator CreateStomtAsync(string json)
+
+	private IEnumerator CreateStomtAsync(string json)
 	{
 		byte[] data = Encoding.UTF8.GetBytes(json);
 
@@ -156,7 +184,7 @@ public class StomtAPI : MonoBehaviour
 		request.Method = "POST";
 		request.ContentType = "application/json";
 		request.ContentLength = data.Length;
-		request.Headers["appid"] = _AppId;
+		request.Headers["appid"] = _appId;
 
 		var async1 = request.BeginGetRequestStream(null, null);
 
