@@ -32,12 +32,14 @@ namespace Stomt
 		/// <param name="feed">The list of stomt items from the requested feed.</param>
 		public delegate void FeedCallback(StomtItem[] feed);
 
+		#region Inspector Variables
 		[SerializeField]
 		[Tooltip("The application identifier for your game. Tell us what you want to do (api@stomt.com) to request your own.")]
 		string _appId = "";
 		[SerializeField]
 		[Tooltip("The name of your game's target on stomt.")]
 		string _targetName = "";
+		#endregion
 
 		/// <summary>
 		/// The application identifier for your game.
@@ -281,7 +283,7 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(json);
 
-			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/stomts");
+			HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/stomts");
 			request.ContentLength = data.Length;
 
 			// Send request
@@ -305,7 +307,7 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(jsonImage);
 
-			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/images");
+			HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/images");
 			request.ContentLength = data.Length;
 
 			// Send request
