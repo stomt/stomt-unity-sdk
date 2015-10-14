@@ -227,23 +227,10 @@ namespace Stomt
 				}
 
 				var buffer = new byte[2048];
+				int length;
 
-				while (true)
+				while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
 				{
-					var async2 = responseStream.BeginRead(buffer, 0, buffer.Length, null, null);
-
-					while (!async2.IsCompleted)
-					{
-						yield return null;
-					}
-
-					int length = responseStream.EndRead(async2);
-
-					if (length <= 0)
-					{
-						break;
-					}
-
 					responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
 				}
 			}
@@ -370,23 +357,10 @@ namespace Stomt
 				}
 
 				var buffer = new byte[2048];
+				int length;
 
-				while (true)
+				while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
 				{
-					var async3 = responseStream.BeginRead(buffer, 0, buffer.Length, null, null);
-
-					while (!async3.IsCompleted)
-					{
-						yield return null;
-					}
-
-					int length = responseStream.EndRead(async3);
-
-					if (length <= 0)
-					{
-						break;
-					}
-
 					responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
 				}
 			}
