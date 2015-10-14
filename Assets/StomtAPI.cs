@@ -200,7 +200,10 @@ namespace Stomt
 			// Send request and wait for response
 			var async1 = request.BeginGetResponse(null, null);
 
-			yield return async1;
+			while (!async1.IsCompleted)
+			{
+				yield return null;
+			}
 
 			HttpWebResponse response;
 			var responseDataText = string.Empty;
@@ -229,7 +232,10 @@ namespace Stomt
 				{
 					var async2 = responseStream.BeginRead(buffer, 0, buffer.Length, null, null);
 
-					yield return async2;
+					while (!async2.IsCompleted)
+					{
+						yield return null;
+					}
 
 					int length = responseStream.EndRead(async2);
 
@@ -283,13 +289,16 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(json);
 
-			HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/stomts");
+			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/stomts");
 			request.ContentLength = data.Length;
 
 			// Send request
 			var async1 = request.BeginGetRequestStream(null, null);
 
-			yield return async1;
+			while (!async1.IsCompleted)
+			{
+				yield return null;
+			}
 
 			try
 			{
@@ -307,13 +316,16 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(jsonImage);
 
-			HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/images");
+			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/images");
 			request.ContentLength = data.Length;
 
 			// Send request
 			var async1 = request.BeginGetRequestStream(null, null);
 
-			yield return async1;
+			while (!async1.IsCompleted)
+			{
+				yield return null;
+			}
 
 			try
 			{
@@ -331,7 +343,10 @@ namespace Stomt
 			// Wait for response
 			var async2 = request.BeginGetResponse(null, null);
 
-			yield return async2;
+			while (!async2.IsCompleted)
+			{
+				yield return null;
+			}
 
 			HttpWebResponse response;
 			var responseDataText = string.Empty;
@@ -360,7 +375,10 @@ namespace Stomt
 				{
 					var async3 = responseStream.BeginRead(buffer, 0, buffer.Length, null, null);
 
-					yield return async3;
+					while (!async3.IsCompleted)
+					{
+						yield return null;
+					}
 
 					int length = responseStream.EndRead(async3);
 
