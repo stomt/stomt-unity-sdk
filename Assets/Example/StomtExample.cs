@@ -23,6 +23,13 @@ public class StomtExample : MonoBehaviour
 
 	public void OnToggleButtonPressed()
 	{
+		var likeTransform = _like.GetComponent<RectTransform>();
+		var wishTransform = _wish.GetComponent<RectTransform>();
+
+		var temp = likeTransform.anchoredPosition;
+		likeTransform.anchoredPosition = wishTransform.anchoredPosition;
+		wishTransform.anchoredPosition = temp;
+
 		if (_wish.sortingOrder == 1)
 		{
 			_like.sortingOrder = 1;
