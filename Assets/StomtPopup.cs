@@ -37,7 +37,7 @@ public class StomtPopup : MonoBehaviour
 
 		_targetText.text = _api.TargetName;
 
-		OnMessageChanged();
+		Reset();
 	}
 	void Start()
 	{
@@ -59,12 +59,26 @@ public class StomtPopup : MonoBehaviour
 		_screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
 
 		// Show UI
+		Reset();
 		_ui.SetActive(true);
 	}
 	void Hide()
 	{
 		// Hide UI
 		_ui.SetActive(false);
+	}
+	void Reset()
+	{
+		_message.text = string.Empty;
+
+		if (_like.sortingOrder == 2)
+		{
+			OnToggleButtonPressed();
+		}
+		else
+		{
+			OnMessageChanged();
+		}
 	}
 
 	public void OnToggleButtonPressed()
@@ -76,14 +90,16 @@ public class StomtPopup : MonoBehaviour
 		likeTransform.anchoredPosition = wishTransform.anchoredPosition;
 		wishTransform.anchoredPosition = temp;
 
-		if (_wish.sortingOrder == 1)
+		if (_like.sortingOrder == 2)
 		{
+			// I wish
 			_like.sortingOrder = 1;
 			_wish.sortingOrder = 2;
 			_wouldBecauseText.text = "would";
 		}
 		else
 		{
+			// I like
 			_like.sortingOrder = 2;
 			_wish.sortingOrder = 1;
 			_wouldBecauseText.text = "because";
