@@ -189,7 +189,7 @@ namespace Stomt
 		}
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback)
 		{
-			HttpWebRequest request = WebRequest("GET", string.Format("https://test.rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, 15));
+			HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, 15));
 
 			// Send request and wait for response
 			var async1 = request.BeginGetResponse(null, null);
@@ -277,7 +277,7 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(json);
 
-			HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/stomts");
+			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/stomts");
 			request.ContentLength = data.Length;
 
 			// Send request
@@ -301,7 +301,7 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(jsonImage);
 
-			HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/images");
+			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/images");
 			request.ContentLength = data.Length;
 
 			// Send request
