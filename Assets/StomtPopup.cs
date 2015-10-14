@@ -70,6 +70,7 @@ public class StomtPopup : MonoBehaviour
 	void Reset()
 	{
 		_message.text = string.Empty;
+		_screenshotToggle.isOn = true;
 
 		if (_like.sortingOrder == 2)
 		{
