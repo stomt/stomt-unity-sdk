@@ -62,18 +62,18 @@ public class StomtAPI : MonoBehaviour
 	/// Requests the asynchronous feed download from your game's target.
 	/// </summary>
 	/// <param name="outlist">Reference to a list receiving the feed once downloaded.</param>
-	public void RequestFeed(ref List<Stomt> outlist)
+	public void LoadFeed(ref List<Stomt> outlist)
 	{
-		RequestFeed(_targetName, ref outlist);
+		LoadFeed(_targetName, ref outlist);
 	}
 	/// <summary>
 	/// Requests the asynchronous feed download from the specified target.
 	/// </summary>
 	/// <param name="target">The target to download the feed from.</param>
 	/// <param name="outlist">Reference to a list receiving the feed once downloaded.</param>
-	public void RequestFeed(string target, ref List<Stomt> outlist)
+	public void LoadFeed(string target, ref List<Stomt> outlist)
 	{
-		StartCoroutine(RequestFeedAsync(target, outlist));
+		StartCoroutine(LoadFeedAsync(target, outlist));
 	}
 	/// <summary>
 	/// Creates a new anonymous stomt on the game's target.
@@ -185,7 +185,7 @@ public class StomtAPI : MonoBehaviour
 
 		return request;
 	}
-	IEnumerator RequestFeedAsync(string target, ICollection<Stomt> outlist)
+	IEnumerator LoadFeedAsync(string target, ICollection<Stomt> outlist)
 	{
 		HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, 15));
 
