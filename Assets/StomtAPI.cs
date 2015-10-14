@@ -75,76 +75,6 @@ public class StomtAPI : MonoBehaviour
 	{
 		StartCoroutine(RequestFeedAsync(target, outlist));
 	}
-
-	private IEnumerator RequestFeedAsync(string target, ICollection<Stomt> outlist)
-	{
-		const int limit = 15;
-
-		var request = (HttpWebRequest)WebRequest.Create(string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, limit));
-		request.Method = "GET";
-		request.Accept = "application/json";
-		request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
-		request.Headers["appid"] = _appId;
-
-		var async1 = request.BeginGetResponse(null, null);
-
-		yield return async1;
-
-		Stream responseStream;
-
-		try
-		{
-			var response = (HttpWebResponse)request.EndGetResponse(async1);
-			responseStream = response.GetResponseStream();
-		}
-		catch (WebException ex)
-		{
-			Debug.LogException(ex);
-			yield break;
-		}
-
-		if (responseStream == null)
-		{
-			yield break;
-		}
-
-		var dataText = string.Empty;
-		var dataBuffer = new byte[2048];
-
-		while (true)
-		{
-			var async2 = responseStream.BeginRead(dataBuffer, 0, dataBuffer.Length, null, null);
-
-			yield return async2;
-
-			int length = responseStream.EndRead(async2);
-
-			if (length <= 0)
-			{
-				break;
-			}
-
-			dataText += Encoding.UTF8.GetString(dataBuffer, 0, length);
-		}
-
-		responseStream.Close();
-
-		LitJson.JsonData data = LitJson.JsonMapper.ToObject(dataText);
-
-		if (data.Keys.Contains("error"))
-		{
-			Debug.LogError((string)data["error"]["msg"]);
-			yield break;
-		}
-
-		data = data["data"];
-
-		for (int i = 0; i < data.Count; i++)
-		{
-			outlist.Add(LitJson.JsonMapper.ToObject<Stomt>(data[i].ToJson()));
-		}
-	}
-
 	/// <summary>
 	/// Creates a new anonymous stomt on the game's target.
 	/// </summary>
@@ -178,30 +108,253 @@ public class StomtAPI : MonoBehaviour
 
 		StartCoroutine(CreateStomtAsync(json.ToString()));
 	}
+	/// <summary>
+	/// Creates a new anonymous stomt on the game's target with an image attached to it.
+	/// </summary>
+	/// <param name="positive">The stomt type. True for "I like" and false for "I wish".</param>
+	/// <param name="text">The stomt message.</param>
+	/// <param name="image">The image texture to upload and attach to the stomt.</param>
+	public void CreateStomtWithImage(bool positive, string text, Texture2D image)
+	{
+		CreateStomtWithImage(positive, _targetName, text, image);
+	}
+	/// <summary>
+	/// Creates a new anonymous stomt on the specified target with an image attached to it.
+	/// </summary>
+	/// <param name="positive">The stomt type. True for "I like" and false for "I wish".</param>
+	/// <param name="target">The target to post the stomt to.</param>
+	/// <param name="text">The stomt message.</param>
+	/// <param name="image">The image texture to upload and attach to the stomt.</param>
+	public void CreateStomtWithImage(bool positive, string target, string text, Texture2D image)
+	{
+		if (image == null)
+		{
+			CreateStomt(positive, target, text);
+			return;
+		}
 
-	private IEnumerator CreateStomtAsync(string json)
+		byte[] imageBytes = image.EncodeToPNG();
+
+		if (imageBytes == null)
+		{
+			return;
+		}
+
+		var jsonImage = new StringBuilder();
+		var writerImage = new LitJson.JsonWriter(jsonImage);
+
+		writerImage.WriteObjectStart();
+		writerImage.WritePropertyName("images");
+		writerImage.WriteObjectStart();
+		writerImage.WritePropertyName("stomt");
+		writerImage.WriteArrayStart();
+		writerImage.WriteObjectStart();
+		writerImage.WritePropertyName("data");
+		writerImage.Write(System.Convert.ToBase64String(imageBytes));
+		writerImage.WriteObjectEnd();
+		writerImage.WriteArrayEnd();
+		writerImage.WriteObjectEnd();
+		writerImage.WriteObjectEnd();
+
+		var jsonStomt = new StringBuilder();
+		var writerStomt = new LitJson.JsonWriter(jsonStomt);
+
+		writerStomt.WriteObjectStart();
+		writerStomt.WritePropertyName("anonym");
+		writerStomt.Write(true);
+		writerStomt.WritePropertyName("positive");
+		writerStomt.Write(positive);
+		writerStomt.WritePropertyName("target_id");
+		writerStomt.Write(target);
+		writerStomt.WritePropertyName("text");
+		writerStomt.Write(text);
+		writerStomt.WritePropertyName("img_name");
+		writerStomt.Write("{img_name}");
+		writerStomt.WriteObjectEnd();
+
+		StartCoroutine(CreateStomtWithImageAsync(jsonImage.ToString(), jsonStomt.ToString()));
+	}
+
+	HttpWebRequest WebRequest(string method, string url)
+	{
+		var request = (HttpWebRequest)System.Net.WebRequest.Create(url);
+		request.Method = method;
+		request.Accept = request.ContentType = "application/json";
+		request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
+		request.Headers["appid"] = _appId;
+
+		return request;
+	}
+	IEnumerator RequestFeedAsync(string target, ICollection<Stomt> outlist)
+	{
+		HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, 15));
+
+		// Send request and wait for response
+		var async1 = request.BeginGetResponse(null, null);
+
+		yield return async1;
+
+		HttpWebResponse response;
+		var responseDataText = string.Empty;
+
+		try
+		{
+			response = (HttpWebResponse)request.EndGetResponse(async1);
+		}
+		catch (WebException ex)
+		{
+			Debug.LogException(ex);
+			yield break;
+		}
+
+		// Read response stream
+		using (Stream responseStream = response.GetResponseStream())
+		{
+			if (responseStream == null)
+			{
+				yield break;
+			}
+
+			var buffer = new byte[2048];
+
+			while (true)
+			{
+				var async2 = responseStream.BeginRead(buffer, 0, buffer.Length, null, null);
+
+				yield return async2;
+
+				int length = responseStream.EndRead(async2);
+
+				if (length <= 0)
+				{
+					break;
+				}
+
+				responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+			}
+		}
+
+		// Analyze JSON data
+		LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+		if (responseData.Keys.Contains("error"))
+		{
+			Debug.LogError((string)responseData["error"]["msg"]);
+			yield break;
+		}
+
+		responseData = responseData["data"];
+
+		for (int i = 0; i < responseData.Count; i++)
+		{
+			outlist.Add(LitJson.JsonMapper.ToObject<Stomt>(responseData[i].ToJson()));
+		}
+	}
+	IEnumerator CreateStomtAsync(string json)
 	{
 		var data = Encoding.UTF8.GetBytes(json);
 
-		var request = (HttpWebRequest)WebRequest.Create("https://rest.stomt.com/stomts");
-		request.Method = "POST";
-		request.ContentType = "application/json";
+		HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/stomts");
 		request.ContentLength = data.Length;
-		request.Headers["appid"] = _appId;
 
+		// Send request
 		var async1 = request.BeginGetRequestStream(null, null);
 
 		yield return async1;
 
 		try
 		{
-			Stream requestStream = request.EndGetRequestStream(async1);
-			requestStream.Write(data, 0, data.Length);
-			requestStream.Close();
+			using (Stream requestStream = request.EndGetRequestStream(async1))
+			{
+				requestStream.Write(data, 0, data.Length);
+			}
 		}
 		catch (WebException ex)
 		{
 			Debug.LogException(ex);
 		}
+	}
+	IEnumerator CreateStomtWithImageAsync(string jsonImage, string jsonStomt)
+	{
+		var data = Encoding.UTF8.GetBytes(jsonImage);
+
+		HttpWebRequest request = WebRequest("POST", "https://test.rest.stomt.com/images");
+		request.ContentLength = data.Length;
+
+		// Send request
+		var async1 = request.BeginGetRequestStream(null, null);
+
+		yield return async1;
+
+		try
+		{
+			using (Stream requestStream = request.EndGetRequestStream(async1))
+			{
+				requestStream.Write(data, 0, data.Length);
+			}
+		}
+		catch (WebException ex)
+		{
+			Debug.LogException(ex);
+			yield break;
+		}
+
+		// Wait for response
+		var async2 = request.BeginGetResponse(null, null);
+
+		yield return async2;
+
+		HttpWebResponse response;
+		var responseDataText = string.Empty;
+
+		try
+		{
+			response = (HttpWebResponse)request.EndGetResponse(async2);
+		}
+		catch (WebException ex)
+		{
+			Debug.LogException(ex);
+			yield break;
+		}
+
+		// Read response stream
+		using (Stream responseStream = response.GetResponseStream())
+		{
+			if (responseStream == null)
+			{
+				yield break;
+			}
+
+			var buffer = new byte[2048];
+
+			while (true)
+			{
+				var async3 = responseStream.BeginRead(buffer, 0, buffer.Length, null, null);
+
+				yield return async3;
+
+				int length = responseStream.EndRead(async3);
+
+				if (length <= 0)
+				{
+					break;
+				}
+
+				responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+			}
+		}
+
+		// Analyze JSON data
+		LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+		if (responseData.Keys.Contains("error"))
+		{
+			Debug.LogError((string)responseData["error"]["msg"]);
+			yield break;
+		}
+
+		var imagename = (string)responseData["data"]["images"]["stomt"]["name"];
+
+		yield return StartCoroutine(CreateStomtAsync(jsonStomt.Replace("{img_name}", imagename)));
 	}
 }
