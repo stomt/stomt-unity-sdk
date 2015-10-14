@@ -57,7 +57,7 @@ namespace Stomt
 		/// <summary>
 		/// Requests the asynchronous feed download from your game's target.
 		/// </summary>
-		/// <param name="outlist">Reference to a list receiving the feed once downloaded.</param>
+		/// <param name="callback">The <see cref="FeedCallback"/> delegate.</param>
 		public void LoadFeed(FeedCallback callback)
 		{
 			LoadFeed(_targetName, callback);
@@ -66,7 +66,7 @@ namespace Stomt
 		/// Requests the asynchronous feed download from the specified target.
 		/// </summary>
 		/// <param name="target">The target to download the feed from.</param>
-		/// <param name="outlist">Reference to a list receiving the feed once downloaded.</param>
+		/// <param name="callback">The <see cref="FeedCallback"/> delegate.</param>
 		public void LoadFeed(string target, FeedCallback callback)
 		{
 			StartCoroutine(LoadFeedAsync(target, callback));
