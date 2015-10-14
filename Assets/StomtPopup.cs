@@ -7,10 +7,11 @@ using UnityEngine.UI;
 public class StomtPopup : MonoBehaviour
 {
 	#region Inspector Variables
-	[Header("UI")]
+	[SerializeField]
+	KeyCode _toggleKey = KeyCode.F1;
+	[Header("UI Elements")]
 	[SerializeField]
 	GameObject _ui;
-	[Header("UI Elements")]
 	[SerializeField]
 	Canvas _like;
 	[SerializeField]
@@ -45,9 +46,16 @@ public class StomtPopup : MonoBehaviour
 	}
 	void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.Space) && !_ui.activeSelf)
+		if (Input.GetKeyDown(_toggleKey))
 		{
-			StartCoroutine(Show());
+			if (_ui.activeSelf)
+			{
+				Hide();
+			}
+			else
+			{
+				StartCoroutine(Show());
+			}
 		}
 	}
 
