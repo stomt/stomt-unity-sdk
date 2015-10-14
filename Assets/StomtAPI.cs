@@ -58,18 +58,22 @@ namespace Stomt
 		/// Requests the asynchronous feed download from your game's target.
 		/// </summary>
 		/// <param name="callback">The <see cref="FeedCallback"/> delegate.</param>
-		public void LoadFeed(FeedCallback callback)
+		/// <param name="offset">The offset from feed begin.</param>
+		/// <param name="limit">The maximum amount of stomts to load.</param>
+		public void LoadFeed(FeedCallback callback, int offset = 0, int limit = 15)
 		{
-			LoadFeed(_targetName, callback);
+			LoadFeed(_targetName, callback, offset, limit);
 		}
 		/// <summary>
 		/// Requests the asynchronous feed download from the specified target.
 		/// </summary>
 		/// <param name="target">The target to download the feed from.</param>
 		/// <param name="callback">The <see cref="FeedCallback"/> delegate.</param>
-		public void LoadFeed(string target, FeedCallback callback)
+		/// <param name="offset">The offset from feed begin.</param>
+		/// <param name="limit">The maximum amount of stomts to load.</param>
+		public void LoadFeed(string target, FeedCallback callback, int offset = 0, int limit = 15)
 		{
-			StartCoroutine(LoadFeedAsync(target, callback));
+			StartCoroutine(LoadFeedAsync(target, callback, offset, limit));
 		}
 		/// <summary>
 		/// Creates a new anonymous stomt on the game's target.
@@ -187,9 +191,9 @@ namespace Stomt
 
 			return request;
 		}
-		IEnumerator LoadFeedAsync(string target, FeedCallback callback)
+		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
 		{
-			HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}/stomts/received?limit={1}", target, 15));
+			HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}/stomts/received?offset={1}&limit={2}", target, offset, limit));
 
 			// Send request and wait for response
 			var async1 = request.BeginGetResponse(null, null);
