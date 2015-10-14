@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(StomtAPI))]
-public class StomtCreation : MonoBehaviour
+public class StomtExample : MonoBehaviour
 {
 	public Canvas _like, _wish;
 	public InputField _message;
