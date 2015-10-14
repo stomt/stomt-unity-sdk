@@ -1,20 +1,20 @@
-# stomt Unity Plugin
+# Stomt Unity Widget
 
-[![GitHub license](https://img.shields.io/github/license/stomt/unity.svg)](http://opensource.org/licenses/MIT)
-[![GitHub release](https://img.shields.io/github/release/stomt/unity.svg)](https://github.com/stomt/unity)
-[![GitHub issues](https://img.shields.io/github/issues/stomt/unity.svg)](https://github.com/stomt/unity/issues)
+[![License](https://img.shields.io/github/license/stomt/unity.svg)](http://opensource.org/licenses/MIT)
+[![Releases](https://img.shields.io/github/release/stomt/unity.svg)](https://github.com/stomt/unity)
+[![Issues](https://img.shields.io/github/issues/stomt/unity.svg)](https://github.com/stomt/unity/issues)
 
-![A widget for the Unity3d engine.](http://i.imgur.com/LzUt8j1.png "A widget for the Unity3d engine.")
+![A stomt widget for the Unity3D engine.](http://i.imgur.com/LzUt8j1.png "A widget for the Unity3d engine.")
 
 
 
 ## Installation
 
-1. Clone/Download this Repository
-2. Open the folder as a Unity project
-3. Open the example scene in the example folder for more instructions.
+1. Download this repository and copy the assets into your project.
+2. Add the "StomtPopup" prefab to your main UI canvas.
+3. Enter your AppId and stomt target name into the "StomtAPI" component on the prefab.
 
 
 ## Feedback
 
-We use stomt for all our feedback. Please help us improve our plugin at: https://www.stomt.com/stomt-unity 
+Please help to improve this plugin at: https://www.stomt.com/stomt-unity 
