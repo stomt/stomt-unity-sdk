@@ -22,7 +22,7 @@
 2. Make sure you have registered your target page
 3. Go to Settings > [My Apps](https://www.stomt.com/dev/my-apps) and create an application
 
-## Feedback
+## Feedback & Ideas
 
 Please help to improve this plugin at: https://www.stomt.com/stomt-unity 
 
