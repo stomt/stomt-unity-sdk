@@ -44,8 +44,6 @@ namespace Stomt
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
-			_targetText.text = _api.TargetName;
-
 			Reset();
 		}
 		void Start()
@@ -85,6 +83,7 @@ namespace Stomt
 		}
 		void Reset()
 		{
+			_targetText.text = _api.TargetName;
 			_message.text = string.Empty;
 			_screenshotToggle.isOn = true;
 

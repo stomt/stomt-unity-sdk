@@ -34,28 +34,32 @@ namespace Stomt
 
 		#region Inspector Variables
 		[SerializeField]
-		[Tooltip("The application identifier for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
+		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
 		string _appId = "";
 		[SerializeField]
-		[Tooltip("The name of your game's target page on https://www.stomt.com/.")]
-		string _targetName = "";
+		[Tooltip("The ID of the target page for your game on https://www.stomt.com/.")]
+		string _targetId = "";
 		#endregion
 		string _accessToken = "";
 
 		/// <summary>
-		/// The application identifier for your game.
+		/// The application ID for your game.
 		/// </summary>
 		public string AppId
 		{
 			get { return _appId; }
 		}
 		/// <summary>
-		/// The name of your game's target on stomt.
+		/// The target page ID for your game.
 		/// </summary>
-		public string TargetName
+		public string TargetId
 		{
-			get { return _targetName; }
+			get { return _targetId; }
 		}
+		/// <summary>
+		/// The name of your target page.
+		/// </summary>
+		public string TargetName { get; set; }
 
 		/// <summary>
 		/// Requests the asynchronous feed download from your game's target.
@@ -65,7 +69,7 @@ namespace Stomt
 		/// <param name="limit">The maximum amount of stomts to load.</param>
 		public void LoadFeed(FeedCallback callback, int offset = 0, int limit = 15)
 		{
-			LoadFeed(_targetName, callback, offset, limit);
+			LoadFeed(_targetId, callback, offset, limit);
 		}
 		/// <summary>
 		/// Requests the asynchronous feed download from the specified target.
@@ -85,7 +89,7 @@ namespace Stomt
 		/// <param name="text">The stomt message.</param>
 		public void CreateStomt(bool positive, string text)
 		{
-			CreateStomt(positive, _targetName, text);
+			CreateStomt(positive, _targetId, text);
 		}
 		/// <summary>
 		/// Creates a new anonymous stomt on the specified target.
@@ -119,7 +123,7 @@ namespace Stomt
 		/// <param name="image">The image texture to upload and attach to the stomt.</param>
 		public void CreateStomtWithImage(bool positive, string text, Texture2D image)
 		{
-			CreateStomtWithImage(positive, _targetName, text, image);
+			CreateStomtWithImage(positive, _targetId, text, image);
 		}
 		/// <summary>
 		/// Creates a new anonymous stomt on the specified target with an image attached to it.
@@ -153,7 +157,7 @@ namespace Stomt
 			writerImage.WriteArrayStart();
 			writerImage.WriteObjectStart();
 			writerImage.WritePropertyName("data");
-			writerImage.Write(System.Convert.ToBase64String(imageBytes));
+			writerImage.Write(Convert.ToBase64String(imageBytes));
 			writerImage.WriteObjectEnd();
 			writerImage.WriteArrayEnd();
 			writerImage.WriteObjectEnd();
@@ -182,6 +186,10 @@ namespace Stomt
 		{
 			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
 			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+
+			// Load target information
+			TargetName = _targetId;
+			StartCoroutine(LoadTarget(_targetId));
 		}
 
 		HttpWebRequest WebRequest(string method, string url)
@@ -198,6 +206,64 @@ namespace Stomt
 			}
 
 			return request;
+		}
+		IEnumerator LoadTarget(string target)
+		{
+			HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}", target));
+
+			// Send request and wait for response
+			var async1 = request.BeginGetResponse(null, null);
+
+			while (!async1.IsCompleted)
+			{
+				yield return null;
+			}
+
+			HttpWebResponse response;
+			var responseDataText = string.Empty;
+
+			try
+			{
+				response = (HttpWebResponse)request.EndGetResponse(async1);
+			}
+			catch (WebException ex)
+			{
+				Debug.LogException(ex);
+				yield break;
+			}
+
+			// Store access token
+			_accessToken = response.Headers["accesstoken"];
+
+			// Read response stream
+			using (var responseStream = response.GetResponseStream())
+			{
+				if (responseStream == null)
+				{
+					yield break;
+				}
+
+				var buffer = new byte[2048];
+				int length;
+
+				while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+				{
+					responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+				}
+			}
+
+			// Analyze JSON data
+			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+			if (responseData.Keys.Contains("error"))
+			{
+				Debug.LogError((string)responseData["error"]["msg"]);
+				yield break;
+			}
+
+			responseData = responseData["data"];
+
+			TargetName = (string)responseData["displayname"];
 		}
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
 		{
@@ -318,7 +384,6 @@ namespace Stomt
 			}
 
 			HttpWebResponse response;
-			var responseDataText = string.Empty;
 
 			try
 			{
