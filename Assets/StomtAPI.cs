@@ -184,6 +184,15 @@ namespace Stomt
 
 		void Start()
 		{
+			if (string.IsNullOrEmpty(_appId))
+			{
+				throw new ArgumentException("The stomt application ID variable cannot be empty.");
+			}
+			if (string.IsNullOrEmpty(_targetId))
+			{
+				throw new ArgumentException("The stomt target ID variable cannot be empty.");
+			}
+
 			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
 			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
 
