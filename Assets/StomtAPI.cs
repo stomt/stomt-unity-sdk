@@ -40,6 +40,7 @@ namespace Stomt
 		[Tooltip("The name of your game's target on stomt.")]
 		string _targetName = "";
 		#endregion
+		string _accessToken = "";
 
 		/// <summary>
 		/// The application identifier for your game.
@@ -191,6 +192,11 @@ namespace Stomt
 			request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
 			request.Headers["appid"] = _appId;
 
+			if (!string.IsNullOrEmpty(_accessToken))
+			{
+				request.Headers["accesstoken"] = _accessToken;
+			}
+
 			return request;
 		}
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
@@ -217,6 +223,9 @@ namespace Stomt
 				Debug.LogException(ex);
 				yield break;
 			}
+
+			// Store access token
+			_accessToken = response.Headers["accesstoken"];
 
 			// Read response stream
 			using (var responseStream = response.GetResponseStream())
@@ -297,7 +306,32 @@ namespace Stomt
 			catch (WebException ex)
 			{
 				Debug.LogException(ex);
+				yield break;
 			}
+
+			// Wait for response
+			var async2 = request.BeginGetResponse(null, null);
+
+			while (!async2.IsCompleted)
+			{
+				yield return null;
+			}
+
+			HttpWebResponse response;
+			var responseDataText = string.Empty;
+
+			try
+			{
+				response = (HttpWebResponse)request.EndGetResponse(async2);
+			}
+			catch (WebException ex)
+			{
+				Debug.LogException(ex);
+				yield break;
+			}
+
+			// Store access token
+			_accessToken = response.Headers["accesstoken"];
 		}
 		IEnumerator CreateStomtWithImageAsync(string jsonImage, string jsonStomt)
 		{
@@ -347,6 +381,9 @@ namespace Stomt
 				Debug.LogException(ex);
 				yield break;
 			}
+
+			// Store access token
+			_accessToken = response.Headers["accesstoken"];
 
 			// Read response stream
 			using (var responseStream = response.GetResponseStream())
