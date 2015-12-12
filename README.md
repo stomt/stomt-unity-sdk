@@ -1,5 +1,7 @@
 # stomt Unity-SDK [![Stomt API](https://img.shields.io/badge/stomt-v2.4.X-brightgreen.svg)](https://rest.stomt.com/)
 
+<img alt="Screenshot" src="https://cdn.stomt.com/uploads/nxru/origin/nxruIZkdL5uSOqxVmrt5sdwUWbSw12LAW0TmGAAF_origin.png" />
+
 This SDK allows the easy integration of the feedback solution [www.stomt.com](https://www.stomt.com/) in your Unity apps and games.
 
 ## Installation
