@@ -14,7 +14,7 @@ This SDK allows the easy integration of the feedback solution [www.stomt.com](ht
 
 ## Contribution
 
-We would love to see you contributing to this project. Feel free to fork it and send in your pull requests!
+We would love to see you contributing to this project. Feel free to fork it and send in your pull requests! Visit the [project on stomt](https://www.stomt.com/stomt-unity) to support with your ideas and feedback.
 
 ## Author
 
