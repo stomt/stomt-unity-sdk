@@ -1,28 +1,18 @@
-# Stomt Unity Widget
+# stomt Unity-SDK [![Stomt API](https://img.shields.io/badge/stomt-v2.1.X-brightgreen.svg)](https://rest.stomt.com/)
 
-[![License](https://img.shields.io/github/license/stomt/unity.svg)](http://opensource.org/licenses/MIT)
-[![Releases](https://img.shields.io/github/release/stomt/unity.svg)](https://github.com/stomt/unity)
-[![Issues](https://img.shields.io/github/issues/stomt/unity.svg)](https://github.com/stomt/unity/issues)
+This SDK allows the easy integration of the feedback solution [www.stomt.com](https://www.stomt.com/) in your Unity apps and games.
 
-![A stomt widget for the Unity3D engine.](http://i.imgur.com/LzUt8j1.png "A widget for the Unity3d engine.")
+## Installation
 
+1. [Create a target page on stomt](https://www.stomt.com/createTarget).
+2. Go to [Settings > My Apps](https://www.stomt.com/dev/my-apps) and create an application.
+3. Download this repository and copy the assets into your project.
+4. Add the "StomtPopup" prefab to your main UI canvas.
+5. Enter the AppId you obtained in the second step and your target username into the "StomtAPI" component on the prefab.
 
+## Contribution
 
-## Installation in three steps
-
-1. Download this repository and copy the assets into your project.
-2. Add the "StomtPopup" prefab to your main UI canvas.
-3. Enter your [AppId](##how-to-obtain-your-appid) and your [Target username](https://www.stomt.com/createTarget) into the "StomtAPI" component on the prefab.
-
-## How to obtain your AppId
-
-1. Register on [www.stomt.com](https://www.stomt.com)
-2. Make sure you have registered your target page
-3. Go to Settings > [My Apps](https://www.stomt.com/dev/my-apps) and create an application
-
-## Feedback & Ideas
-
-Please help to improve this plugin at: https://www.stomt.com/stomt-unity 
+We would love to see you contributing to this project. Feel free to fork it and send in your pull requests!
 
 ## Author
 
