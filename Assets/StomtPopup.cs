@@ -9,25 +9,32 @@ public class StomtPopup : MonoBehaviour
 	#region Inspector Variables
 	[SerializeField]
 	KeyCode _toggleKey = KeyCode.F1;
-	[Header("UI Elements")]
+
 	[SerializeField]
+	[HideInInspector]
 	GameObject _ui;
 	[SerializeField]
+	[HideInInspector]
 	Canvas _like;
 	[SerializeField]
+	[HideInInspector]
 	Canvas _wish;
 	[SerializeField]
+	[HideInInspector]
 	InputField _message;
 	[SerializeField]
+	[HideInInspector]
 	Text _wouldBecauseText;
 	[SerializeField]
+	[HideInInspector]
 	Text _characterLimit;
 	[SerializeField]
+	[HideInInspector]
 	Text _targetText;
 	[SerializeField]
+	[HideInInspector]
 	Toggle _screenshotToggle;
 	#endregion
-
 	StomtAPI _api;
 	Texture2D _screenshot;
 
