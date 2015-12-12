@@ -34,10 +34,10 @@ namespace Stomt
 
 		#region Inspector Variables
 		[SerializeField]
-		[Tooltip("The application identifier for your game. Tell us what you want to do (api@stomt.com) to request your own.")]
+		[Tooltip("The application identifier for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
 		string _appId = "";
 		[SerializeField]
-		[Tooltip("The name of your game's target on stomt.")]
+		[Tooltip("The name of your game's target page on https://www.stomt.com/.")]
 		string _targetName = "";
 		#endregion
 		string _accessToken = "";
