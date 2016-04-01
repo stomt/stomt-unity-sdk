@@ -26,6 +26,8 @@ namespace Stomt
 	/// </summary>
 	public class StomtAPI : MonoBehaviour
 	{
+        public string _restServerURL;
+
 		/// <summary>
 		/// References a method to be called when the asynchronous feed download completes.
 		/// </summary>
