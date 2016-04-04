@@ -26,7 +26,7 @@ namespace Stomt
 	/// </summary>
 	public class StomtAPI : MonoBehaviour
 	{
-        public string _restServerURL;
+        public string restServerURL;
 
 		/// <summary>
 		/// References a method to be called when the asynchronous feed download completes.
@@ -220,7 +220,7 @@ namespace Stomt
 		}
 		IEnumerator LoadTarget(string target)
 		{
-			HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}", target));
+			HttpWebRequest request = WebRequest("GET", string.Format("{0}/targets/{1}", restServerURL, target));
 
 			// Send request and wait for response
 			var async1 = request.BeginGetResponse(null, null);
@@ -278,7 +278,7 @@ namespace Stomt
 		}
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
 		{
-			HttpWebRequest request = WebRequest("GET", string.Format("https://rest.stomt.com/targets/{0}/stomts/received?offset={1}&limit={2}", target, offset, limit));
+			HttpWebRequest request = WebRequest("GET", string.Format("{0}/targets/{1}/stomts/received?offset={2}&limit={3}", restServerURL, target, offset, limit));
 
 			// Send request and wait for response
 			var async1 = request.BeginGetResponse(null, null);
@@ -362,7 +362,7 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(json);
 
-			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/stomts");
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/stomts", restServerURL));
 			request.ContentLength = data.Length;
 
 			// Send request
@@ -413,7 +413,7 @@ namespace Stomt
 		{
 			var data = Encoding.UTF8.GetBytes(jsonImage);
 
-			HttpWebRequest request = WebRequest("POST", "https://rest.stomt.com/images");
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/images", restServerURL));
 			request.ContentLength = data.Length;
 
 			// Send request
