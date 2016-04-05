@@ -10,7 +10,7 @@ namespace Stomt
 		#region Inspector Variables
 		[SerializeField]
 		KeyCode _toggleKey = KeyCode.F1;
-
+        
 		[SerializeField]
 		[HideInInspector]
 		GameObject _ui;
@@ -23,6 +23,9 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		InputField _message;
+        [SerializeField]
+        [HideInInspector]
+        Text _PlaceholderText;
 		[SerializeField]
 		[HideInInspector]
 		Text _wouldBecauseText;
@@ -39,8 +42,18 @@ namespace Stomt
 		StomtAPI _api;
 		Texture2D _screenshot;
 
+        private GameObject placeholderText;
+        private bool startTyping;
+
+        int CharLimit = 140;
+
 		void Awake()
 		{
+            placeholderText = GameObject.Find("Placeholder Text");
+            if(placeholderText == null)
+            {
+                Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
+            }
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
@@ -48,6 +61,7 @@ namespace Stomt
 		}
 		void Start()
 		{
+            startTyping = false;
 			Hide();
 		}
 		void Update()
@@ -63,6 +77,14 @@ namespace Stomt
 					StartCoroutine(Show());
 				}
 			}
+
+            if(!startTyping && !placeholderText.GetComponent<Text>().IsActive() )
+            {
+                refreshStartText();
+                this.startTyping = true;
+            }
+
+
 		}
 
 		IEnumerator Show()
@@ -125,7 +147,7 @@ namespace Stomt
 		}
 		public void OnMessageChanged()
 		{
-			int limit = 101 - _wouldBecauseText.text.Length;
+			int limit = CharLimit - _wouldBecauseText.text.Length;
 			int reverselength = limit - _message.text.Length;
 
 			if (reverselength <= 0)
@@ -135,7 +157,36 @@ namespace Stomt
 			}
 
 			_characterLimit.text = reverselength.ToString();
+
+
+            /** Change Text *****************************************************/
+            if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf )
+            {
+                refreshStartText();
+            }
 		}
+
+        private void refreshStartText()
+        {
+            if (_like.sortingOrder == 1)
+            {
+
+                // I wish
+                if (_message.text.Equals("") || _message.text.Equals("because "))
+                {
+                    _message.text = "would ";
+                }
+            }
+            else
+            {
+                // I like
+                if (_message.text.Equals("") || _message.text.Equals("would "))
+                {
+                    _message.text = "because ";
+                }
+            }
+        }
+
 		public void OnPostButtonPressed()
 		{
 			if (_message.text.Length == 0)
