@@ -20,12 +20,9 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		Canvas _wish;
-		[SerializeField]
-		[HideInInspector]
-		InputField _message;
         [SerializeField]
         [HideInInspector]
-        Text _PlaceholderText;
+		InputField _message;
 		[SerializeField]
 		[HideInInspector]
 		Text _wouldBecauseText;
@@ -42,7 +39,13 @@ namespace Stomt
 		StomtAPI _api;
 		Texture2D _screenshot;
 
-        private GameObject placeholderText;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject placeholderText;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject messageText;
+
         private bool startTyping;
 
         int CharLimit = 140;
@@ -54,6 +57,9 @@ namespace Stomt
             {
                 Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
             }
+
+            
+
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
@@ -78,11 +84,11 @@ namespace Stomt
 				}
 			}
 
-            if(!startTyping && !placeholderText.GetComponent<Text>().IsActive() )
+            /*if(!startTyping && !placeholderText.GetComponent<Text>().IsActive() )
             {
                 refreshStartText();
                 this.startTyping = true;
-            }
+            }*/
 
 
 		}
@@ -106,7 +112,12 @@ namespace Stomt
 		void Reset()
 		{
 			_targetText.text = _api.TargetName;
-			_message.text = string.Empty;
+
+            if(startTyping)
+            {
+                this.refreshStartText();
+            }
+            
 			_screenshotToggle.isOn = true;
 
 			if (_like.sortingOrder == 2)
@@ -159,14 +170,21 @@ namespace Stomt
 			_characterLimit.text = reverselength.ToString();
 
 
-            /** Change Text *****************************************************/
+            /** Change Text **/
             if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf )
             {
-                refreshStartText();
+                //this.startTyping = true;
+  
+                //if (startTyping)
+                {
+                    this.refreshStartText();
+                }
+
+                
             }
 		}
 
-        private void refreshStartText()
+        public void refreshStartText()
         {
             if (_like.sortingOrder == 1)
             {
