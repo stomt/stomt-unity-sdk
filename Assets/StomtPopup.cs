@@ -48,7 +48,7 @@ namespace Stomt
 
         private bool startTyping;
 
-        int CharLimit = 140;
+        int CharLimit = 120;
 
 		void Awake()
 		{
@@ -158,7 +158,7 @@ namespace Stomt
 		}
 		public void OnMessageChanged()
 		{
-			int limit = CharLimit - _wouldBecauseText.text.Length;
+            int limit = CharLimit;
 			int reverselength = limit - _message.text.Length;
 
 			if (reverselength <= 0)
