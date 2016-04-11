@@ -62,7 +62,7 @@ namespace Stomt
 		/// The name of your target page.
 		/// </summary>
 		public string TargetName { get; set; }
-
+        public string TargetImageURL { get; set; }
 		/// <summary>
 		/// Requests the asynchronous feed download from your game's target.
 		/// </summary>
@@ -184,6 +184,11 @@ namespace Stomt
 			StartCoroutine(CreateStomtWithImageAsync(jsonImage.ToString(), jsonStomt.ToString()));
 		}
 
+        void Awake()
+        {
+            StartCoroutine(LoadTarget(_targetId));
+        }
+
 		void Start()
 		{
 			if (string.IsNullOrEmpty(_appId))
@@ -275,6 +280,7 @@ namespace Stomt
 			responseData = responseData["data"];
 
 			TargetName = (string)responseData["displayname"];
+            TargetImageURL = (string)responseData["images"]["profile"][0];
 		}
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
 		{
@@ -491,5 +497,30 @@ namespace Stomt
 
 			yield return StartCoroutine(CreateStomtAsync(jsonStomt.Replace("{img_name}", imagename)));
 		}
+
+
+        public WWW LoadTargetImage()
+        {
+            
+            // Start download
+            if(TargetImageURL != null)
+            { 
+                Debug.Log("TT: " + TargetImageURL + TargetId);
+                var www = new WWW(TargetImageURL);
+                while (!www.isDone)
+                {
+                    // wait until the download is done
+                }
+
+                Debug.Log(TargetImageURL);
+
+                return www;
+            }
+            else
+            {
+                Debug.Log("TargetIcon URL = NULL");
+                return null;
+            }
+        }
 	}
 }

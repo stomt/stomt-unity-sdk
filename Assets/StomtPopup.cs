@@ -46,13 +46,15 @@ namespace Stomt
         [HideInInspector]
         public GameObject messageText;
 
+        public Image TargetIcon;
+
         private bool startTyping;
 
         int CharLimit = 120;
 
 		void Awake()
 		{
-            placeholderText = GameObject.Find("Placeholder Text");
+            /*placeholderText = GameObject.Find("Placeholder Text");*/
             if(placeholderText == null)
             {
                 Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
@@ -112,6 +114,8 @@ namespace Stomt
 		void Reset()
 		{
 			_targetText.text = _api.TargetName;
+            Debug.Log("icon: " + _api.TargetImageURL + _api.TargetName);
+            refreshTargetIcon();
 
             if(startTyping)
             {
@@ -223,5 +227,19 @@ namespace Stomt
 
 			Hide();
 		}
+
+        private void refreshTargetIcon()
+        {
+            var Image = _api.LoadTargetImage();
+
+            if(Image != null)
+            {
+                Debug.Log("" + Image.url);
+                Image.LoadImageIntoTexture(TargetIcon.sprite.texture);
+            }
+           // TargetIcon.sprite.texture = _api.LoadTargetImage().texture;
+
+            //_api.LoadTargetImage().texture;
+        }
 	}
 }
