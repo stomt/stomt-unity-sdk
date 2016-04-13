@@ -21,12 +21,14 @@ namespace Stomt
 		public string CreatorName { get; set; }
 	}
 
+
 	/// <summary>
 	/// Low-level stomt API component.
 	/// </summary>
 	public class StomtAPI : MonoBehaviour
 	{
         public string restServerURL;
+        public bool NetworkError { get; set; }
 
 		/// <summary>
 		/// References a method to be called when the asynchronous feed download completes.
@@ -187,6 +189,7 @@ namespace Stomt
         void Awake()
         {
             StartCoroutine(LoadTarget(_targetId));
+            NetworkError = false;
         }
 
 		void Start()
@@ -241,9 +244,11 @@ namespace Stomt
 			try
 			{
 				response = (HttpWebResponse)request.EndGetResponse(async1);
+                this.NetworkError = false;
 			}
 			catch (WebException ex)
 			{
+                this.NetworkError = true;
                 Debug.LogException(ex);
 				yield break;
 			}

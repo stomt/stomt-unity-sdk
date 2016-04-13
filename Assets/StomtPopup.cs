@@ -10,6 +10,11 @@ namespace Stomt
 		#region Inspector Variables
 		[SerializeField]
 		KeyCode _toggleKey = KeyCode.F1;
+
+        public GameObject _typeObj;
+        public GameObject _targetNameObj;
+        public GameObject _messageObj;
+        public GameObject _errorMessage;
         
 		[SerializeField]
 		[HideInInspector]
@@ -106,7 +111,30 @@ namespace Stomt
 
 			// Show UI
 			Reset();
-			_ui.SetActive(true);
+            _ui.SetActive(true);
+
+            Debug.Log("_errorMessage: " + _api.NetworkError);
+
+            if(_api.NetworkError)
+            {
+                // Diable GUI
+                _messageObj.SetActive(false);
+                _typeObj.SetActive(false);
+                _targetNameObj.SetActive(false);
+                // Enable Error MSG
+                _errorMessage.SetActive(true);
+
+            }
+            else
+            {
+                // Diable GUI
+                _messageObj.SetActive(true);
+                _typeObj.SetActive(true);
+                _targetNameObj.SetActive(true);
+                // Enable Error MSG
+                _errorMessage.SetActive(false);
+            }
+			
 		}
 		void Hide()
 		{
@@ -237,8 +265,6 @@ namespace Stomt
                 ImageDownload = _api.LoadTargetImage();
             }
             
-
-
             if (ImageDownload != null)
             {
                 ImageDownload.LoadImageIntoTexture(TargetIcon.sprite.texture);
