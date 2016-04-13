@@ -48,6 +48,8 @@ namespace Stomt
 
         public Image TargetIcon;
 
+        private WWW ImageDownload;
+
         private bool startTyping;
 
         int CharLimit = 120;
@@ -230,16 +232,17 @@ namespace Stomt
 
         private void refreshTargetIcon()
         {
-            var Image = _api.LoadTargetImage();
-
-            if(Image != null)
+            if (ImageDownload == null)
             {
-                Debug.Log("" + Image.url);
-                Image.LoadImageIntoTexture(TargetIcon.sprite.texture);
+                ImageDownload = _api.LoadTargetImage();
             }
-           // TargetIcon.sprite.texture = _api.LoadTargetImage().texture;
+            
 
-            //_api.LoadTargetImage().texture;
+
+            if (ImageDownload != null)
+            {
+                ImageDownload.LoadImageIntoTexture(TargetIcon.sprite.texture);
+            }
         }
 	}
 }

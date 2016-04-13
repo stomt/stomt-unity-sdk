@@ -505,20 +505,16 @@ namespace Stomt
             // Start download
             if(TargetImageURL != null)
             { 
-                Debug.Log("TT: " + TargetImageURL + TargetId);
                 var www = new WWW(TargetImageURL);
                 while (!www.isDone)
                 {
                     // wait until the download is done
                 }
 
-                Debug.Log(TargetImageURL);
-
                 return www;
             }
             else
             {
-                Debug.Log("TargetIcon URL = NULL");
                 return null;
             }
         }
