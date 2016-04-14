@@ -103,13 +103,10 @@ namespace Stomt
 				}
 			}
 
-            /*if(!startTyping && !placeholderText.GetComponent<Text>().IsActive() )
+            if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
             {
-                refreshStartText();
-                this.startTyping = true;
-            }*/
-
-
+                ShowError();
+            }
 		}
 
 		IEnumerator Show()
@@ -123,9 +120,12 @@ namespace Stomt
 			Reset();
             _ui.SetActive(true);
 
-            Debug.Log("_errorMessage: " + _api.NetworkError);
+            ShowError();	
+		}
 
-            if(_api.NetworkError)
+        void ShowError()
+        {
+            if (_api.NetworkError)
             {
                 // Diable GUI
                 _messageObj.SetActive(false);
@@ -144,8 +144,8 @@ namespace Stomt
                 // Enable Error MSG
                 _errorMessage.SetActive(false);
             }
-			
-		}
+        }
+
 		void Hide()
 		{
 			// Hide UI
