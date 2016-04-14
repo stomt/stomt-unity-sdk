@@ -11,9 +11,17 @@ namespace Stomt
 		[SerializeField]
 		KeyCode _toggleKey = KeyCode.F1;
 
+        [SerializeField]
+        [HideInInspector]
         public GameObject _typeObj;
+        [SerializeField]
+        [HideInInspector]
         public GameObject _targetNameObj;
+        [SerializeField]
+        [HideInInspector]
         public GameObject _messageObj;
+        [SerializeField]
+        [HideInInspector]
         public GameObject _errorMessage;
         
 		[SerializeField]
@@ -51,13 +59,15 @@ namespace Stomt
         [HideInInspector]
         public GameObject messageText;
 
+        [SerializeField]
+        [HideInInspector]
         public Image TargetIcon;
 
         private WWW ImageDownload;
 
         private bool startTyping;
 
-        int CharLimit = 120;
+        public int CharLimit = 120;
 
 		void Awake()
 		{
@@ -144,7 +154,7 @@ namespace Stomt
 		void Reset()
 		{
 			_targetText.text = _api.TargetName;
-            Debug.Log("icon: " + _api.TargetImageURL + _api.TargetName);
+
             refreshTargetIcon();
 
             if(startTyping)
