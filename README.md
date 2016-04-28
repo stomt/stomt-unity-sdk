@@ -19,15 +19,9 @@ enter "https://test.rest.stomt.com" as Rest Server URL in the widget.
 
 ## Common Issues
 
-WebException
-
-Error (401) Unauthorized: Is your application ID right? test.stomt and stomt use different ID's.
-
-Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
-
-Target Name doesn't fit: you can easily adjust the width.
-
-<img alt="Screenshot" src="http://schukies.io/images/stomt/targetname.gif" />
+- Error (401) Unauthorized: Is your application ID right? test.stomt and stomt use different ID's.
+- Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
+- Target Name doesn't fit: you can easily adjust the width. <img alt="Screenshot" src="http://schukies.io/images/stomt/targetname.gif" />
 
 ## Contribution
 
