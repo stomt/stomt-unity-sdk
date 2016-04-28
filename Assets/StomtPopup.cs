@@ -139,6 +139,7 @@ namespace Stomt
                 _targetNameObj.SetActive(false);
                 // Enable Error MSG
                 _errorMessage.SetActive(true);
+                TargetIcon.enabled = false;
 
             }
             else
@@ -149,6 +150,7 @@ namespace Stomt
                 _targetNameObj.SetActive(true);
                 // Enable Error MSG
                 _errorMessage.SetActive(false);
+                TargetIcon.enabled = true;
             }
         }
 
