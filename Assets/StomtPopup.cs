@@ -161,7 +161,6 @@ namespace Stomt
 		{
 			_targetText.text = _api.TargetName;
 
-
             if( !TargetImageApplied )
             {
                 refreshTargetIcon();
