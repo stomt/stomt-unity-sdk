@@ -51,27 +51,32 @@ namespace Stomt
 		#endregion
 		StomtAPI _api;
 		Texture2D _screenshot;
-
         [SerializeField]
         [HideInInspector]
         public GameObject placeholderText;
         [SerializeField]
         [HideInInspector]
         public GameObject messageText;
-
         [SerializeField]
         [HideInInspector]
         public Image TargetIcon;
 
         private WWW ImageDownload;
+        private Texture2D ProfileImageTexture;
+        private bool TargetImageApplied;
+        private bool StartedTyping;
 
-        private bool startTyping;
-
+        
+        public bool WouldBecauseText = true; // activates the would/because text
+        public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
+        public int AutoImageDownloadDelay = 5; // %DelayTime
         public int CharLimit = 120;
 
 		void Awake()
 		{
-            /*placeholderText = GameObject.Find("Placeholder Text");*/
+
+            TargetImageApplied = false;
+
             if(placeholderText == null)
             {
                 Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
@@ -83,10 +88,11 @@ namespace Stomt
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
 			Reset();
+            StartCoroutine(this.refreshTargetIcon(AutoImageDownloadDelay));
 		}
 		void Start()
 		{
-            startTyping = false;
+            StartedTyping = false;
 			Hide();
 		}
 		void Update()
@@ -155,11 +161,16 @@ namespace Stomt
 		{
 			_targetText.text = _api.TargetName;
 
-            refreshTargetIcon();
 
-            if(startTyping)
+            if( !TargetImageApplied )
             {
-                this.refreshStartText();
+                refreshTargetIcon();
+            }
+            
+
+            if(StartedTyping)
+            {
+                //this.refreshStartText();
             }
             
 			_screenshotToggle.isOn = true;
@@ -217,34 +228,30 @@ namespace Stomt
             /** Change Text **/
             if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf )
             {
-                //this.startTyping = true;
-  
-                //if (startTyping)
-                {
-                    this.refreshStartText();
-                }
-
-                
+                this.RefreshStartText();
             }
 		}
 
-        public void refreshStartText()
+        public void RefreshStartText()
         {
-            if (_like.sortingOrder == 1)
+            if (this.StartedTyping && WouldBecauseText)
             {
+                if (_like.sortingOrder == 1)
+                {
 
-                // I wish
-                if (_message.text.Equals("") || _message.text.Equals("because "))
-                {
-                    _message.text = "would ";
+                    // I wish
+                    if (_message.text.Equals("") || _message.text.Equals("because "))
+                    {
+                        _message.text = "would ";
+                    }
                 }
-            }
-            else
-            {
-                // I like
-                if (_message.text.Equals("") || _message.text.Equals("would "))
+                else
                 {
-                    _message.text = "because ";
+                    // I like
+                    if (_message.text.Equals("") || _message.text.Equals("would "))
+                    {
+                        _message.text = "because ";
+                    }
                 }
             }
         }
@@ -270,15 +277,48 @@ namespace Stomt
 
         private void refreshTargetIcon()
         {
+            StartCoroutine(refreshTargetIcon(0));
+        }
+
+        private IEnumerator refreshTargetIcon(float DelayTime)
+        {
+
+            // check wether download needed
             if (ImageDownload == null)
             {
                 ImageDownload = _api.LoadTargetImage();
             }
-            
-            if (ImageDownload != null)
+
+            yield return new WaitForSeconds(DelayTime);
+
+            if(DelayTime > 0)
             {
-                ImageDownload.LoadImageIntoTexture(TargetIcon.sprite.texture);
+                this.refreshTargetIcon();
             }
+
+            // check wether download finished
+            if (ImageDownload != null && !TargetImageApplied)
+            {
+
+                if (ProfileImageTexture != null) // already loaded, apply now
+                {
+                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToJPG(), false);
+                }
+                else if (ImageDownload.texture != null) // scale now and apply
+                {
+                    ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 1024, 1024, FilterMode.Trilinear);
+
+                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
+                    this.TargetImageApplied = true;
+                }
+            }
+        }
+
+        public void OnPointerEnter()
+        {
+            this.StartedTyping = true;
+
+            this.RefreshStartText();
         }
 	}
 }

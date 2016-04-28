@@ -462,11 +462,14 @@ namespace Stomt
 			try
 			{
 				response = (HttpWebResponse)request.EndGetResponse(async2);
+                this.NetworkError = false;
 			}
 			catch (WebException ex)
-			{
+			{ 
+                this.NetworkError = true;
 				Debug.LogException(ex);
 				yield break;
+                
 			}
 
 			// Store access token
