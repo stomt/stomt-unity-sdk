@@ -14,9 +14,17 @@ This SDK allows the easy integration of the feedback solution [www.stomt.com](ht
 
 <img alt="Screenshot" src="http://schukies.io/images/stomt/config.gif" />
 
-If you want to test something just use [test.stomt.com](https://test.stomt.com/) and
-enter "https://test.rest.stomt.com" as REST URL in the widget.
+If you want to test something just go through the installation steps again on [test.stomt.com](https://test.stomt.com/) and
+enter "https://test.rest.stomt.com" as Rest Server URL in the widget.
 
+## Common Issues
+
+WebException
+Error (401) Unauthorized: Is your application ID right? test.stomt and stomt use different ID's.
+Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
+
+Target Name doesn't fit: you can easily adjust the width:
+<img alt="Screenshot" src="http://schukies.io/images/stomt/targetname.gif" />
 
 ## Contribution
 
