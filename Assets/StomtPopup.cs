@@ -266,11 +266,11 @@ namespace Stomt
 
 			if (_screenshotToggle.isOn)
 			{
-				_api.CreateStomtWithImage(_like.sortingOrder == 2, _wouldBecauseText.text + " " + _message.text, _screenshot);
+				_api.CreateStomtWithImage(_like.sortingOrder == 2, _message.text, _screenshot);
 			}
 			else
 			{
-				_api.CreateStomt(_like.sortingOrder == 2, _wouldBecauseText.text + " " + _message.text);
+				_api.CreateStomt(_like.sortingOrder == 2,  _message.text);
 			}
 
 			Hide();
