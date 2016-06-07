@@ -35,5 +35,5 @@ We would love to see you contributing to this project. Feel free to fork it and 
 
 ## Authors
 
-[Daniel Schukies](https://github.com/daniel-schukies) | [Follow me on stomt](https://www.stomt.com/daniel-schukies)    
+[Daniel Schukies](https://github.com/daniel-schukies) | [Follow me on stomt](https://www.stomt.com/danielschukies)    
 [Patrick Mours](https://github.com/crosire) | [Follow me on stomt](https://www.stomt.com/crosire)
