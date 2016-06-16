@@ -23,7 +23,9 @@ namespace Stomt
         [SerializeField]
         [HideInInspector]
         public GameObject _errorMessage;
-        
+        [HideInInspector]
+        public GameObject _closeButton;
+
 		[SerializeField]
 		[HideInInspector]
 		GameObject _ui;
@@ -66,10 +68,10 @@ namespace Stomt
         private bool TargetImageApplied;
         private bool StartedTyping;
 
-        
+        public bool ShowCloseButton = true;
         public bool WouldBecauseText = true; // activates the would/because text
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
-        public int AutoImageDownloadDelay = 5; // %DelayTime
+        public int AutoImageDownloadDelay = 5; // DelayTime in seconds
         public int CharLimit = 120;
 
 		void Awake()
@@ -125,6 +127,9 @@ namespace Stomt
 			// Show UI
 			Reset();
             _ui.SetActive(true);
+            _closeButton.SetActive(ShowCloseButton);
+
+
 
             ShowError();	
 		}
@@ -154,7 +159,7 @@ namespace Stomt
             }
         }
 
-		void Hide()
+		public void Hide()
 		{
 			// Hide UI
 			_ui.SetActive(false);
