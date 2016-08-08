@@ -37,3 +37,9 @@ We would love to see you contributing to this project. Feel free to fork it and 
 
 [Daniel Schukies](https://github.com/daniel-schukies) | [Follow me on stomt](https://www.stomt.com/danielschukies)    
 [Patrick Mours](https://github.com/crosire) | [Follow me on stomt](https://www.stomt.com/crosire)
+
+## More about stomt
+
+* On the web [www.stomt.com](https://www.stomt.com)
+* [stomt for iOS](http://stomt.co/ios)
+* [stomt for Android](http://stomt.co/android)
