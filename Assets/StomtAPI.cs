@@ -250,6 +250,7 @@ namespace Stomt
 			{
                 this.NetworkError = true;
                 Debug.LogException(ex);
+                Debug.Log("Maybe wrong target id");
 				yield break;
 			}
 
