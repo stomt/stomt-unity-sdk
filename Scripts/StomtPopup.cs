@@ -71,7 +71,7 @@ namespace Stomt
         public bool ShowCloseButton = true;
         public bool WouldBecauseText = true; // activates the would/because text
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
-        public int AutoImageDownloadDelay = 5; // DelayTime in seconds
+        public float AutoImageDownloadDelay = 5; // DelayTime in seconds
         public int CharLimit = 120;
 
 		void Awake()
