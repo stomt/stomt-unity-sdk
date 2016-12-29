@@ -9,7 +9,7 @@ This Widget allows the easy integration of the feedback solution [www.stomt.com]
 1. Register as normal user on [www.stomt.com](https://www.stomt.com/) 
 2. [Create a target page on stomt](https://www.stomt.com/createTarget).
 3. Go to [Settings > My Apps](https://www.stomt.com/dev/my-apps) and create an application.
-4. Download this repository and copy the assets into your project.
+4. Download this repository and [or get it from the AssetStore](https://www.assetstore.unity3d.com/en/#!/content/64669) and copy the assets into your project.
 5. Add the ```StomtPopup``` prefab to your main UI canvas.
 6. Enter all necessary data into the ```StomtAPI``` component on the prefab.     
 6.1 Enter the ```Rest Server Url```: rest.stomt.com (Or use our Sandbox for testing - See below)     
