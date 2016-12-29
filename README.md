@@ -14,7 +14,7 @@ This Widget allows the easy integration of the feedback solution [www.stomt.com]
 6. Enter all necessary data into the ```StomtAPI``` component on the prefab.     
 6.1 Enter the ```Rest Server Url```: rest.stomt.com (Or use our Sandbox for testing - See below)     
 6.2 Enter the ```AppId``` you obtained in the third step     
-6.3 Enter your page username (you find it in your profile-url. E.g. stomt.com/stomt => stomt)     
+6.3 Enter your ```page username (as Target Id)``` (you find it in your profile-url. E.g. stomt.com/stomt => stomt)     
 7. Finished! *Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*     
 
 <img alt="Configure stomt Unity plugin" src="http://schukies.io/images/stomt/config.gif" />
