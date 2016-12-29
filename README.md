@@ -11,7 +11,8 @@ This Widget allows the easy integration of the feedback solution [www.stomt.com]
 3. Go to [Settings > My Apps](https://www.stomt.com/dev/my-apps) and create an application.
 4. Download this repository and copy the assets into your project.
 5. Add the ```StomtPopup``` prefab to your main UI canvas.
-6. Enter the AppId you obtained in the second step and your target username into the ```StomtAPI``` component on the prefab.
+6. Enter the AppId you obtained in the second step and your page username (you find it in your profile-url) into the ```StomtAPI``` component on the prefab.
+7. Enter the ```Rest Server Url```: rest.stomt.com (Or use our Sandbox for testing - See below)
 
 <img alt="Configure stomt Unity plugin" src="http://schukies.io/images/stomt/config.gif" />
 
