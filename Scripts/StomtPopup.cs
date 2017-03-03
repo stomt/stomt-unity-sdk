@@ -76,15 +76,12 @@ namespace Stomt
 
 		void Awake()
 		{
-
             TargetImageApplied = false;
 
             if(placeholderText == null)
             {
                 Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
             }
-
-            
 
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
@@ -99,23 +96,42 @@ namespace Stomt
 		}
 		void Update()
 		{
-			if (Input.GetKeyDown(_toggleKey))
-			{
-				if (_ui.activeSelf)
-				{
-					Hide();
-				}
-				else
-				{
-					StartCoroutine(Show());
-				}
-			}
-
             if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
             {
                 ShowError();
             }
 		}
+
+        public void ShowWidget()
+        {
+            if (!_ui.activeSelf)
+            {
+                StartCoroutine(Show());
+            }
+        }
+
+        public void HideWidget()
+        {
+            if (_ui.activeSelf)
+            {
+                Hide();
+            }
+        }
+
+        void OnGUI()
+        {
+            if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())))
+            {
+                if (_ui.activeSelf)
+                {
+                    Hide();
+                }
+                else
+                {
+                    StartCoroutine(Show());
+                }
+            }
+        }
 
 		IEnumerator Show()
 		{
@@ -128,8 +144,6 @@ namespace Stomt
 			Reset();
             _ui.SetActive(true);
             _closeButton.SetActive(ShowCloseButton);
-
-
 
             ShowError();	
 		}
