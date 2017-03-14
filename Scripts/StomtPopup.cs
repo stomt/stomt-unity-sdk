@@ -89,11 +89,13 @@ namespace Stomt
 			Reset();
             StartCoroutine(this.refreshTargetIcon(AutoImageDownloadDelay));
 		}
+
 		void Start()
 		{
             StartedTyping = false;
 			Hide();
 		}
+
 		void Update()
 		{
             if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
@@ -102,6 +104,9 @@ namespace Stomt
             }
 		}
 
+        /**
+         *   Enables the Widget/Popup when hidden
+         */
         public void ShowWidget()
         {
             if (!_ui.activeSelf)
@@ -110,6 +115,9 @@ namespace Stomt
             }
         }
 
+        /**
+         *  Disables the Widget/Popup when active
+         */
         public void HideWidget()
         {
             if (_ui.activeSelf)
