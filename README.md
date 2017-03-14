@@ -23,7 +23,7 @@ The Widget can be enabled by using a toggle key or calling the API Methods.
 
 StomtPopup Class
 * Enable:	ShowWidget()
-* Disable:	HideWIdget()
+* Disable:	HideWidget()
 
 ## Use our Sandbox!
 If you want to test the integration please feel free to do what you want on [test.stomt.com](https://test.stomt.com/) 
