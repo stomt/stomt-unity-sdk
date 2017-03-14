@@ -19,6 +19,12 @@ This Widget allows the easy integration of the feedback solution [www.stomt.com]
 
 <img alt="Configure stomt Unity plugin" src="http://schukies.io/images/stomt/config.gif" />
 
+The Widget can be enabled by using a toggle key or calling the API Methods.
+
+StomtPopup Class
+* Enable:	ShowWidget()
+* Disable:	HideWIdget()
+
 ## Use our Sandbox!
 If you want to test the integration please feel free to do what you want on [test.stomt.com](https://test.stomt.com/) 
 
