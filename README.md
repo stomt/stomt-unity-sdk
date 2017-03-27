@@ -1,4 +1,4 @@
-# STP;T Unity-SDK [![STOMT API](https://img.shields.io/badge/stomt-v2.4.X-brightgreen.svg)](https://rest.stomt.com/)
+# STOMT Unity-SDK [![STOMT API](https://img.shields.io/badge/stomt-v2.4.X-brightgreen.svg)](https://rest.stomt.com/)
 
 <img alt="STOMT unity feedback integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
 
@@ -43,7 +43,7 @@ If you want to test the integration please feel free to do what you want on [tes
 
 ## Contribution
 
-We would love to see you contributing to this project. Feel free to fork it and send in your pull requests! Visit the [project on stomt](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
+We would love to see you contributing to this project. Feel free to fork it and send in your pull requests! Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
 
 ## Authors
 
