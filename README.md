@@ -50,7 +50,7 @@ We would love to see you contributing to this project. Feel free to fork it and 
 [Daniel Schukies](https://github.com/daniel-schukies) | [Follow Daniel Schukies on STOMT](https://www.stomt.com/danielschukies)    
 [Patrick Mours](https://github.com/crosire) | [Follow Patrick Mours on STOMT](https://www.stomt.com/crosire)
 
-## More about stomt
+## More about STOMT
 
 * On the web [www.stomt.com](https://www.stomt.com)
 * [STOMT for iOS](http://stomt.co/ios)
