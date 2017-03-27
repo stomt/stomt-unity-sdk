@@ -1,13 +1,13 @@
-# stomt Unity-SDK [![Stomt API](https://img.shields.io/badge/stomt-v2.4.X-brightgreen.svg)](https://rest.stomt.com/)
+# STP;T Unity-SDK [![STOMT API](https://img.shields.io/badge/stomt-v2.4.X-brightgreen.svg)](https://rest.stomt.com/)
 
-<img alt="stomt unity feedback integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
+<img alt="STOMT unity feedback integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
 
-This Widget allows the easy integration of the feedback solution [www.stomt.com](https://www.stomt.com/) in your Unity apps and games. Of course you can find the stomt feedback widget for Unity3D in the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669).
+This Widget allows the easy integration of the feedback solution [www.stomt.com](https://www.stomt.com/) in your Unity apps and games. Of course you can find the STOMT feedback widget for Unity3D in the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669).
 
 ## Installation
 
 1. Register as normal user on [www.stomt.com](https://www.stomt.com/) 
-2. [Create a target page on stomt](https://www.stomt.com/createTarget).
+2. [Create a target page on STOMT](https://www.stomt.com/createTarget).
 3. Go to [Settings > My Apps](https://www.stomt.com/dev/my-apps) and create an application.
 4. Download this repository and [or get it from the AssetStore](https://www.assetstore.unity3d.com/en/#!/content/64669) and copy the assets into your project.
 5. Add the ```StomtPopup``` prefab to your main UI canvas.
@@ -17,7 +17,7 @@ This Widget allows the easy integration of the feedback solution [www.stomt.com]
 6.3 Enter your ```page username (as Target Id)``` (you find it in your profile-url. E.g. stomt.com/stomt => stomt)     
 7. Finished! *Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*     
 
-<img alt="Configure stomt Unity plugin" src="http://schukies.io/images/stomt/config.gif" />
+<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/config.gif" />
 
 ## Usage
 
@@ -53,5 +53,5 @@ We would love to see you contributing to this project. Feel free to fork it and 
 ## More about stomt
 
 * On the web [www.stomt.com](https://www.stomt.com)
-* [stomt for iOS](http://stomt.co/ios)
-* [stomt for Android](http://stomt.co/android)
+* [STOMT for iOS](http://stomt.co/ios)
+* [STOMT for Android](http://stomt.co/android)
