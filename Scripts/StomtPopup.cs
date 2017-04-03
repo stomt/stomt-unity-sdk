@@ -74,6 +74,10 @@ namespace Stomt
         public float AutoImageDownloadDelay = 5; // DelayTime in seconds
         public int CharLimit = 120;
 
+        public delegate void StomtAction();
+        public static event StomtAction OnStomtSend;
+        public static event StomtAction OnWidgetClosed;
+
 		void Awake()
 		{
             TargetImageApplied = false;
@@ -185,6 +189,11 @@ namespace Stomt
 		{
 			// Hide UI
 			_ui.SetActive(false);
+
+            if (OnWidgetClosed != null)
+            {
+                OnWidgetClosed();
+            }
 		}
 		void Reset()
 		{
@@ -301,6 +310,13 @@ namespace Stomt
 			}
 
 			Hide();
+
+
+            if ( OnStomtSend != null)
+            {
+                OnStomtSend();
+            }
+
 		}
 
         private void refreshTargetIcon()
