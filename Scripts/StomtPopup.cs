@@ -295,8 +295,9 @@ namespace Stomt
 
 		public void OnPostButtonPressed()
 		{
-			if (_message.text.Length == 0)
+			if (_message.text.Length == 0 || _message.text.Length <= 8 )
 			{
+				Debug.Log("_message to short!");
 				return;
 			}
 
