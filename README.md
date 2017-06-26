@@ -41,6 +41,8 @@ If you want to test the integration please feel free to do what you want on [tes
 
 <img alt="Adjust target bubble" src="http://schukies.io/images/stomt/targetname.gif" />
 
+* Stomts are not sent out on Android: change the API Compatibility Level from `.NET 2.0 Subset` to `.NET 2.0` in the Player Settings.
+
 ## Contribution
 
 We would love to see you contributing to this project. Feel free to fork it and send in your pull requests! Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
