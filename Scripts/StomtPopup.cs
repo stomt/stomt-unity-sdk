@@ -132,7 +132,7 @@ namespace Stomt
 
         void OnGUI()
         {
-            if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())))
+            if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())) && _toggleKey != KeyCode.None)
             {
                 if (_ui.activeSelf)
                 {
