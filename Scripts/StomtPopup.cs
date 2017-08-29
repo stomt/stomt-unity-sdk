@@ -327,11 +327,20 @@ namespace Stomt
 
         private IEnumerator refreshTargetIcon(float DelayTime)
         {
-
             // check wether download needed
-            if (ImageDownload == null)
+            if (ImageDownload == null )
             {
-                ImageDownload = _api.LoadTargetImage();
+                // Start download
+                if (this._api.TargetImageURL != null)
+                {
+                    WWW www = new WWW(this._api.TargetImageURL);
+                    while (!www.isDone)
+                    {
+                        // wait until the download is done
+                    }
+
+                    ImageDownload = www;
+                }
             }
 
             yield return new WaitForSeconds(DelayTime);
@@ -347,13 +356,13 @@ namespace Stomt
 
                 if (ProfileImageTexture != null) // already loaded, apply now
                 {
-                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToJPG(), false);
+                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
                 }
                 else if (ImageDownload.texture != null) // scale now and apply
                 {
-                    ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 1024, 1024, FilterMode.Trilinear);
+                    ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
 
-                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
+                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG());
                     this.TargetImageApplied = true;
                 }
             }
