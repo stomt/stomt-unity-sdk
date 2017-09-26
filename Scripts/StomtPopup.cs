@@ -32,6 +32,8 @@ namespace Stomt
         [HideInInspector]
         public GameObject _LayerInput;
 
+        public Text _TargetURL;
+
 		[SerializeField]
 		[HideInInspector]
 		GameObject _ui;
@@ -102,6 +104,7 @@ namespace Stomt
 
 		void Start()
 		{
+            _TargetURL.text = "stomt.com/" + _api.TargetId;
             StartedTyping = false;
 			Hide();
 		}
@@ -432,6 +435,11 @@ namespace Stomt
         {
             this._LayerInput.SetActive(true);
             this._LayerSuccessfulSent.SetActive(false);
+        }
+
+        public void OpenTargetURL()
+        {
+            Application.OpenURL("https://stomt.com/" + _api.TargetId);
         }
 	}
 }
