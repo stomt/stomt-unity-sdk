@@ -158,7 +158,16 @@ namespace Stomt
 			Reset();
             _ui.SetActive(true);
             _closeButton.SetActive(ShowCloseButton);
-            _postButton.GetComponent<Button>().interactable = false;
+
+            if(this.IsMessageLengthCorrect())
+            {
+                _postButton.GetComponent<Button>().interactable = true;
+            }
+            else
+            {
+                _postButton.GetComponent<Button>().interactable = false;
+            }
+
 
             ShowError();	
 		}
@@ -240,6 +249,11 @@ namespace Stomt
 				_like.sortingOrder = 1;
 				_wish.sortingOrder = 2;
 				_wouldBecauseText.text = "would";
+
+                if (!this.IsMessageLengthCorrect())
+                {
+                    _message.text = "because ";
+                }
 			}
 			else
 			{
@@ -247,6 +261,11 @@ namespace Stomt
 				_like.sortingOrder = 2;
 				_wish.sortingOrder = 1;
 				_wouldBecauseText.text = "because";
+               
+                if(!this.IsMessageLengthCorrect())
+                {
+                    _message.text = "because ";
+                }
 			}
 
 			OnMessageChanged();
@@ -297,7 +316,7 @@ namespace Stomt
                 else
                 {
                     // I like
-                    if (_message.text.Equals("") || _message.text.Equals("would "))
+                    if (_message.text.Equals("") || _message.text.Equals("would ") )
                     {
                         _message.text = "because ";
                     }
