@@ -309,7 +309,6 @@ namespace Stomt
         {
             if (_message.text.Length == 0 || _message.text.Length <= 9)
             {
-                Debug.Log("_message to short!");
                 return false;
             }
             else
@@ -322,6 +321,7 @@ namespace Stomt
 		{
             if (!IsMessageLengthCorrect())
 			{
+                Debug.Log("_message to short!");
 				return;
 			}
 
