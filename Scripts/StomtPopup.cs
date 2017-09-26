@@ -25,6 +25,8 @@ namespace Stomt
         public GameObject _errorMessage;
         [HideInInspector]
         public GameObject _closeButton;
+        [HideInInspector]
+        public GameObject _postButton;
 
 		[SerializeField]
 		[HideInInspector]
@@ -156,6 +158,7 @@ namespace Stomt
 			Reset();
             _ui.SetActive(true);
             _closeButton.SetActive(ShowCloseButton);
+            _postButton.GetComponent<Button>().interactable = false;
 
             ShowError();	
 		}
@@ -267,6 +270,15 @@ namespace Stomt
             {
                 this.RefreshStartText();
             }
+
+            if(IsMessageLengthCorrect())
+            {
+                _postButton.GetComponent<Button>().interactable = true;
+            }
+            else
+            {
+                _postButton.GetComponent<Button>().interactable = false;
+            }
 		}
 
         public void RefreshStartText()
@@ -293,11 +305,23 @@ namespace Stomt
             }
         }
 
+        private bool IsMessageLengthCorrect()
+        {
+            if (_message.text.Length == 0 || _message.text.Length <= 9)
+            {
+                Debug.Log("_message to short!");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
 		public void OnPostButtonPressed()
 		{
-			if (_message.text.Length == 0 || _message.text.Length <= 8 )
+            if (!IsMessageLengthCorrect())
 			{
-				Debug.Log("_message to short!");
 				return;
 			}
 
