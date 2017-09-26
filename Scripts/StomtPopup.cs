@@ -27,6 +27,10 @@ namespace Stomt
         public GameObject _closeButton;
         [HideInInspector]
         public GameObject _postButton;
+        [HideInInspector]
+        public GameObject _LayerSuccessfulSent;
+        [HideInInspector]
+        public GameObject _LayerInput;
 
 		[SerializeField]
 		[HideInInspector]
@@ -168,6 +172,7 @@ namespace Stomt
                 _postButton.GetComponent<Button>().interactable = false;
             }
 
+            ResetUILayer();
 
             ShowError();	
 		}
@@ -355,15 +360,16 @@ namespace Stomt
 				_api.CreateStomt(_like.sortingOrder == 2,  _message.text);
 			}
 
-			Hide();
-
-
             if ( OnStomtSend != null)
             {
                 OnStomtSend();
             }
 
             _message.text = "";
+
+            //Switch UI Layer
+            _LayerSuccessfulSent.SetActive(true);
+            _LayerInput.SetActive(false);
 
 		}
 
@@ -420,6 +426,12 @@ namespace Stomt
             this.StartedTyping = true;
 
             this.RefreshStartText();
+        }
+
+        public void ResetUILayer()
+        {
+            this._LayerInput.SetActive(true);
+            this._LayerSuccessfulSent.SetActive(false);
         }
 	}
 }
