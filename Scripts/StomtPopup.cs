@@ -72,7 +72,7 @@ namespace Stomt
         public bool WouldBecauseText = true; // activates the would/because text
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
         public float AutoImageDownloadDelay = 5; // DelayTime in seconds
-        public int CharLimit = 120;
+        private int CharLimit = 120;
 
         public delegate void StomtAction();
         public static event StomtAction OnStomtSend;
