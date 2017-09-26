@@ -318,6 +318,8 @@ namespace Stomt
                 OnStomtSend();
             }
 
+            _message.text = "";
+
 		}
 
         private void refreshTargetIcon()
