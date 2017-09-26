@@ -302,6 +302,8 @@ namespace Stomt
                         _message.text = "because ";
                     }
                 }
+
+                _message.GetComponent<InputField>().MoveTextEnd(true);
             }
         }
 
