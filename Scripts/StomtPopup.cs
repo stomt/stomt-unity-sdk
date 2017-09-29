@@ -265,6 +265,12 @@ namespace Stomt
 
 		public void OnToggleButtonPressed()
 		{
+            if(!StartedTyping)
+            {
+                this.StartedTyping = true;
+                this.RefreshStartText();
+            }
+
 			var likeTransform = _like.GetComponent<RectTransform>();
 			var wishTransform = _wish.GetComponent<RectTransform>();
 
@@ -473,11 +479,29 @@ namespace Stomt
             }
         }
 
-        public void OnPointerEnter()
+        public void OnPointerEnterMessage()
         {
             this.StartedTyping = true;
 
             this.RefreshStartText();
+        }
+
+        public void OnPointerEnterToggle()
+        {
+            var likeAnimator = _like.GetComponent<Animator>();
+            var wishAnimator = _wish.GetComponent<Animator>();
+
+            wishAnimator.SetBool("Hover", true);
+            likeAnimator.SetBool("Hover", true);
+        }
+
+        public void OnPointerExitToggle()
+        {
+            var likeAnimator = _like.GetComponent<Animator>();
+            var wishAnimator = _wish.GetComponent<Animator>();
+
+            wishAnimator.SetBool("Hover", false);
+            likeAnimator.SetBool("Hover", false);
         }
 
         public void ResetUILayer()
