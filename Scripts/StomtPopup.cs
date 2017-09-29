@@ -31,7 +31,7 @@ namespace Stomt
         public GameObject _LayerSuccessfulSent;
         [HideInInspector]
         public GameObject _LayerInput;
-
+        [HideInInspector]
         public Text _TargetURL;
 
 		[SerializeField]
@@ -80,6 +80,7 @@ namespace Stomt
         public bool WouldBecauseText = true; // activates the would/because text
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
         public float AutoImageDownloadDelay = 5; // DelayTime in seconds
+        public int TargetNameCharLimit = 11;
         private int CharLimit = 120;
 
         public delegate void StomtAction();
@@ -217,7 +218,18 @@ namespace Stomt
 		}
 		void Reset()
 		{
-			_targetText.text = _api.TargetName;
+            if(_api.TargetName != null)
+            {
+                if (_api.TargetName.Length > TargetNameCharLimit)
+                {
+                    _targetText.text = _api.TargetName.Substring(0, TargetNameCharLimit);
+                }
+                else
+                {
+                    _targetText.text = _api.TargetName;
+                }
+            }
+			
 
             if( !TargetImageApplied )
             {
