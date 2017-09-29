@@ -187,6 +187,9 @@ namespace Stomt
             ShowError();
 
             _characterLimit.GetComponent<Animator>().SetBool("Active", false);
+
+            _like.GetComponent<Animator>().SetBool("OnTop", false);
+            _wish.GetComponent<Animator>().SetBool("OnTop", true);
 		}
 
         void ShowError()
@@ -265,9 +268,15 @@ namespace Stomt
 			var likeTransform = _like.GetComponent<RectTransform>();
 			var wishTransform = _wish.GetComponent<RectTransform>();
 
-			var temp = likeTransform.anchoredPosition;
-			likeTransform.anchoredPosition = wishTransform.anchoredPosition;
-			wishTransform.anchoredPosition = temp;
+            var likeAnimator = _like.GetComponent<Animator>();
+            var wishAnimator = _wish.GetComponent<Animator>();
+
+            bool tmp = likeAnimator.GetBool("OnTop");
+            likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
+            wishAnimator.SetBool("OnTop", tmp);
+			//var temp = likeTransform.anchoredPosition;
+			//likeTransform.anchoredPosition = wishTransform.anchoredPosition;
+			//wishTransform.anchoredPosition = temp;
 
 			if (_like.sortingOrder == 2)
 			{
