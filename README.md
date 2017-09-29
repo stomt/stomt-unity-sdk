@@ -1,7 +1,7 @@
 # STOMT Unity-SDK [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
 
 <p align="center">
-  <img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
+  <img alt="STOMT Unity Feedback Integration" src="https://schukies.io/images/stomt/stomtunity7.PNG" />
 </p>
 
 This Widget allows the easy integration of the feedback solution [www.stomt.com](https://www.stomt.com/) in your Unity apps and games. Of course you can find the STOMT feedback widget for Unity3D in the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669).
@@ -48,6 +48,9 @@ The Widget can be enabled by using a toggle key or calling the API Methods.
 StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
+
+
+<img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
 
 
 ## Use our Sandbox
