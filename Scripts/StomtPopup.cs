@@ -184,7 +184,9 @@ namespace Stomt
 
             ResetUILayer();
 
-            ShowError();	
+            ShowError();
+
+            _characterLimit.GetComponent<Animator>().SetBool("Active", false);
 		}
 
         void ShowError()
@@ -326,6 +328,15 @@ namespace Stomt
             if(StartedTyping && _message.text.Length < 6)
             {
                 this.ShowErrorMessage("Please write a bit more.");
+            }
+
+            if(_message.text.Length > 15)
+            {
+                _characterLimit.GetComponent<Animator>().SetBool("Active", true);
+            }
+            else
+            {
+                _characterLimit.GetComponent<Animator>().SetBool("Active", false);
             }
 		}
 
