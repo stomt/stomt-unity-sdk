@@ -49,6 +49,36 @@ StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
 
+## Event Callbacks
+
+
+The STOMT Widget supports a variety of callback events.
+
+This shows how you can access them.
+
+```
+using UnityEngine;
+using System.Collections;
+using Stomt;
+
+public class StomtEventCallbackExample : MonoBehaviour 
+{
+    // Use this for initialization
+    void Start () 
+    {
+        StomtPopup.OnStomtSend += YourFunction;
+        StomtPopup.OnWidgetClosed += YourFunction;
+        StomtPopup.OnWidgetOpen += YourFunction;
+    }
+
+    // Your Function
+    void YourFunction()
+    {
+        // React
+    }
+} 
+```
+
 
 ## Use our Sandbox
 
