@@ -1,7 +1,7 @@
 # STOMT Unity-SDK [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
 
 <p align="center">
-  <img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
+  <img alt="STOMT Unity Feedback Integration" src="https://schukies.io/images/stomt/stomtunity7.PNG" />
 </p>
 
 This Widget allows the easy integration of the feedback solution [www.stomt.com](https://www.stomt.com/) in your Unity apps and games. Of course you can find the STOMT feedback widget for Unity3D in the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669).
@@ -80,6 +80,9 @@ public class StomtEventCallbackExample : MonoBehaviour
 ```
 
 
+<img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
+
+
 ## Use our Sandbox
 
 If you want to test the integration please feel free to do what you want on [test.stomt.com](https://test.stomt.com/) 
@@ -95,10 +98,6 @@ Just go through the configuration steps again using the test server:
 
 * Error (401) Unauthorized: Is your application ID right? ```test.stomt.com``` and ```stomt.com``` use different ID's.
 * Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
-* Target Name doesn't fit: you can easily adjust the width. 
-
-<img alt="Adjust target bubble" src="http://schukies.io/images/stomt/targetname.gif" />
-
 * Stomts are not sent out on Android: change the API Compatibility Level from `.NET 2.0 Subset` to `.NET 2.0` in the Player Settings.
 
 
