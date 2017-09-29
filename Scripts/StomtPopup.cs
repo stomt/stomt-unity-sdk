@@ -92,6 +92,7 @@ namespace Stomt
         public delegate void StomtAction();
         public static event StomtAction OnStomtSend;
         public static event StomtAction OnWidgetClosed;
+        public static event StomtAction OnWidgetOpen;
 
 		void Awake()
 		{
@@ -190,6 +191,11 @@ namespace Stomt
 
             _like.GetComponent<Animator>().SetBool("OnTop", false);
             _wish.GetComponent<Animator>().SetBool("OnTop", true);
+
+            if (OnWidgetOpen != null)
+            {
+                OnWidgetOpen();
+            }
 		}
 
         void ShowError()
