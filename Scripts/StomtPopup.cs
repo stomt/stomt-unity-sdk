@@ -451,7 +451,7 @@ namespace Stomt
 
         public void OpenTargetURL()
         {
-            Application.OpenURL("https://stomt.com/" + _api.TargetId);
+            Application.OpenURL("https://www.stomt.com/" + _api.TargetId);
         }
 	}
 }
