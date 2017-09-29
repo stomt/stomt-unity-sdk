@@ -49,6 +49,9 @@ StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
 
+<img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
+
+
 ## Event Callbacks
 
 
@@ -78,10 +81,6 @@ public class StomtEventCallbackExample : MonoBehaviour
     }
 } 
 ```
-
-
-<img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
-
 
 ## Use our Sandbox
 
