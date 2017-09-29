@@ -33,6 +33,10 @@ namespace Stomt
         public GameObject _LayerInput;
         [HideInInspector]
         public Text _TargetURL;
+        [HideInInspector]
+        public GameObject _ErrorMessageObject;
+        [HideInInspector]
+        public Text _ErrorMessageText;
 
 		[SerializeField]
 		[HideInInspector]
@@ -81,6 +85,7 @@ namespace Stomt
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
         public float AutoImageDownloadDelay = 5; // DelayTime in seconds
         public int TargetNameCharLimit = 11;
+        public int ErrorMessageCharLimit = 11;
         private int CharLimit = 120;
 
         public delegate void StomtAction();
@@ -274,6 +279,8 @@ namespace Stomt
                 {
                     _message.text = "because ";
                 }
+
+                this.ShowErrorMessage("test error .....");
 			}
 			else
 			{
@@ -286,6 +293,8 @@ namespace Stomt
                 {
                     _message.text = "because ";
                 }
+
+                this.HideErrorMessage();
 			}
 
 			OnMessageChanged();
@@ -452,6 +461,30 @@ namespace Stomt
         public void OpenTargetURL()
         {
             Application.OpenURL("https://www.stomt.com/" + _api.TargetId);
+        }
+
+        public void ShowErrorMessage(string message)
+        {
+            if (message.Length > ErrorMessageCharLimit)
+            {
+                _ErrorMessageText.text = message.Substring(0, ErrorMessageCharLimit);
+            }
+            else
+            {
+                _ErrorMessageText.text = message;
+            }
+
+            _ErrorMessageObject.SetActive(true);
+            _screenshotToggle.GetComponent<Animator>().SetBool("Show", false);
+            _postButton.GetComponent<Animator>().SetBool("Left", true);
+            _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", true);
+        }
+
+        public void HideErrorMessage()
+        {
+            _postButton.GetComponent<Animator>().SetBool("Left", false);
+            _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", false);
+            _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
         }
 	}
 }
