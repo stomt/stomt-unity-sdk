@@ -79,13 +79,14 @@ namespace Stomt
         private Texture2D ProfileImageTexture;
         private bool TargetImageApplied;
         private bool StartedTyping;
+        private bool IsErrorState;
 
         public bool ShowCloseButton = true;
         public bool WouldBecauseText = true; // activates the would/because text
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
         public float AutoImageDownloadDelay = 5; // DelayTime in seconds
         public int TargetNameCharLimit = 11;
-        public int ErrorMessageCharLimit = 11;
+        public int ErrorMessageCharLimit = 20;
         private int CharLimit = 120;
 
         public delegate void StomtAction();
@@ -235,13 +236,11 @@ namespace Stomt
                 }
             }
 			
-
             if( !TargetImageApplied )
             {
                 refreshTargetIcon();
             }
             
-
             if(StartedTyping)
             {
                 //this.refreshStartText();
@@ -279,8 +278,6 @@ namespace Stomt
                 {
                     _message.text = "because ";
                 }
-
-                this.ShowErrorMessage("test error .....");
 			}
 			else
 			{
@@ -293,8 +290,6 @@ namespace Stomt
                 {
                     _message.text = "because ";
                 }
-
-                this.HideErrorMessage();
 			}
 
 			OnMessageChanged();
@@ -326,6 +321,11 @@ namespace Stomt
             else
             {
                 _postButton.GetComponent<Button>().interactable = false;
+            }
+
+            if(StartedTyping && _message.text.Length < 6)
+            {
+                this.ShowErrorMessage("Please write a bit more.");
             }
 		}
 
@@ -363,14 +363,22 @@ namespace Stomt
             }
             else
             {
+                HideErrorMessage();
                 return true;
             }
         }
 
 		public void OnPostButtonPressed()
 		{
+            if (IsErrorState)
+            {
+                this.HideErrorMessage();
+                return;
+            }
+
             if (!IsMessageLengthCorrect())
 			{
+                this.ShowErrorMessage("Please write a bit more");
                 Debug.Log("_message to short!");
 				return;
 			}
@@ -465,6 +473,9 @@ namespace Stomt
 
         public void ShowErrorMessage(string message)
         {
+            _postButton.GetComponent<Button>().interactable = true;
+            IsErrorState = true;
+
             if (message.Length > ErrorMessageCharLimit)
             {
                 _ErrorMessageText.text = message.Substring(0, ErrorMessageCharLimit);
@@ -482,6 +493,9 @@ namespace Stomt
 
         public void HideErrorMessage()
         {
+            IsErrorState = false;
+            _postButton.GetComponent<Button>().interactable = false;
+
             _postButton.GetComponent<Animator>().SetBool("Left", false);
             _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", false);
             _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
