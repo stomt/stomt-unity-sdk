@@ -187,11 +187,12 @@ namespace Stomt
 
             ShowError();
 
+            // Handle Animations
             _characterLimit.GetComponent<Animator>().SetBool("Active", false);
-
             _like.GetComponent<Animator>().SetBool("OnTop", false);
             _wish.GetComponent<Animator>().SetBool("OnTop", true);
 
+            // Call Event
             if (OnWidgetOpen != null)
             {
                 OnWidgetOpen();
@@ -251,12 +252,7 @@ namespace Stomt
             {
                 refreshTargetIcon();
             }
-            
-            if(StartedTyping)
-            {
-                //this.refreshStartText();
-            }
-            
+                        
 			_screenshotToggle.isOn = true;
 
 			if (_like.sortingOrder == 2)
@@ -277,18 +273,12 @@ namespace Stomt
                 this.RefreshStartText();
             }
 
-			var likeTransform = _like.GetComponent<RectTransform>();
-			var wishTransform = _wish.GetComponent<RectTransform>();
-
             var likeAnimator = _like.GetComponent<Animator>();
             var wishAnimator = _wish.GetComponent<Animator>();
 
             bool tmp = likeAnimator.GetBool("OnTop");
             likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
             wishAnimator.SetBool("OnTop", tmp);
-			//var temp = likeTransform.anchoredPosition;
-			//likeTransform.anchoredPosition = wishTransform.anchoredPosition;
-			//wishTransform.anchoredPosition = temp;
 
 			if (_like.sortingOrder == 2)
 			{
@@ -357,7 +347,10 @@ namespace Stomt
             }
             else
             {
-                _characterLimit.GetComponent<Animator>().SetBool("Active", false);
+                if(_characterLimit.GetComponent<Animator>().isInitialized)
+                {
+                    _characterLimit.GetComponent<Animator>().SetBool("Active", false);
+                }
             }
 		}
 
@@ -488,8 +481,12 @@ namespace Stomt
         public void OnPointerEnterMessage()
         {
             this.StartedTyping = true;
-
             this.RefreshStartText();
+
+            if(!IsErrorState)
+            {
+                _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
+            }
         }
 
         public void OnPointerEnterToggle()
@@ -543,12 +540,16 @@ namespace Stomt
 
         public void HideErrorMessage()
         {
-            IsErrorState = false;
-            _postButton.GetComponent<Button>().interactable = false;
+            if(IsErrorState)
+            {
+                IsErrorState = false;
 
-            _postButton.GetComponent<Animator>().SetBool("Left", false);
-            _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", false);
-            _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
+                _postButton.GetComponent<Button>().interactable = false;
+
+                _postButton.GetComponent<Animator>().SetBool("Left", false);
+                _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", false);
+                _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
+            }
         }
 	}
 }
