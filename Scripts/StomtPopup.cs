@@ -130,6 +130,8 @@ namespace Stomt
          */
         public void ShowWidget()
         {
+            _api.SendTrack(_api.CreateTrack("form", "open"));
+
             if (!_ui.activeSelf)
             {
                 StartCoroutine(Show());

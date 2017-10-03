@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Net;
 using System.Text;
+using System.IO;
 using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
@@ -23,6 +24,19 @@ namespace Stomt
 		public string CreatorName { get; set; }
 	}
 
+    public struct StomtTrack
+    {
+        public string device_platform { get; set; }
+        public string device_id { get; set; }
+        public string sdk_type { get; set; }
+        public string sdk_version { get; set; }
+        public string sdk_integration { get; set; }
+        public string target_id { get; set; }
+        public string stomt_id { get; set; }
+        public string event_category { get; set; }
+        public string event_action { get; set; }
+        public string event_label { get; set; }
+    }
 
 	/// <summary>
 	/// Low-level stomt API component.
@@ -187,6 +201,133 @@ namespace Stomt
 
 			StartCoroutine(CreateStomtWithImageAsync(jsonImage.ToString(), jsonStomt.ToString()));
 		}
+
+        public StomtTrack CreateTrack(string event_category, string event_action)
+        {
+            return CreateTrack(event_category, event_action, "", "");
+        }
+
+        public StomtTrack CreateTrack(string event_category, string event_action, string stomt_id)
+        {
+            return CreateTrack(event_category, event_action, "", stomt_id);
+        }
+
+        public StomtTrack CreateTrack(string event_category, string event_action, string event_label, string stomt_id)
+        {
+            StomtTrack track = new StomtTrack();
+
+            track.event_category = event_category;
+            track.event_action = event_action;
+            track.event_label = event_label;
+            track.stomt_id = stomt_id;
+
+            track.device_platform = Application.platform.ToString();
+            track.sdk_type = "Unity" + Application.unityVersion;
+            track.sdk_version = "Beta - 2.0";
+            track.sdk_integration = Application.productName;
+            track.target_id = this.TargetId;
+
+            return track;
+        }
+
+        public void SendTrack(StomtTrack track)
+        {
+            var jsonTrack = new StringBuilder();
+            var writerTrack = new LitJson.JsonWriter(jsonTrack);
+
+            writerTrack.WriteObjectStart();
+            writerTrack.WritePropertyName("device_platform");
+            writerTrack.Write(track.device_platform);
+
+            writerTrack.WritePropertyName("device_id");
+            writerTrack.Write(track.device_id);
+
+            writerTrack.WritePropertyName("sdk_type");
+            writerTrack.Write(track.sdk_type);
+
+            writerTrack.WritePropertyName("sdk_version");
+            writerTrack.Write(track.sdk_version);
+
+            writerTrack.WritePropertyName("sdk_integration");
+            writerTrack.Write(track.sdk_integration);
+
+            writerTrack.WritePropertyName("target_id");
+            writerTrack.Write(track.target_id);
+
+            writerTrack.WritePropertyName("stomt_id");
+            writerTrack.Write(track.stomt_id);
+
+            writerTrack.WritePropertyName("event_category");
+            writerTrack.Write(track.event_category);
+
+            writerTrack.WritePropertyName("event_action");
+            writerTrack.Write(track.event_action);
+
+            writerTrack.WritePropertyName("event_label");
+            writerTrack.Write(track.event_label);
+
+            writerTrack.WriteObjectEnd();
+
+            StartCoroutine(SendTrack(jsonTrack.ToString()));
+        }
+
+        IEnumerator SendTrack(string json)
+        {
+            var data = Encoding.UTF8.GetBytes(json);
+
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/track", restServerURL));
+            request.ContentLength = data.Length;
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            // Send request
+            var async1 = request.BeginGetRequestStream(null, null);
+
+            while (!async1.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
+                using (var requestStream = request.EndGetRequestStream(async1))
+                {
+                    requestStream.Write(data, 0, data.Length);
+                }
+            }
+            catch (WebException ex)
+            {
+                Debug.LogException(ex);
+                yield break;
+            }
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            // Wait for response
+            var async2 = request.BeginGetResponse(null, null);
+
+            while (!async2.IsCompleted)
+            {
+                yield return null;
+            }
+
+            HttpWebResponse response;
+
+            try
+            {
+                response = (HttpWebResponse)request.EndGetResponse(async2);
+            }
+            catch (WebException ex)
+            {
+                Debug.LogException(ex);
+                yield break;
+            }
+
+            // Store access token
+            _accessToken = response.Headers["accesstoken"];
+        }
 
         void Awake()
         {
@@ -435,7 +576,27 @@ namespace Stomt
 				yield break;
 			}
 
-			// Store access token
+            Stream receiveStream = response.GetResponseStream();
+
+            // Pipes the stream to a higher level stream reader with the required encoding format. 
+            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+
+            Debug.Log("Response stream received.");
+            Debug.Log(readStream.ReadToEnd());
+
+            // Analyze JSON data
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(readStream.ReadToEnd());
+
+            if (responseData.Keys.Contains("error"))
+            {
+                Debug.LogError((string)responseData["error"]["msg"]);
+                yield break;
+            }
+
+            string stomt_id = (string)responseData["data"]["id"];
+
+            this.SendTrack(this.CreateTrack("stomt", "submit", stomt_id));
+
 			_accessToken = response.Headers["accesstoken"];
 		}
 		
