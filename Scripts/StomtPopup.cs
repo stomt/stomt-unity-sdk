@@ -130,8 +130,6 @@ namespace Stomt
          */
         public void ShowWidget()
         {
-            _api.SendTrack(_api.CreateTrack("form", "open"));
-
             if (!_ui.activeSelf)
             {
                 StartCoroutine(Show());
@@ -167,6 +165,8 @@ namespace Stomt
 		IEnumerator Show()
 		{
 			yield return new WaitForEndOfFrame();
+
+            _api.SendTrack(_api.CreateTrack("form", "open"));
 
 			// Capture screenshot
 			_screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);

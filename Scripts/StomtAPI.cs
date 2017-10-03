@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 
+
 namespace Stomt
 {
 	/// <summary>
@@ -222,6 +223,7 @@ namespace Stomt
             track.stomt_id = stomt_id;
 
             track.device_platform = Application.platform.ToString();
+            track.device_id = SystemInfo.deviceUniqueIdentifier;
             track.sdk_type = "Unity" + Application.unityVersion;
             track.sdk_version = "Beta - 2.0";
             track.sdk_integration = Application.productName;
@@ -236,6 +238,7 @@ namespace Stomt
             var writerTrack = new LitJson.JsonWriter(jsonTrack);
 
             writerTrack.WriteObjectStart();
+
             writerTrack.WritePropertyName("device_platform");
             writerTrack.Write(track.device_platform);
 
@@ -263,8 +266,11 @@ namespace Stomt
             writerTrack.WritePropertyName("event_action");
             writerTrack.Write(track.event_action);
 
-            writerTrack.WritePropertyName("event_label");
-            writerTrack.Write(track.event_label);
+            if (!String.IsNullOrEmpty(track.event_label))
+            {
+                writerTrack.WritePropertyName("event_label");
+                writerTrack.Write(track.event_label);
+            }
 
             writerTrack.WriteObjectEnd();
 
@@ -273,9 +279,11 @@ namespace Stomt
 
         IEnumerator SendTrack(string json)
         {
+            Debug.Log(json.ToString());
             var data = Encoding.UTF8.GetBytes(json);
 
             HttpWebRequest request = WebRequest("POST", string.Format("{0}/track", restServerURL));
+            Debug.Log(request.RequestUri.ToString());
             request.ContentLength = data.Length;
 
             // Workaround for certificate problem
@@ -301,6 +309,16 @@ namespace Stomt
                 Debug.LogException(ex);
                 yield break;
             }
+
+            //JsonConvert.SerializeObject(request, Formatting.Indented);
+            /*
+            Stream receiveStream = request.GetRequestStream();
+
+            // Pipes the stream to a higher level stream reader with the required encoding format. 
+            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+
+            Debug.Log("GetRequestStream: ");
+            Debug.Log(readStream.ReadToEnd());*/
 
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
@@ -564,28 +582,50 @@ namespace Stomt
 				yield return null;
 			}
 
-			HttpWebResponse response;
+            HttpWebResponse response;
+            var responseDataText = string.Empty;
 
-			try
-			{
-				response = (HttpWebResponse)request.EndGetResponse(async2);
-			}
-			catch (WebException ex)
-			{
-				Debug.LogException(ex);
-				yield break;
-			}
+            try
+            {
+                response = (HttpWebResponse)request.EndGetResponse(async2);
+                this.NetworkError = false;
+            }
+            catch (WebException ex)
+            {
+                this.NetworkError = true;
+                Debug.LogException(ex);
+                yield break;
 
+            }
+
+            /*
             Stream receiveStream = response.GetResponseStream();
 
             // Pipes the stream to a higher level stream reader with the required encoding format. 
             StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
 
             Debug.Log("Response stream received.");
-            Debug.Log(readStream.ReadToEnd());
+            Debug.Log(readStream.ReadToEnd());*/
+
+            // Read response stream
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    yield break;
+                }
+
+                var buffer = new byte[2048];
+                int length;
+
+                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                }
+            }
 
             // Analyze JSON data
-            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(readStream.ReadToEnd());
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
 
             if (responseData.Keys.Contains("error"))
             {
