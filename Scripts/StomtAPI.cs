@@ -383,17 +383,17 @@ namespace Stomt
 
         public void SendSubscription(string email)
         {
-            var jsonTrack = new StringBuilder();
-            var writerTrack = new LitJson.JsonWriter(jsonTrack);
+            var jsonSubscription = new StringBuilder();
+            var writerSubscription = new LitJson.JsonWriter(jsonSubscription);
 
-            writerTrack.WriteObjectStart();
+            writerSubscription.WriteObjectStart();
 
-            writerTrack.WritePropertyName("email");
-            writerTrack.Write(email);
+            writerSubscription.WritePropertyName("email");
+            writerSubscription.Write(email);
 
-            writerTrack.WriteObjectEnd();
+            writerSubscription.WriteObjectEnd();
 
-            StartCoroutine(SendSubscriptionAsJson(jsonTrack.ToString()));
+            StartCoroutine(SendSubscriptionAsJson(jsonSubscription.ToString()));
         }
 
         IEnumerator SendSubscriptionAsJson(string json)
@@ -452,7 +452,7 @@ namespace Stomt
             }
             catch (WebException ex)
             {
-                Debug.LogException(ex);
+                Debug.Log("EMail not correct: " + ex.ToString() );
                 yield break;
             }
 

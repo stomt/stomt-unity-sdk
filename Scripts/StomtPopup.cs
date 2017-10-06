@@ -567,7 +567,7 @@ namespace Stomt
 
         public void SubmitSubscriptionLayer()
         {
-            if(string.IsNullOrEmpty(_EmailInput.text))
+            if(!string.IsNullOrEmpty(_EmailInput.text))
             {
                 this._api.SendSubscription(_EmailInput.text);
             }
