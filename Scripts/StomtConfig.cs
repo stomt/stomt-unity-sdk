@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 
 
-public class StomtConfig : MonoBehaviour 
+public class StomtConfig
 {
     public delegate void StomtConfigAction();
     public static event StomtConfigAction OnStomtConfigUpdate;
@@ -17,18 +17,14 @@ public class StomtConfig : MonoBehaviour
     private bool Subscribed;
     private bool Loggedin;
 
-	// Use this for initialization
-	void Start () 
-    {
-        Load();
-	}
-
     public void Load()
     {
         this.Accesstoken = this.GetAccessToken();
         this.Subscribed = this.GetSubscribed();
         this.Loggedin = this.GetLoggedin();
-        OnStomtConfigUpdate();
+
+        if (OnStomtConfigUpdate != null)
+            OnStomtConfigUpdate();
     }
 
     public void Delete()
@@ -37,13 +33,16 @@ public class StomtConfig : MonoBehaviour
         PlayerPrefs.DeleteKey(this.StomtLoggedinKey);
         PlayerPrefs.DeleteKey(this.StomtSubscribedKey);
         PlayerPrefs.Save();
-        OnStomtConfigUpdate();
+
+        if (OnStomtConfigUpdate != null)
+            OnStomtConfigUpdate();
     }
 
     public void SetAccessToken(string accesstoken)
     {
         if (PlayerPrefs.HasKey(this.StomtAccesstokenKey))
         {
+            Debug.Log("has key");
             if(PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(accesstoken))
             {
                 return;
@@ -55,7 +54,9 @@ public class StomtConfig : MonoBehaviour
             this.Accesstoken = accesstoken;
             PlayerPrefs.SetString(this.StomtAccesstokenKey, this.Accesstoken);
             PlayerPrefs.Save();
-            OnStomtConfigUpdate();
+
+            if (OnStomtConfigUpdate != null)
+                OnStomtConfigUpdate();
         }
     }
 
@@ -74,7 +75,9 @@ public class StomtConfig : MonoBehaviour
             this.Subscribed = subscribed;
             PlayerPrefs.SetString(this.StomtSubscribedKey, this.Subscribed.ToString());
             PlayerPrefs.Save();
-            OnStomtConfigUpdate();
+
+            if (OnStomtConfigUpdate != null)
+                OnStomtConfigUpdate();
         }
     }
 
@@ -93,7 +96,9 @@ public class StomtConfig : MonoBehaviour
             this.Loggedin = loggedin;
             PlayerPrefs.SetString(this.StomtLoggedinKey, this.Loggedin.ToString());
             PlayerPrefs.Save();
-            OnStomtConfigUpdate();
+
+            if (OnStomtConfigUpdate != null)
+                OnStomtConfigUpdate();
         }
     }
 

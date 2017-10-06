@@ -25,6 +25,9 @@ namespace Stomt
 		public string CreatorName { get; set; }
 	}
 
+    /// <summary>
+    /// A single stomt-track.
+    /// </summary>
     public struct StomtTrack
     {
         public string device_platform { get; set; }
@@ -53,6 +56,8 @@ namespace Stomt
 		/// <param name="feed">The list of stomt items from the requested feed.</param>
 		public delegate void FeedCallback(StomtItem[] feed);
 
+        public StomtConfig config;
+
 		#region Inspector Variables
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
@@ -61,7 +66,6 @@ namespace Stomt
 		[Tooltip("The ID of the target page for your game on https://www.stomt.com/.")]
 		string _targetId = "";
 		#endregion
-		string _accessToken = "";
 
 		/// <summary>
 		/// The application ID for your game.
@@ -334,12 +338,14 @@ namespace Stomt
             }
 
             // Store access token
-            _accessToken = response.Headers["accesstoken"];
+            this.config.SetAccessToken(response.Headers["accesstoken"]);
              
         }
 
         void Awake()
         {
+            this.config = new StomtConfig();
+            this.config.Load();
             StartCoroutine(LoadTarget(_targetId));
             NetworkError = false;
         }
@@ -371,9 +377,9 @@ namespace Stomt
 			request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
 			request.Headers["appid"] = _appId;
 
-			if (!string.IsNullOrEmpty(_accessToken))
+			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
 			{
-				request.Headers["accesstoken"] = _accessToken;
+				request.Headers["accesstoken"] = this.config.GetAccessToken();
 			}
 
 			return request;
@@ -386,7 +392,10 @@ namespace Stomt
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
-			// Send request and wait for response
+            //////////////////////////////////////////////////////////////////
+            // Send request and wait for response
+            //////////////////////////////////////////////////////////////////
+			
 			var async1 = request.BeginGetResponse(null, null);
 
 			while (!async1.IsCompleted)
@@ -410,10 +419,10 @@ namespace Stomt
 				yield break;
 			}
 
-			// Store access token
-			_accessToken = response.Headers["accesstoken"];
-
+			//////////////////////////////////////////////////////////////////
 			// Read response stream
+            //////////////////////////////////////////////////////////////////
+
 			using (var responseStream = response.GetResponseStream())
 			{
 				if (responseStream == null)
@@ -430,7 +439,10 @@ namespace Stomt
 				}
 			}
 
-			// Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
 			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
 
 			if (responseData.Keys.Contains("error"))
@@ -439,10 +451,22 @@ namespace Stomt
 				yield break;
 			}
 
+            // Store access token
+            if(responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
+
+
+            // Read Data
 			responseData = responseData["data"];
 
 			TargetName = (string)responseData["displayname"];
             TargetImageURL = (string)responseData["images"]["profile"][0];
+
+
+
 		}
 		
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
@@ -473,8 +497,6 @@ namespace Stomt
 				yield break;
 			}
 
-			// Store access token
-			_accessToken = response.Headers["accesstoken"];
 
 			// Read response stream
 			using (var responseStream = response.GetResponseStream())
@@ -501,6 +523,13 @@ namespace Stomt
 				Debug.LogError((string)responseData["error"]["msg"]);
 				yield break;
 			}
+
+            // Store access token
+            if (responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
 
 			responseData = responseData["data"];
 
@@ -589,15 +618,6 @@ namespace Stomt
 
             }
 
-            /*
-            Stream receiveStream = response.GetResponseStream();
-
-            // Pipes the stream to a higher level stream reader with the required encoding format. 
-            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
-
-            Debug.Log("Response stream received.");
-            Debug.Log(readStream.ReadToEnd());*/
-
             // Read response stream
             using (var responseStream = response.GetResponseStream())
             {
@@ -624,11 +644,17 @@ namespace Stomt
                 yield break;
             }
 
+            // Store access token
+            if (responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
+
             string stomt_id = (string)responseData["data"]["id"];
 
             this.SendTrack(this.CreateTrack("stomt", "submit", stomt_id));
 
-			_accessToken = response.Headers["accesstoken"];
 		}
 		
 		IEnumerator CreateStomtWithImageAsync(string jsonImage, string jsonStomt)
@@ -689,8 +715,6 @@ namespace Stomt
                 
 			}
 
-			// Store access token
-			_accessToken = response.Headers["accesstoken"];
 
 			// Read response stream
 			using (var responseStream = response.GetResponseStream())
@@ -717,6 +741,14 @@ namespace Stomt
 				Debug.LogError((string)responseData["error"]["msg"]);
 				yield break;
 			}
+
+            // Store access token
+            if(responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+                Debug.Log("responseMetaData[accesstoken]: " + accesstoken);
+            }
 
 			var imagename = (string)responseData["data"]["images"]["stomt"]["name"];
 
