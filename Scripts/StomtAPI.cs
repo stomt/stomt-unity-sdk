@@ -279,11 +279,10 @@ namespace Stomt
 
         IEnumerator SendTrack(string json)
         {
-            Debug.Log(json.ToString());
             var data = Encoding.UTF8.GetBytes(json);
 
-            HttpWebRequest request = WebRequest("POST", string.Format("{0}/track", restServerURL));
-            Debug.Log(request.RequestUri.ToString());
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/tracks", restServerURL));
+            //Debug.Log(request.RequestUri.ToString());
             request.ContentLength = data.Length;
 
             // Workaround for certificate problem
@@ -309,16 +308,7 @@ namespace Stomt
                 Debug.LogException(ex);
                 yield break;
             }
-
-            //JsonConvert.SerializeObject(request, Formatting.Indented);
-            /*
-            Stream receiveStream = request.GetRequestStream();
-
-            // Pipes the stream to a higher level stream reader with the required encoding format. 
-            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
-
-            Debug.Log("GetRequestStream: ");
-            Debug.Log(readStream.ReadToEnd());*/
+             
 
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
@@ -330,7 +320,7 @@ namespace Stomt
             {
                 yield return null;
             }
-
+            
             HttpWebResponse response;
 
             try
@@ -345,6 +335,7 @@ namespace Stomt
 
             // Store access token
             _accessToken = response.Headers["accesstoken"];
+             
         }
 
         void Awake()
