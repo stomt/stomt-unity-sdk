@@ -494,6 +494,9 @@ namespace Stomt
                 string accesstoken = (string)responseData["meta"]["accesstoken"];
                 this.config.SetAccessToken(accesstoken);
             }
+
+            this.config.SetSubscribed(true);
+            this.SendTrack(this.CreateTrack("auth", "subscribed"));
         }
 
         void Awake()
@@ -604,14 +607,6 @@ namespace Stomt
 				Debug.LogError((string)responseData["error"]["msg"]);
 				yield break;
 			}
-
-            // Store access token
-            if(responseData.Keys.Contains("meta"))
-            {
-                string accesstoken = (string)responseData["meta"]["accesstoken"];
-                this.config.SetAccessToken(accesstoken);
-            }
-
 
             // Read Data
 			responseData = responseData["data"];
@@ -779,7 +774,7 @@ namespace Stomt
             catch (WebException ex)
             {
                 this.NetworkError = true;
-                Debug.LogException(ex);
+                Debug.LogWarning("Could not send stomt: " + ex.ToString());
                 yield break;
 
             }

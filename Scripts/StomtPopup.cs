@@ -146,6 +146,8 @@ namespace Stomt
          */
         public void HideWidget()
         {
+            this._api.config.Delete();
+
             if (_ui.activeSelf)
             {
                 Hide();
@@ -432,7 +434,15 @@ namespace Stomt
             _message.text = "";
 
             //Switch UI Layer
-            _LayerSubscription.SetActive(true);
+            if(this._api.config.GetSubscribed())
+            {
+                _LayerSuccessfulSent.SetActive(true);
+            }
+            else
+            {
+                _LayerSubscription.SetActive(true);
+            }
+
             _LayerInput.SetActive(false);
 
 		}
