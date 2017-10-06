@@ -42,7 +42,6 @@ public class StomtConfig
     {
         if (PlayerPrefs.HasKey(this.StomtAccesstokenKey))
         {
-            Debug.Log("has key");
             if(PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(accesstoken))
             {
                 return;

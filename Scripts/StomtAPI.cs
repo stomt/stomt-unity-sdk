@@ -286,13 +286,16 @@ namespace Stomt
             var data = Encoding.UTF8.GetBytes(json);
 
             HttpWebRequest request = WebRequest("POST", string.Format("{0}/tracks", restServerURL));
-            //Debug.Log(request.RequestUri.ToString());
             request.ContentLength = data.Length;
 
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
+
+            //////////////////////////////////////////////////////////////////
             // Send request
+            //////////////////////////////////////////////////////////////////
+
             var async1 = request.BeginGetRequestStream(null, null);
 
             while (!async1.IsCompleted)
@@ -326,6 +329,7 @@ namespace Stomt
             }
             
             HttpWebResponse response;
+            var responseDataText = string.Empty;
 
             try
             {
@@ -337,9 +341,44 @@ namespace Stomt
                 yield break;
             }
 
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
+
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    yield break;
+                }
+
+                var buffer = new byte[2048];
+                int length;
+
+                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                }
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+            if (responseData.Keys.Contains("error"))
+            {
+                Debug.LogError((string)responseData["error"]["msg"]);
+                yield break;
+            }
+
             // Store access token
-            this.config.SetAccessToken(response.Headers["accesstoken"]);
-             
+            if (responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
         }
 
         void Awake()
@@ -476,7 +515,11 @@ namespace Stomt
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
-			// Send request and wait for response
+
+            //////////////////////////////////////////////////////////////////
+            // Send request and wait for response
+            //////////////////////////////////////////////////////////////////
+
 			var async1 = request.BeginGetResponse(null, null);
 
 			while (!async1.IsCompleted)
@@ -497,8 +540,10 @@ namespace Stomt
 				yield break;
 			}
 
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
 
-			// Read response stream
 			using (var responseStream = response.GetResponseStream())
 			{
 				if (responseStream == null)
@@ -515,7 +560,10 @@ namespace Stomt
 				}
 			}
 
-			// Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
 			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
 
 			if (responseData.Keys.Contains("error"))
@@ -570,7 +618,10 @@ namespace Stomt
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
-			// Send request
+            //////////////////////////////////////////////////////////////////
+            // Send request
+            //////////////////////////////////////////////////////////////////
+
 			var async1 = request.BeginGetRequestStream(null, null);
 
 			while (!async1.IsCompleted)
@@ -618,7 +669,10 @@ namespace Stomt
 
             }
 
+            //////////////////////////////////////////////////////////////////
             // Read response stream
+            //////////////////////////////////////////////////////////////////
+
             using (var responseStream = response.GetResponseStream())
             {
                 if (responseStream == null)
@@ -635,7 +689,10 @@ namespace Stomt
                 }
             }
 
+            //////////////////////////////////////////////////////////////////
             // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
             LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
 
             if (responseData.Keys.Contains("error"))
@@ -667,7 +724,10 @@ namespace Stomt
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 
-			// Send request
+            //////////////////////////////////////////////////////////////////
+            // Send request
+            //////////////////////////////////////////////////////////////////
+
 			var async1 = request.BeginGetRequestStream(null, null);
 
 			while (!async1.IsCompleted)
@@ -715,8 +775,10 @@ namespace Stomt
                 
 			}
 
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
 
-			// Read response stream
 			using (var responseStream = response.GetResponseStream())
 			{
 				if (responseStream == null)
@@ -733,7 +795,10 @@ namespace Stomt
 				}
 			}
 
-			// Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
 			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
 
 			if (responseData.Keys.Contains("error"))
@@ -747,7 +812,6 @@ namespace Stomt
             {
                 string accesstoken = (string)responseData["meta"]["accesstoken"];
                 this.config.SetAccessToken(accesstoken);
-                Debug.Log("responseMetaData[accesstoken]: " + accesstoken);
             }
 
 			var imagename = (string)responseData["data"]["images"]["stomt"]["name"];
