@@ -381,6 +381,121 @@ namespace Stomt
             }
         }
 
+        public void SendSubscription(string email)
+        {
+            var jsonTrack = new StringBuilder();
+            var writerTrack = new LitJson.JsonWriter(jsonTrack);
+
+            writerTrack.WriteObjectStart();
+
+            writerTrack.WritePropertyName("email");
+            writerTrack.Write(email);
+
+            writerTrack.WriteObjectEnd();
+
+            StartCoroutine(SendSubscriptionAsJson(jsonTrack.ToString()));
+        }
+
+        IEnumerator SendSubscriptionAsJson(string json)
+        {
+            var data = Encoding.UTF8.GetBytes(json);
+
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/authentication/subscribe", restServerURL));
+            request.ContentLength = data.Length;
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+
+            //////////////////////////////////////////////////////////////////
+            // Send request
+            //////////////////////////////////////////////////////////////////
+
+            var async1 = request.BeginGetRequestStream(null, null);
+
+            while (!async1.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
+                using (var requestStream = request.EndGetRequestStream(async1))
+                {
+                    requestStream.Write(data, 0, data.Length);
+                }
+            }
+            catch (WebException ex)
+            {
+                Debug.LogException(ex);
+                yield break;
+            }
+
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            // Wait for response
+            var async2 = request.BeginGetResponse(null, null);
+
+            while (!async2.IsCompleted)
+            {
+                yield return null;
+            }
+
+            HttpWebResponse response;
+            var responseDataText = string.Empty;
+
+            try
+            {
+                response = (HttpWebResponse)request.EndGetResponse(async2);
+            }
+            catch (WebException ex)
+            {
+                Debug.LogException(ex);
+                yield break;
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
+
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    yield break;
+                }
+
+                var buffer = new byte[2048];
+                int length;
+
+                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                }
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+            if (responseData.Keys.Contains("error"))
+            {
+                Debug.LogError((string)responseData["error"]["msg"]);
+                yield break;
+            }
+
+            // Store access token
+            if (responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
+        }
+
         void Awake()
         {
             this.config = new StomtConfig();
