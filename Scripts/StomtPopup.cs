@@ -32,11 +32,16 @@ namespace Stomt
         [HideInInspector]
         public GameObject _LayerInput;
         [HideInInspector]
+        public GameObject _LayerSubscription;
+        [HideInInspector]
         public Text _TargetURL;
         [HideInInspector]
         public GameObject _ErrorMessageObject;
         [HideInInspector]
         public Text _ErrorMessageText;
+        [SerializeField]
+        [HideInInspector]
+        public InputField _EmailInput;
 
 		[SerializeField]
 		[HideInInspector]
@@ -343,13 +348,13 @@ namespace Stomt
                 this.ShowErrorMessage("Please write a bit more.");
             }
 
-            if(_message.text.Length > 15)
+            if(_characterLimit.GetComponent<Animator>().isInitialized)
             {
-                _characterLimit.GetComponent<Animator>().SetBool("Active", true);
-            }
-            else
-            {
-                if(_characterLimit.GetComponent<Animator>().isInitialized)
+                if (_message.text.Length > 15)
+                {
+                    _characterLimit.GetComponent<Animator>().SetBool("Active", true);
+                }
+                else
                 {
                     _characterLimit.GetComponent<Animator>().SetBool("Active", false);
                 }
@@ -427,7 +432,7 @@ namespace Stomt
             _message.text = "";
 
             //Switch UI Layer
-            _LayerSuccessfulSent.SetActive(true);
+            _LayerSubscription.SetActive(true);
             _LayerInput.SetActive(false);
 
 		}
@@ -487,7 +492,8 @@ namespace Stomt
 
             if(!IsErrorState)
             {
-                _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
+                if(_characterLimit.GetComponent<Animator>().isInitialized)
+                    _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
             }
         }
 
@@ -513,6 +519,11 @@ namespace Stomt
         {
             this._LayerInput.SetActive(true);
             this._LayerSuccessfulSent.SetActive(false);
+
+            // Reset Subscription Layer
+            this._LayerSubscription.SetActive(false);
+            _EmailInput.text = "";
+
         }
 
         public void OpenTargetURL()
@@ -552,6 +563,23 @@ namespace Stomt
                 _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", false);
                 _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
             }
+        }
+
+        public void SubmitSubscriptionLayer()
+        {
+            if(string.IsNullOrEmpty(_EmailInput.text))
+            {
+                this._api.SendSubscription(_EmailInput.text);
+            }
+
+            this._LayerSuccessfulSent.SetActive(true);
+            this._LayerSubscription.SetActive(false);
+
+        }
+
+        public void SubmitSuccessLayer()
+        {
+            this.HideWidget();
         }
 	}
 }
