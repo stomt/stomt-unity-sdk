@@ -27,6 +27,9 @@ namespace Stomt
         public GameObject _closeButton;
         [HideInInspector]
         public GameObject _postButton;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject _postButtonSubscription;
         [HideInInspector]
         public GameObject _LayerSuccessfulSent;
         [HideInInspector]
@@ -584,7 +587,23 @@ namespace Stomt
 
             this._LayerSuccessfulSent.SetActive(true);
             this._LayerSubscription.SetActive(false);
+        }
 
+        public void OnSubscriptionInputChanged()
+        {
+            if(_EmailInput.text.Length > 8 )
+            {
+                _postButtonSubscription.GetComponent<Button>().interactable = true;
+            }
+            else
+            {
+                _postButtonSubscription.GetComponent<Button>().interactable = false;
+            }
+        }
+
+        public void OnSubscriptionPointerEnter()
+        {
+            _EmailInput.text = "";
         }
 
         public void SubmitSuccessLayer()
