@@ -149,7 +149,7 @@ namespace Stomt
          */
         public void HideWidget()
         {
-            this._api.config.Delete();
+            //this._api.config.Delete();
 
             if (_ui.activeSelf)
             {
