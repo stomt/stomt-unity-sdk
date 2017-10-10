@@ -1030,5 +1030,23 @@ namespace Stomt
 
             return "";
         }
+
+        public string ReadFile(string FilePath)
+        {
+            string FileCopyPath = FilePath + ".tmp.copy";
+
+            // Copy File for reading an already opened file
+            File.Copy(FilePath, FileCopyPath, true);
+
+            // Read File
+            StreamReader reader = new StreamReader(FileCopyPath);
+            string content = reader.ReadToEnd();
+
+            // Close stream and delete file copy
+            reader.Close();
+            File.Delete(FilePath + ".tmp.copy");
+
+            return content;
+        }
 	}
 }
