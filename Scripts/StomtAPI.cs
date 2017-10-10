@@ -974,5 +974,61 @@ namespace Stomt
             }
             return isOk;
         }
+
+        public string GetLogFilePath()
+        {
+            string logFilePath = "";
+            //////////////////////////////////////////////////////////////////
+            // Windows Paths
+            //////////////////////////////////////////////////////////////////
+
+            if(Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Unity\\Editor\\Editor.log";
+            }
+            
+            if(Application.platform == RuntimePlatform.WindowsPlayer)
+            {
+                logFilePath = "_EXECNAME_Data_\\output_log.txt";
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // OSX Paths
+            //////////////////////////////////////////////////////////////////
+
+            if(Application.platform == RuntimePlatform.OSXEditor)
+            {
+                logFilePath = "~/Library/Logs/Unity/Editor.log";
+            }
+
+            if(Application.platform == RuntimePlatform.OSXPlayer)
+            {
+                logFilePath = "~/Library/Logs/Unity/Player.log";
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Linux Paths
+            //////////////////////////////////////////////////////////////////
+
+            if(Application.platform == RuntimePlatform.LinuxEditor)
+            {
+                logFilePath = "~/.config/unity3d/CompanyName/ProductName/Editor.log";
+            }
+
+            if(Application.platform == RuntimePlatform.LinuxPlayer)
+            {
+                logFilePath = "~/.config/unity3d/CompanyName/ProductName/Player.log";
+            }
+
+            if(!string.IsNullOrEmpty(logFilePath))
+            {
+                if (File.Exists(logFilePath))
+                {
+                    return logFilePath;
+                }
+            }
+
+            return "";
+        }
 	}
 }
