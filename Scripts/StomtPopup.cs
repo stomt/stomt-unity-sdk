@@ -89,6 +89,7 @@ namespace Stomt
         private bool StartedTyping;
         private bool IsErrorState;
 
+        public bool LogFileUpload = true;
         public bool ShowCloseButton = true;
         public bool WouldBecauseText = true; // activates the would/because text
         public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
@@ -113,6 +114,8 @@ namespace Stomt
 
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+            Debug.Log(_api.GetLogFilePath());
+            Debug.Log(_api.ReadFile(_api.GetLogFilePath()));
 
 			Reset();
             StartCoroutine(this.refreshTargetIcon(AutoImageDownloadDelay));
@@ -422,11 +425,25 @@ namespace Stomt
 
 			if (_screenshotToggle.isOn)
 			{
-				_api.CreateStomtWithImage(_like.sortingOrder == 2, _message.text, _screenshot);
+                if(this.LogFileUpload)
+                {
+                    _api.CreateStomtWidthImageAndFile(_like.sortingOrder == 2, _message.text, _screenshot, _api.GetLogFilePath(), "UnityLogFile");
+                }
+                else
+                {
+                    _api.CreateStomtWithImage(_like.sortingOrder == 2, _message.text, _screenshot);
+                }
 			}
 			else
 			{
-				_api.CreateStomt(_like.sortingOrder == 2,  _message.text);
+                if (this.LogFileUpload)
+                {
+                    _api.CreateStomtWidthFile(_like.sortingOrder == 2, _message.text, _api.GetLogFilePath(), "UnityLogFile");
+                }
+                else
+                {
+                    _api.CreateStomt(_like.sortingOrder == 2, _message.text);
+                }
 			}
 
             if ( OnStomtSend != null)

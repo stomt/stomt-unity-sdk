@@ -140,6 +140,49 @@ namespace Stomt
 
 			StartCoroutine(CreateStomtAsync(json.ToString()));
 		}
+
+        public void CreateStomtWidthFile(bool positive, string text, string filePath, string fileTag)
+        {
+            CreateStomtWidthFile(positive, this.TargetId, text, filePath, fileTag);
+        }
+
+        public void CreateStomtWidthFile(bool positive, string target, string text, string filePath, string fileTag)
+        {
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                CreateStomt(positive, target, text);
+                return;
+            }
+
+            string jsonFileUpload = ConstructFileUploadAsJson(filePath, fileTag);
+
+            string jsonStomt = ConstructStomtWidthFileAsJson(positive, target, text, "{file_uid}");
+
+            StartCoroutine(CreateStomtWithFileAsync( jsonFileUpload, jsonStomt));
+        }
+
+        public void CreateStomtWidthImageAndFile(bool positive, string text, Texture2D image, string filePath, string fileTag)
+        {
+            this.CreateStomtWidthImageAndFile(positive, this.TargetId, text, image, filePath, fileTag);
+        }
+
+        public void CreateStomtWidthImageAndFile(bool positive, string target, string text, Texture2D image, string filePath, string fileTag)
+        {
+            if (image == null && !string.IsNullOrEmpty(filePath) )
+            {
+                CreateStomt(positive, target, text);
+                return;
+            }
+
+            string jsonImageUpload = ConstructImageUploadAsJson(image);
+            string jsonFileUpload = ConstructFileUploadAsJson(filePath,fileTag);
+
+            string jsonStomt = ConstructStomtWithImageAndFileAsJson(positive, target, text, "{img_name}", "{file_uid}");
+
+
+            StartCoroutine(CreateStomtWithImageAndFileAsync(jsonImageUpload, jsonFileUpload, jsonStomt));
+        }
+
 		/// <summary>
 		/// Creates a new anonymous stomt on the game's target with an image attached to it.
 		/// </summary>
@@ -159,6 +202,7 @@ namespace Stomt
 		/// <param name="image">The image texture to upload and attach to the stomt.</param>
 		public void CreateStomtWithImage(bool positive, string target, string text, Texture2D image)
 		{
+            Debug.Log("CreateStomtWithImage");
 			if (image == null)
 			{
 				CreateStomt(positive, target, text);
@@ -206,6 +250,170 @@ namespace Stomt
 
 			StartCoroutine(CreateStomtWithImageAsync(jsonImage.ToString(), jsonStomt.ToString()));
 		}
+
+        public string ConstructFileUploadAsJson(string filePath, string fileNameOrTag)
+        {
+            string file = this.ReadFile(filePath);
+
+            if (string.IsNullOrEmpty(file))
+            {
+                return "";
+            }
+
+            // Convert to Base64
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(file);
+            file = System.Convert.ToBase64String(plainTextBytes);
+
+            var jsonFileUpload = new StringBuilder();
+            var writerImage = new LitJson.JsonWriter(jsonFileUpload);
+
+            writerImage.WriteObjectStart();
+            writerImage.WritePropertyName("files");
+            writerImage.WriteObjectStart();
+            writerImage.WritePropertyName("stomt");
+            writerImage.WriteArrayStart();
+            writerImage.WriteObjectStart();
+            writerImage.WritePropertyName("data");
+            writerImage.Write(file);
+            writerImage.WritePropertyName("filename");
+            writerImage.Write(fileNameOrTag);
+            writerImage.WriteObjectEnd();
+            writerImage.WriteArrayEnd();
+            writerImage.WriteObjectEnd();
+            writerImage.WriteObjectEnd();
+
+            return jsonFileUpload.ToString();
+        }
+
+        public string ConstructImageUploadAsJson(Texture2D image)
+        {
+            byte[] imageBytes = image.EncodeToPNG();
+
+            if (imageBytes == null)
+            {
+                return "";
+            }
+
+            var jsonImage = new StringBuilder();
+            var writerImage = new LitJson.JsonWriter(jsonImage);
+
+            writerImage.WriteObjectStart();
+            writerImage.WritePropertyName("images");
+            writerImage.WriteObjectStart();
+            writerImage.WritePropertyName("stomt");
+            writerImage.WriteArrayStart();
+            writerImage.WriteObjectStart();
+            writerImage.WritePropertyName("data");
+            writerImage.Write(Convert.ToBase64String(imageBytes));
+            writerImage.WriteObjectEnd();
+            writerImage.WriteArrayEnd();
+            writerImage.WriteObjectEnd();
+            writerImage.WriteObjectEnd();
+
+            return jsonImage.ToString();
+        }
+
+        public string ConstructStomtWithImageAsJson(bool positive, string target, string text, string img_name)
+        {
+            var jsonStomt = new StringBuilder();
+            var writerStomt = new LitJson.JsonWriter(jsonStomt);
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("anonym");
+            writerStomt.Write(true);
+            writerStomt.WritePropertyName("positive");
+            writerStomt.Write(positive);
+            writerStomt.WritePropertyName("target_id");
+            writerStomt.Write(target);
+            writerStomt.WritePropertyName("text");
+            writerStomt.Write(text);
+            writerStomt.WritePropertyName("img_name");
+            writerStomt.Write("{img_name}");
+            writerStomt.WriteObjectEnd();
+
+            return jsonStomt.ToString();
+        }
+
+        public string ConstructStomtWidthFileAsJson(bool positive, string target, string text, string file_uid)
+        {
+            var jsonStomt = new StringBuilder();
+            var writerStomt = new LitJson.JsonWriter(jsonStomt);
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("anonym");
+            writerStomt.Write(true);
+            writerStomt.WritePropertyName("positive");
+            writerStomt.Write(positive);
+            writerStomt.WritePropertyName("target_id");
+            writerStomt.Write(target);
+            writerStomt.WritePropertyName("text");
+            writerStomt.Write(text);
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("files");
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("stomt");
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("file_uid");
+            writerStomt.Write(file_uid);
+            writerStomt.WriteObjectEnd();
+
+            writerStomt.WriteObjectEnd(); // End stomt
+            writerStomt.WriteObjectEnd(); // End files
+
+            writerStomt.WriteObjectEnd();
+            Debug.Log(jsonStomt.ToString());
+            return jsonStomt.ToString();
+        }
+
+        public string ConstructStomtWithImageAndFileAsJson(bool positive, string target, string text, string img_name, string file_uid)
+        {
+            string file = "{\"anonym\":true,\"positive\":" + positive.ToString() + ",\"target_id\": \"" + target + "\" , \"text\":\"" + text + "\",\"img_name\":\"" + img_name + "\", \"files\": { \"stomt\": { \"file_uid\": \"" + file_uid + "\" } }";
+            var jsonStomt = new StringBuilder();
+            var writerStomt = new LitJson.JsonWriter(jsonStomt);
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("anonym");
+            writerStomt.Write(true);
+            writerStomt.WritePropertyName("positive");
+            writerStomt.Write(positive);
+            writerStomt.WritePropertyName("target_id");
+            writerStomt.Write(target);
+            writerStomt.WritePropertyName("text");
+            writerStomt.Write(text);
+            writerStomt.WritePropertyName("img_name");
+            writerStomt.Write("{img_name}");
+     
+            writerStomt.WritePropertyName("files");
+            writerStomt.Write(file);
+
+            writerStomt.WriteObjectEnd();
+
+            Debug.Log(jsonStomt.ToString());
+            Debug.Log(file);
+            return file;
+        }
+
+        public string ConstructStomtAsJson(bool positive, string target, string text)
+        {
+            var jsonStomt = new StringBuilder();
+            var writerStomt = new LitJson.JsonWriter(jsonStomt);
+
+            writerStomt.WriteObjectStart();
+            writerStomt.WritePropertyName("anonym");
+            writerStomt.Write(true);
+            writerStomt.WritePropertyName("positive");
+            writerStomt.Write(positive);
+            writerStomt.WritePropertyName("target_id");
+            writerStomt.Write(target);
+            writerStomt.WritePropertyName("text");
+            writerStomt.Write(text);
+            writerStomt.WriteObjectEnd();
+
+            return jsonStomt.ToString();
+        }
 
         public StomtTrack CreateTrack(string event_category, string event_action)
         {
@@ -720,6 +928,7 @@ namespace Stomt
 		
 		IEnumerator CreateStomtAsync(string json)
 		{
+            Debug.Log("CreateStomtAsync:  " +json);
 			var data = Encoding.UTF8.GetBytes(json);
 
             HttpWebRequest request = WebRequest("POST", string.Format("{0}/stomts", restServerURL));
@@ -826,6 +1035,7 @@ namespace Stomt
 		
 		IEnumerator CreateStomtWithImageAsync(string jsonImage, string jsonStomt)
 		{
+            Debug.Log("CreateStomtWithImageAsync");
 			var data = Encoding.UTF8.GetBytes(jsonImage);
 
             HttpWebRequest request = WebRequest("POST", string.Format("{0}/images", restServerURL));
@@ -928,6 +1138,216 @@ namespace Stomt
 
 			yield return StartCoroutine(CreateStomtAsync(jsonStomt.Replace("{img_name}", imagename)));
 		}
+
+        IEnumerator CreateStomtWithFileAsync(string jsonFile, string jsonStomt)
+        {
+            var data = Encoding.UTF8.GetBytes(jsonFile);
+
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/files", restServerURL));
+            request.ContentLength = data.Length;
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            //////////////////////////////////////////////////////////////////
+            // Send request
+            //////////////////////////////////////////////////////////////////
+
+            var async1 = request.BeginGetRequestStream(null, null);
+
+            while (!async1.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
+                using (var requestStream = request.EndGetRequestStream(async1))
+                {
+                    requestStream.Write(data, 0, data.Length);
+                }
+            }
+            catch (WebException ex)
+            {
+                Debug.LogException(ex);
+                yield break;
+            }
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            // Wait for response
+            var async2 = request.BeginGetResponse(null, null);
+
+            while (!async2.IsCompleted)
+            {
+                yield return null;
+            }
+
+            HttpWebResponse response;
+            var responseDataText = string.Empty;
+
+            try
+            {
+                response = (HttpWebResponse)request.EndGetResponse(async2);
+                this.NetworkError = false;
+            }
+            catch (WebException ex)
+            {
+                this.NetworkError = true;
+                Debug.LogException(ex);
+                yield break;
+
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
+
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    yield break;
+                }
+
+                var buffer = new byte[2048];
+                int length;
+
+                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                }
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+            if (responseData.Keys.Contains("error"))
+            {
+                Debug.LogError((string)responseData["error"]["msg"]);
+                yield break;
+            }
+
+            // Store access token
+            if (responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
+
+            var filename = (string)responseData["data"]["files"]["stomt"]["file_uid"];
+
+            yield return StartCoroutine(CreateStomtAsync(jsonStomt.Replace("{file_uid}", filename)));
+        }
+
+        IEnumerator CreateStomtWithImageAndFileAsync(string jsonImage, string jsonFile, string jsonStomt)
+        {
+            var data = Encoding.UTF8.GetBytes(jsonFile);
+
+            HttpWebRequest request = WebRequest("POST", string.Format("{0}/files", restServerURL));
+            request.ContentLength = data.Length;
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            //////////////////////////////////////////////////////////////////
+            // Send request
+            //////////////////////////////////////////////////////////////////
+
+            var async1 = request.BeginGetRequestStream(null, null);
+
+            while (!async1.IsCompleted)
+            {
+                yield return null;
+            }
+
+            try
+            {
+                using (var requestStream = request.EndGetRequestStream(async1))
+                {
+                    requestStream.Write(data, 0, data.Length);
+                }
+            }
+            catch (WebException ex)
+            {
+                Debug.LogException(ex);
+                yield break;
+            }
+
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            // Wait for response
+            var async2 = request.BeginGetResponse(null, null);
+
+            while (!async2.IsCompleted)
+            {
+                yield return null;
+            }
+
+            HttpWebResponse response;
+            var responseDataText = string.Empty;
+
+            try
+            {
+                response = (HttpWebResponse)request.EndGetResponse(async2);
+                this.NetworkError = false;
+            }
+            catch (WebException ex)
+            {
+                this.NetworkError = true;
+                Debug.LogException(ex);
+                yield break;
+
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
+
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    yield break;
+                }
+
+                var buffer = new byte[2048];
+                int length;
+
+                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                }
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+            if (responseData.Keys.Contains("error"))
+            {
+                Debug.LogError((string)responseData["error"]["msg"]);
+                yield break;
+            }
+
+            // Store access token
+            if (responseData.Keys.Contains("meta"))
+            {
+                string accesstoken = (string)responseData["meta"]["accesstoken"];
+                this.config.SetAccessToken(accesstoken);
+            }
+
+            var filename = (string)responseData["data"]["files"]["stomt"]["file_uid"];
+
+            yield return StartCoroutine(CreateStomtWithImageAsync(jsonImage, jsonStomt.Replace("{file_uid}", filename)));
+        }
 
 
         public WWW LoadTargetImage()
