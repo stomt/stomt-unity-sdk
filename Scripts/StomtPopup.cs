@@ -1,6 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading;
+using System.ComponentModel;
+using System.Collections.Generic;
+
 
 namespace Stomt
 {
@@ -97,6 +101,10 @@ namespace Stomt
         public int TargetNameCharLimit = 11;
         public int ErrorMessageCharLimit = 20;
         private int CharLimit = 120;
+        private string logFileContent;
+        private bool isStomtPositive;
+        private bool isLogFileReadComplete = false;
+        private Thread fileReadThread;
 
         public delegate void StomtAction();
         public static event StomtAction OnStomtSend;
@@ -114,8 +122,6 @@ namespace Stomt
 
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-            Debug.Log(_api.GetLogFilePath());
-            Debug.Log(_api.ReadFile(_api.GetLogFilePath()));
 
 			Reset();
             StartCoroutine(this.refreshTargetIcon(AutoImageDownloadDelay));
@@ -123,6 +129,7 @@ namespace Stomt
 
 		void Start()
 		{
+            fileReadThread = new Thread(LoadLogFile);
             _TargetURL.text = "stomt.com/" + _api.TargetId;
             StartedTyping = false;
 			Hide();
@@ -133,6 +140,29 @@ namespace Stomt
             if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
             {
                 ShowError();
+            }
+
+            if(this.isLogFileReadComplete)
+            {
+                if(!string.IsNullOrEmpty(this.logFileContent))
+                {
+                    if(!fileReadThread.IsAlive)
+                    {
+                        this.handleStomtSending();
+                        Debug.Log("Start sending log in update");
+                    }
+
+                    
+                }
+                else
+                {
+                    bool tmp = this.LogFileUpload;
+                    this.LogFileUpload = false;
+                    this.handleStomtSending();
+                    this.LogFileUpload = tmp;
+                }
+
+                this.isLogFileReadComplete = false;
             }
 		}
 
@@ -152,8 +182,6 @@ namespace Stomt
          */
         public void HideWidget()
         {
-            //this._api.config.Delete();
-
             if (_ui.activeSelf)
             {
                 Hide();
@@ -423,38 +451,8 @@ namespace Stomt
 				return;
 			}
 
-			if (_screenshotToggle.isOn)
-			{
-                if(this.LogFileUpload)
-                {
-                    _api.CreateStomtWidthImageAndFile(_like.sortingOrder == 2, _message.text, _screenshot, _api.GetLogFilePath(), "UnityLogFile");
-                }
-                else
-                {
-                    _api.CreateStomtWithImage(_like.sortingOrder == 2, _message.text, _screenshot);
-                }
-			}
-			else
-			{
-                if (this.LogFileUpload)
-                {
-                    _api.CreateStomtWidthFile(_like.sortingOrder == 2, _message.text, _api.GetLogFilePath(), "UnityLogFile");
-                }
-                else
-                {
-                    _api.CreateStomt(_like.sortingOrder == 2, _message.text);
-                }
-			}
-
-            if ( OnStomtSend != null)
-            {
-                OnStomtSend();
-            }
-
-            _message.text = "";
-
             //Switch UI Layer
-            if(this._api.config.GetSubscribed())
+            if (this._api.config.GetSubscribed())
             {
                 _LayerSuccessfulSent.SetActive(true);
             }
@@ -465,7 +463,89 @@ namespace Stomt
 
             _LayerInput.SetActive(false);
 
+            Debug.Log("Switched UI Layer");
+
+            this.isStomtPositive = _like.sortingOrder == 2;
+
+            if(this.LogFileUpload)
+            {
+
+                this.fileReadThread.Start();
+
+                /*
+                // Read Log FIle and Sending Stomt
+                BackgroundWorker bg = new BackgroundWorker();
+                bg.DoWork += new DoWorkEventHandler(LoadLogFile);
+                bg.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnLogFileLoadFinish);
+                bg.RunWorkerAsync();
+                 */
+            }
+            else
+            {
+                this.handleStomtSending();
+            }
+
+
+            //handleStomtSending();
+           // Thread handlethread = new Thread(handleStomtSending);
+           // handlethread.Start();
+
+            
+
+            if ( OnStomtSend != null)
+            {
+                OnStomtSend();
+            }
+
+            _message.text = "";
 		}
+
+        private void LoadLogFile(object sender, DoWorkEventArgs e)
+        {
+            Debug.Log("do worker stuff");
+            logFileContent = _api.ReadFile(_api.GetLogFilePath());
+        }
+
+        private void LoadLogFile()
+        {
+            Debug.Log("do worker stuff");
+            logFileContent = _api.ReadFile(_api.GetLogFilePath());
+            this.isLogFileReadComplete = true;
+        }
+
+        private void OnLogFileLoadFinish(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.isLogFileReadComplete = true;
+        }
+
+        private void handleStomtSending()
+        {
+            // Send Stomt
+            if (_screenshotToggle.isOn)
+            {
+                if (this.LogFileUpload)
+                {
+                    _api.CreateStomtWidthImageAndFile(this.isStomtPositive, _message.text, _screenshot, this.logFileContent, "UnityLogFile");
+                }
+                else
+                {
+                    _api.CreateStomtWithImage(this.isStomtPositive, _message.text, _screenshot);
+                }
+            }
+            else
+            {
+                if (this.LogFileUpload)
+                {
+                    _api.CreateStomtWidthFile(this.isStomtPositive, _message.text, this.logFileContent, "UnityLogFile");
+                }
+                else
+                {
+                    _api.CreateStomt(this.isStomtPositive, _message.text);
+                }
+            }
+
+            Debug.Log("Started sending in handleStomtSending()");
+        }
 
         private void refreshTargetIcon()
         {

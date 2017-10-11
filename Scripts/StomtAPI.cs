@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
+using System.Threading; 
 
 
 namespace Stomt
@@ -49,6 +50,8 @@ namespace Stomt
 	{
         public string restServerURL;
         public bool NetworkError { get; set; }
+
+        private string jsonFileUpload;
 
 		/// <summary>
 		/// References a method to be called when the asynchronous feed download completes.
@@ -141,46 +144,58 @@ namespace Stomt
 			StartCoroutine(CreateStomtAsync(json.ToString()));
 		}
 
-        public void CreateStomtWidthFile(bool positive, string text, string filePath, string fileTag)
+        public void CreateStomtWidthFile(bool positive, string text, string file, string fileTag)
         {
-            CreateStomtWidthFile(positive, this.TargetId, text, filePath, fileTag);
+            CreateStomtWidthFile(positive, this.TargetId, text, file, fileTag);
         }
 
-        public void CreateStomtWidthFile(bool positive, string target, string text, string filePath, string fileTag)
+        public void CreateStomtWidthFile(bool positive, string target, string text, string file, string fileTag)
         {
-            if (!string.IsNullOrEmpty(filePath))
+            StartCoroutine(CreateStomtWidthFileAsync(positive, target, text, file, fileTag));
+        }
+
+        IEnumerator CreateStomtWidthFileAsync(bool positive, string target, string text, string file, string fileTag)
+        {
+            if (string.IsNullOrEmpty(file))
             {
                 CreateStomt(positive, target, text);
-                return;
+                yield break;
             }
 
-            string jsonFileUpload = ConstructFileUploadAsJson(filePath, fileTag);
+            string jsonFileUpload = ConstructFileUploadAsJson(file, fileTag);
 
             string jsonStomt = ConstructStomtWidthFileAsJson(positive, target, text, "{file_uid}");
 
-            StartCoroutine(CreateStomtWithFileAsync( jsonFileUpload, jsonStomt));
+            StartCoroutine(CreateStomtWithFileAsync(jsonFileUpload, jsonStomt));
         }
 
-        public void CreateStomtWidthImageAndFile(bool positive, string text, Texture2D image, string filePath, string fileTag)
+        public void CreateStomtWidthImageAndFile(bool positive, string text, Texture2D image, string file, string fileTag)
         {
-            this.CreateStomtWidthImageAndFile(positive, this.TargetId, text, image, filePath, fileTag);
+            this.CreateStomtWidthImageAndFile(positive, this.TargetId, text, image, file, fileTag);
         }
 
-        public void CreateStomtWidthImageAndFile(bool positive, string target, string text, Texture2D image, string filePath, string fileTag)
+        public void CreateStomtWidthImageAndFile(bool positive, string target, string text, Texture2D image, string file, string fileTag)
         {
-            if (image == null && !string.IsNullOrEmpty(filePath) )
+            StartCoroutine(CreateStomtWidthImageAndFileAsync(positive, target, text, image, file, fileTag));
+        }
+
+        IEnumerator CreateStomtWidthImageAndFileAsync(bool positive, string target, string text, Texture2D image, string file, string fileTag)
+        {
+            if (image == null && string.IsNullOrEmpty(file) )
             {
                 CreateStomt(positive, target, text);
-                return;
+                yield break;
             }
 
             string jsonImageUpload = ConstructImageUploadAsJson(image);
-            string jsonFileUpload = ConstructFileUploadAsJson(filePath,fileTag);
+            string jsonFileUpload = ConstructFileUploadAsJson(file, fileTag);
 
             string jsonStomt = ConstructStomtWithImageAndFileAsJson(positive, target, text, "{img_name}", "{file_uid}");
 
 
             StartCoroutine(CreateStomtWithImageAndFileAsync(jsonImageUpload, jsonFileUpload, jsonStomt));
+
+            Debug.Log("CreateStomtWidthImageAndFileAsync");
         }
 
 		/// <summary>
@@ -202,7 +217,6 @@ namespace Stomt
 		/// <param name="image">The image texture to upload and attach to the stomt.</param>
 		public void CreateStomtWithImage(bool positive, string target, string text, Texture2D image)
 		{
-            Debug.Log("CreateStomtWithImage");
 			if (image == null)
 			{
 				CreateStomt(positive, target, text);
@@ -251,12 +265,11 @@ namespace Stomt
 			StartCoroutine(CreateStomtWithImageAsync(jsonImage.ToString(), jsonStomt.ToString()));
 		}
 
-        public string ConstructFileUploadAsJson(string filePath, string fileNameOrTag)
+        public string ConstructFileUploadAsJson(string file, string fileNameOrTag)
         {
-            string file = this.ReadFile(filePath);
-
             if (string.IsNullOrEmpty(file))
             {
+                Debug.Log(" file IsNullOrEmpty");
                 return "";
             }
 
@@ -282,6 +295,7 @@ namespace Stomt
             writerImage.WriteObjectEnd();
             writerImage.WriteObjectEnd();
 
+            this.jsonFileUpload = jsonFileUpload.ToString();
             return jsonFileUpload.ToString();
         }
 
@@ -334,7 +348,7 @@ namespace Stomt
             return jsonStomt.ToString();
         }
 
-        public string ConstructStomtWidthFileAsJson(bool positive, string target, string text, string file_uid)
+        private string ConstructStomtWidthOptFileImageAsJson(bool positive, string target, string text, string img_name, string file_uid)
         {
             var jsonStomt = new StringBuilder();
             var writerStomt = new LitJson.JsonWriter(jsonStomt);
@@ -349,51 +363,40 @@ namespace Stomt
             writerStomt.WritePropertyName("text");
             writerStomt.Write(text);
 
-            writerStomt.WriteObjectStart();
-            writerStomt.WritePropertyName("files");
+            if(!string.IsNullOrEmpty(img_name))
+            {
+                writerStomt.WritePropertyName("img_name");
+                writerStomt.Write("{img_name}");
+            }
 
-            writerStomt.WriteObjectStart();
-            writerStomt.WritePropertyName("stomt");
+            if(!string.IsNullOrEmpty(file_uid))
+            {
+                writerStomt.WritePropertyName("files");
+                writerStomt.WriteObjectStart();
 
-            writerStomt.WriteObjectStart();
-            writerStomt.WritePropertyName("file_uid");
-            writerStomt.Write(file_uid);
+                writerStomt.WritePropertyName("stomt");
+                writerStomt.WriteObjectStart();
+
+                writerStomt.WritePropertyName("file_uid");
+                writerStomt.Write(file_uid);
+
+                writerStomt.WriteObjectEnd();
+                writerStomt.WriteObjectEnd();
+            }
+
             writerStomt.WriteObjectEnd();
 
-            writerStomt.WriteObjectEnd(); // End stomt
-            writerStomt.WriteObjectEnd(); // End files
-
-            writerStomt.WriteObjectEnd();
-            Debug.Log(jsonStomt.ToString());
             return jsonStomt.ToString();
+        }
+
+        public string ConstructStomtWidthFileAsJson(bool positive, string target, string text, string file_uid)
+        {
+            return ConstructStomtWidthOptFileImageAsJson(positive, target, text, "", file_uid);
         }
 
         public string ConstructStomtWithImageAndFileAsJson(bool positive, string target, string text, string img_name, string file_uid)
         {
-            string file = "{\"anonym\":true,\"positive\":" + positive.ToString() + ",\"target_id\": \"" + target + "\" , \"text\":\"" + text + "\",\"img_name\":\"" + img_name + "\", \"files\": { \"stomt\": { \"file_uid\": \"" + file_uid + "\" } }";
-            var jsonStomt = new StringBuilder();
-            var writerStomt = new LitJson.JsonWriter(jsonStomt);
-
-            writerStomt.WriteObjectStart();
-            writerStomt.WritePropertyName("anonym");
-            writerStomt.Write(true);
-            writerStomt.WritePropertyName("positive");
-            writerStomt.Write(positive);
-            writerStomt.WritePropertyName("target_id");
-            writerStomt.Write(target);
-            writerStomt.WritePropertyName("text");
-            writerStomt.Write(text);
-            writerStomt.WritePropertyName("img_name");
-            writerStomt.Write("{img_name}");
-     
-            writerStomt.WritePropertyName("files");
-            writerStomt.Write(file);
-
-            writerStomt.WriteObjectEnd();
-
-            Debug.Log(jsonStomt.ToString());
-            Debug.Log(file);
-            return file;
+            return ConstructStomtWidthOptFileImageAsJson(positive, target, text, img_name, file_uid);
         }
 
         public string ConstructStomtAsJson(bool positive, string target, string text)
@@ -928,7 +931,6 @@ namespace Stomt
 		
 		IEnumerator CreateStomtAsync(string json)
 		{
-            Debug.Log("CreateStomtAsync:  " +json);
 			var data = Encoding.UTF8.GetBytes(json);
 
             HttpWebRequest request = WebRequest("POST", string.Format("{0}/stomts", restServerURL));
@@ -1035,7 +1037,6 @@ namespace Stomt
 		
 		IEnumerator CreateStomtWithImageAsync(string jsonImage, string jsonStomt)
 		{
-            Debug.Log("CreateStomtWithImageAsync");
 			var data = Encoding.UTF8.GetBytes(jsonImage);
 
             HttpWebRequest request = WebRequest("POST", string.Format("{0}/images", restServerURL));
@@ -1301,6 +1302,7 @@ namespace Stomt
             {
                 this.NetworkError = true;
                 Debug.LogException(ex);
+                StartCoroutine(CreateStomtAsync(jsonStomt));
                 yield break;
 
             }
@@ -1453,6 +1455,7 @@ namespace Stomt
 
         public string ReadFile(string FilePath)
         {
+            Debug.Log("Read file!");
             string FileCopyPath = FilePath + ".tmp.copy";
 
             // Copy File for reading an already opened file

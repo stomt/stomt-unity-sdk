@@ -107,7 +107,15 @@ public class StomtConfig
         {
             if (PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(this.Accesstoken))
             {
-                return this.Accesstoken;
+                if (!string.IsNullOrEmpty(this.Accesstoken))
+                {
+                    return this.Accesstoken;
+                }
+                else
+                {
+                    Debug.Log("Accesstoken was NullOrEmpty and Key was set");
+                    return "";
+                }
             }
             else
             {
