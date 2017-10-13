@@ -51,8 +51,6 @@ namespace Stomt
         public string restServerURL;
         public bool NetworkError { get; set; }
 
-        private string jsonFileUpload;
-
 		/// <summary>
 		/// References a method to be called when the asynchronous feed download completes.
 		/// </summary>
@@ -194,8 +192,6 @@ namespace Stomt
 
 
             StartCoroutine(CreateStomtWithImageAndFileAsync(jsonImageUpload, jsonFileUpload, jsonStomt));
-
-            Debug.Log("CreateStomtWidthImageAndFileAsync");
         }
 
 		/// <summary>
@@ -295,7 +291,6 @@ namespace Stomt
             writerImage.WriteObjectEnd();
             writerImage.WriteObjectEnd();
 
-            this.jsonFileUpload = jsonFileUpload.ToString();
             return jsonFileUpload.ToString();
         }
 
@@ -1455,7 +1450,6 @@ namespace Stomt
 
         public string ReadFile(string FilePath)
         {
-            Debug.Log("Read file!");
             string FileCopyPath = FilePath + ".tmp.copy";
 
             // Copy File for reading an already opened file

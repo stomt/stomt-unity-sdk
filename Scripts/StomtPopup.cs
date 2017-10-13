@@ -149,10 +149,7 @@ namespace Stomt
                     if(!fileReadThread.IsAlive)
                     {
                         this.handleStomtSending();
-                        Debug.Log("Start sending log in update");
                     }
-
-                    
                 }
                 else
                 {
@@ -463,13 +460,11 @@ namespace Stomt
 
             _LayerInput.SetActive(false);
 
-            Debug.Log("Switched UI Layer");
-
             this.isStomtPositive = _like.sortingOrder == 2;
 
             if(this.LogFileUpload)
             {
-
+                this.fileReadThread = new Thread(LoadLogFile);
                 this.fileReadThread.Start();
 
                 /*
@@ -484,31 +479,15 @@ namespace Stomt
             {
                 this.handleStomtSending();
             }
-
-
-            //handleStomtSending();
-           // Thread handlethread = new Thread(handleStomtSending);
-           // handlethread.Start();
-
-            
-
-            if ( OnStomtSend != null)
-            {
-                OnStomtSend();
-            }
-
-            _message.text = "";
 		}
 
         private void LoadLogFile(object sender, DoWorkEventArgs e)
         {
-            Debug.Log("do worker stuff");
             logFileContent = _api.ReadFile(_api.GetLogFilePath());
         }
 
         private void LoadLogFile()
         {
-            Debug.Log("do worker stuff");
             logFileContent = _api.ReadFile(_api.GetLogFilePath());
             this.isLogFileReadComplete = true;
         }
@@ -544,7 +523,12 @@ namespace Stomt
                 }
             }
 
-            Debug.Log("Started sending in handleStomtSending()");
+            _message.text = "";
+
+            if (OnStomtSend != null)
+            {
+                OnStomtSend();
+            }
         }
 
         private void refreshTargetIcon()
