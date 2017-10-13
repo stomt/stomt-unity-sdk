@@ -1450,6 +1450,15 @@ namespace Stomt
 
         public string ReadFile(string FilePath)
         {
+            var fileInfo = new System.IO.FileInfo(FilePath);
+
+            if (fileInfo.Length > 30000000) 
+            {
+                Debug.Log("Log file too big. Size: " + fileInfo.Length + "Bytes. Path: " + FilePath);
+                this.SendTrack(this.CreateTrack("log", "tooBig"));
+                return null; 
+            }
+
             string FileCopyPath = FilePath + ".tmp.copy";
 
             // Copy File for reading an already opened file
