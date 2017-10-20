@@ -579,6 +579,12 @@ namespace Stomt
             }
         }
 
+        IEnumerator MoveMessageCaretToEnd()
+        {
+            yield return 0; // Skip the first frame
+            _message.MoveTextEnd(false);
+        }
+
         public void OnPointerEnterMessage()
         {
             this.StartedTyping = true;
@@ -589,6 +595,11 @@ namespace Stomt
                 if(_characterLimit.GetComponent<Animator>().isInitialized)
                     _screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
             }
+
+            _message.ActivateInputField();
+            _message.Select();
+
+            StartCoroutine(MoveMessageCaretToEnd());
         }
 
         public void OnPointerEnterToggle()

@@ -1454,7 +1454,7 @@ namespace Stomt
 
             if (fileInfo.Length > 30000000) 
             {
-                Debug.Log("Log file too big. Size: " + fileInfo.Length + "Bytes. Path: " + FilePath);
+                Debug.LogWarning("Log file too big. Size: " + fileInfo.Length + "Bytes. Path: " + FilePath);
                 this.SendTrack(this.CreateTrack("log", "tooBig"));
                 return null; 
             }
