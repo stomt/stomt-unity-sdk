@@ -312,6 +312,14 @@ namespace Stomt
                 this.StartedTyping = true;
                 this.RefreshStartText();
             }
+            else
+            {
+                _message.ActivateInputField();
+                _message.Select();
+
+                this.StartedTyping = true;
+                StartCoroutine(MoveMessageCaretToEnd());
+            }
 
             var likeAnimator = _like.GetComponent<Animator>();
             var wishAnimator = _wish.GetComponent<Animator>();
@@ -400,9 +408,8 @@ namespace Stomt
             {
                 if (_like.sortingOrder == 1)
                 {
-
                     // I wish
-                    if (_message.text.Equals("") || _message.text.Equals("because "))
+                    if (_message.text.Equals("because ") || !StartedTyping)
                     {
                         _message.text = "would ";
                     }
@@ -410,7 +417,7 @@ namespace Stomt
                 else
                 {
                     // I like
-                    if (_message.text.Equals("") || _message.text.Equals("would ") )
+                    if (_message.text.Equals("would ") || !StartedTyping)
                     {
                         _message.text = "because ";
                     }
@@ -418,7 +425,19 @@ namespace Stomt
 
                 _message.GetComponent<InputField>().MoveTextEnd(true);
             }
+            else
+            {
+                if (_like.sortingOrder == 1)
+                {
+                    // I wish
+                    if (_message.text.Equals("because ") || !StartedTyping)
+                    {
+                        _message.text = "would ";
+                    }
+                }
+            }
         }
+
 
         private bool IsMessageLengthCorrect()
         {
@@ -587,7 +606,6 @@ namespace Stomt
 
         public void OnPointerEnterMessage()
         {
-            this.StartedTyping = true;
             this.RefreshStartText();
 
             if(!IsErrorState)
@@ -599,6 +617,7 @@ namespace Stomt
             _message.ActivateInputField();
             _message.Select();
 
+            this.StartedTyping = true;
             StartCoroutine(MoveMessageCaretToEnd());
         }
 
