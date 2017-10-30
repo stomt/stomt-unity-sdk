@@ -1,4 +1,4 @@
-# STOMT Unity-SDK - (Still in Beta) [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
+# STOMT Unity-SDK (Still in Beta) [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
 
 <p align="center">
   <img alt="STOMT Unity Feedback Integration" src="https://schukies.io/images/stomt/stomtunity8.PNG" />
