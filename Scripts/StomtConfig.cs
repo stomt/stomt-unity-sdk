@@ -48,7 +48,7 @@ public class StomtConfig
             }
         }
 
-        if(!string.IsNullOrEmpty(accesstoken))
+        if( accesstoken != null)
         {
             this.Accesstoken = accesstoken;
             PlayerPrefs.SetString(this.StomtAccesstokenKey, this.Accesstoken);

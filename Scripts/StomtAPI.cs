@@ -776,10 +776,46 @@ namespace Stomt
 			}
 			catch (WebException ex)
 			{
-                this.NetworkError = true;
-                Debug.LogException(ex);
-                Debug.Log("Maybe wrong target id");
-				yield break;
+
+                if( ( (HttpWebResponse)ex.Response ).StatusCode.ToString().Equals("419") )
+                {
+                    Debug.Log("Wrong internal STOMT accesstoken! Accesstoken was deleted.");
+                    this.config.SetAccessToken("");
+                    this.StartCoroutine(LoadTarget(target));
+                    yield break;
+                }
+                else
+                {
+                    using (var responseStream = ex.Response.GetResponseStream())
+                    {
+                        if (responseStream == null)
+                        {
+                            yield break;
+                        }
+
+                        var buffer = new byte[2048];
+                        int length;
+
+                        while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                        }
+                    }
+
+                    LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+                    if (ExceptionResponseData.Keys.Contains("error"))
+                    {
+                        Debug.LogError((string)ExceptionResponseData["error"]);
+                        yield break;
+                    }
+
+                    this.NetworkError = true;
+                    Debug.LogException(ex);
+                    Debug.Log("Maybe wrong target id or accesstoken");
+
+                    yield break;
+                }
 			}
 
 			//////////////////////////////////////////////////////////////////
