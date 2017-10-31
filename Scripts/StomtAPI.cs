@@ -59,6 +59,16 @@ namespace Stomt
 
         public StomtConfig config;
 
+        /// <summary>
+        /// The users amount of created stomts.
+        /// </summary>
+        public int amountStomtsCreated { get; set; }
+
+        /// <summary>
+        /// The targets amount of received stomts.
+        /// </summary>
+        public int stomtsReceivedTarget { get; set; }
+
 		#region Inspector Variables
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
@@ -710,6 +720,12 @@ namespace Stomt
             this.config = new StomtConfig();
             this.config.Load();
             StartCoroutine(LoadTarget(_targetId));
+
+            if( !string.IsNullOrEmpty(this.config.GetAccessToken()) )
+            {
+                StartCoroutine(LoadSession(this.config.GetAccessToken()));
+            }
+
             NetworkError = false;
         }
 
@@ -776,7 +792,6 @@ namespace Stomt
 			}
 			catch (WebException ex)
 			{
-
                 if( ( (HttpWebResponse)ex.Response ).StatusCode.ToString().Equals("419") )
                 {
                     Debug.Log("Wrong internal STOMT accesstoken! Accesstoken was deleted.");
@@ -855,10 +870,116 @@ namespace Stomt
 
 			TargetName = (string)responseData["displayname"];
             TargetImageURL = (string)responseData["images"]["profile"][0];
-
-
-
+            stomtsReceivedTarget = (int)responseData["stats"][3];
 		}
+
+        IEnumerator LoadSession(string accesstoken)
+        {
+            if(string.IsNullOrEmpty(accesstoken))
+            {
+                yield break;
+            }
+
+            HttpWebRequest request = WebRequest("GET", string.Format("{0}/authentication/session", restServerURL));
+            Debug.Log("RequestURi: " + request.RequestUri);
+            // Workaround for certificate problem
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+
+            //////////////////////////////////////////////////////////////////
+            // Send request and wait for response
+            //////////////////////////////////////////////////////////////////
+
+            var async1 = request.BeginGetResponse(null, null);
+
+            while (!async1.IsCompleted)
+            {
+                yield return null;
+            }
+
+            HttpWebResponse response;
+            var responseDataText = string.Empty;
+
+            try
+            {
+                response = (HttpWebResponse)request.EndGetResponse(async1);
+                this.NetworkError = false;
+            }
+            catch (WebException ex)
+            {
+
+                if (((HttpWebResponse)ex.Response).StatusCode.ToString().Equals("419"))
+                {
+                    Debug.Log("Wrong internal STOMT accesstoken on LoadSession!");
+                    yield break;
+                }
+                else
+                {
+                    using (var responseStream = ex.Response.GetResponseStream())
+                    {
+                        if (responseStream == null)
+                        {
+                            yield break;
+                        }
+
+                        var buffer = new byte[2048];
+                        int length;
+
+                        while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                        }
+                    }
+
+                    LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+                    if (ExceptionResponseData.Keys.Contains("error"))
+                    {
+                        Debug.LogError((string)ExceptionResponseData["error"]);
+                        yield break;
+                    }
+
+                    this.NetworkError = true;
+                    Debug.LogException(ex);
+                    Debug.Log("Maybe wrong target id or accesstoken");
+
+                    yield break;
+                }
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Read response stream
+            //////////////////////////////////////////////////////////////////
+
+            using (var responseStream = response.GetResponseStream())
+            {
+                if (responseStream == null)
+                {
+                    yield break;
+                }
+
+                var buffer = new byte[2048];
+                int length;
+
+                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+                }
+            }
+
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
+
+            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+            if (responseData.Keys.Contains("error"))
+            {
+                Debug.LogError((string)responseData["error"]["msg"]);
+                yield break;
+            }
+            // Read Data
+            amountStomtsCreated = (int)responseData["data"]["user"]["stats"][4];            
+        }
 		
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
 		{
