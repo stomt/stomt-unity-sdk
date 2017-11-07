@@ -748,6 +748,16 @@ namespace Stomt
 			StartCoroutine(LoadTarget(_targetId));
 		}
 
+        public void RequestTargetAndUserStomts()
+        {
+            StartCoroutine(LoadTarget(_targetId));
+
+            if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
+            {
+                StartCoroutine(LoadSession(this.config.GetAccessToken()));
+            }
+        }
+
 		HttpWebRequest WebRequest(string method, string url)
 		{
 			var request = (HttpWebRequest)System.Net.WebRequest.Create(url);
@@ -881,7 +891,7 @@ namespace Stomt
             }
 
             HttpWebRequest request = WebRequest("GET", string.Format("{0}/authentication/session", restServerURL));
-            Debug.Log("RequestURi: " + request.RequestUri);
+
             // Workaround for certificate problem
             ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 

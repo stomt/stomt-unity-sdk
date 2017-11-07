@@ -49,6 +49,12 @@ namespace Stomt
         [SerializeField]
         [HideInInspector]
         public InputField _EmailInput;
+        [SerializeField]
+        [HideInInspector]
+        public Text _STOMTS_Number;
+        [SerializeField]
+        [HideInInspector]
+        public Text _YOURS_Number;
 
 		[SerializeField]
 		[HideInInspector]
@@ -232,6 +238,10 @@ namespace Stomt
             _like.GetComponent<Animator>().SetBool("OnTop", false);
             _wish.GetComponent<Animator>().SetBool("OnTop", true);
 
+            _STOMTS_Number.text = _api.stomtsReceivedTarget.ToString();
+            _YOURS_Number.text = _api.amountStomtsCreated.ToString();
+
+
             // Call Event
             if (OnWidgetOpen != null)
             {
@@ -273,6 +283,8 @@ namespace Stomt
             {
                 OnWidgetClosed();
             }
+
+            _api.RequestTargetAndUserStomts();
 		}
 		void Reset()
 		{
