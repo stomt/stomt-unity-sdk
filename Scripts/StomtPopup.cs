@@ -674,7 +674,12 @@ namespace Stomt
 			Application.OpenURL("https://www.stomt.com/" + _api.TargetId);
 		}
 
-		public void ShowErrorMessage(string message)
+        public void OpenUserProfileURL()
+        {
+            Application.OpenURL("https://www.stomt.com/" + _api.UserID);
+        }
+
+        public void ShowErrorMessage(string message)
 		{
 			_postButton.GetComponent<Button>().interactable = true;
 			IsErrorState = true;

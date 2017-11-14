@@ -65,6 +65,16 @@ namespace Stomt
         public int amountStomtsCreated { get; set; }
 
         /// <summary>
+        /// The stomt username.
+        /// </summary>
+        public string UserDisplayname { get; set; }
+
+        /// <summary>
+        /// The stomt user ID.
+        /// </summary>
+        public string UserID { get; set; }
+
+        /// <summary>
         /// The targets amount of received stomts.
         /// </summary>
         public int stomtsReceivedTarget { get; set; }
@@ -988,7 +998,9 @@ namespace Stomt
                 yield break;
             }
             // Read Data
-            amountStomtsCreated = (int)responseData["data"]["user"]["stats"][4];            
+            amountStomtsCreated = (int)responseData["data"]["user"]["stats"][4];
+            UserDisplayname = (string)responseData["data"]["user"]["displayname"];
+            UserID = (string)responseData["data"]["user"]["id"];
         }
 		
 		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
