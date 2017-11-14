@@ -681,7 +681,7 @@ namespace Stomt
 
         public void ShowErrorMessage(string message)
 		{
-			_postButton.GetComponent<Button>().interactable = true;
+			_postButton.GetComponent<Button>().interactable = false;
 			IsErrorState = true;
 
 			if (message.Length > ErrorMessageCharLimit)
