@@ -1629,6 +1629,11 @@ namespace Stomt
 
         public string ReadFile(string FilePath)
         {
+			if (string.IsNullOrEmpty(FilePath)) {
+				Debug.LogWarning("No FilePath specified");
+				return null;
+			}
+
             var fileInfo = new System.IO.FileInfo(FilePath);
 
             if (fileInfo.Length > 30000000) 
