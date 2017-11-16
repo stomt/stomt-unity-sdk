@@ -95,15 +95,13 @@ namespace Stomt
 
 		private WWW ImageDownload;
 		private Texture2D ProfileImageTexture;
-		private bool TargetImageApplied;
+		private bool TargetImageApplied = false;
 		private bool StartedTyping;
 		private bool IsErrorState;
 
 		public bool LogFileUpload = true;
 		public bool ShowCloseButton = true;
 		public bool WouldBecauseText = true; // activates the would/because text
-		public bool AutoImageDownload = true; // will automatically download the targetImage after %DelayTime Seconds;
-		public float AutoImageDownloadDelay = 5; // DelayTime in seconds
 		public int TargetNameCharLimit = 11;
 		public int ErrorMessageCharLimit = 20;
         public bool ShowWidgetOnStart = false;
@@ -112,6 +110,7 @@ namespace Stomt
 		private bool isStomtPositive;
 		private bool isLogFileReadComplete = false;
 		private Thread fileReadThread;
+		private bool targetUpdated = true;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -120,8 +119,6 @@ namespace Stomt
 
 		void Awake()
 		{
-			TargetImageApplied = false;
-
 			if(placeholderText == null)
 			{
 				Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
@@ -129,18 +126,17 @@ namespace Stomt
 
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-
-			Reset();
-			StartCoroutine(this.refreshTargetIcon(AutoImageDownloadDelay));
+			_ui.SetActive(false);
 		}
 
 		void Start()
 		{
 			fileReadThread = new Thread(LoadLogFile);
-			_TargetURL.text = "stomt.com/" + _api.TargetId;
 			StartedTyping = false;
-			Hide();
 
+			_api.RequestTargetAndUser((response) => {
+				targetUpdated = true;
+			});
 
             if(ShowWidgetOnStart)
             {
@@ -148,8 +144,17 @@ namespace Stomt
             }
 		}
 
+		// is called every frame
 		void Update()
 		{
+			if (targetUpdated) {
+				SetStomtNumbers();
+				_TargetURL.text = "stomt.com/" + _api.TargetId;
+				setTargetName ();
+				StartCoroutine(refreshTargetIcon());
+				targetUpdated = false;
+			}
+
 			if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
 			{
 				ShowError();
@@ -175,6 +180,7 @@ namespace Stomt
 				this.isLogFileReadComplete = false;
 			}
 		}
+			
 
 		/**
 		 *   Enables the Widget/Popup when hidden
@@ -245,16 +251,19 @@ namespace Stomt
 			_like.GetComponent<Animator>().SetBool("OnTop", false);
 			_wish.GetComponent<Animator>().SetBool("OnTop", true);
 
-			_STOMTS_Number.text = _api.stomtsReceivedTarget.ToString();
-			_YOURS_Number.text = _api.amountStomtsCreated.ToString();
-
-
 			// Call Event
 			if (OnWidgetOpen != null)
 			{
 				OnWidgetOpen();
 			}
 		}
+
+		private void SetStomtNumbers()
+		{
+			_STOMTS_Number.text = _api.stomtsReceivedTarget.ToString ();
+			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
+		}
+
 
 		void ShowError()
 		{
@@ -290,28 +299,11 @@ namespace Stomt
 			{
 				OnWidgetClosed();
 			}
-
-			_api.RequestTargetAndUserStomts();
 		}
+
 		void Reset()
 		{
-			if(_api.TargetName != null)
-			{
-				if (_api.TargetName.Length > TargetNameCharLimit)
-				{
-					_targetText.text = _api.TargetName.Substring(0, TargetNameCharLimit);
-				}
-				else
-				{
-					_targetText.text = _api.TargetName;
-				}
-			}
-			
-			if( !TargetImageApplied )
-			{
-				refreshTargetIcon();
-			}
-						
+			this.StartedTyping = false;
 			_screenshotToggle.isOn = true;
 
 			if (_like.sortingOrder == 2)
@@ -322,6 +314,8 @@ namespace Stomt
 			{
 				OnMessageChanged();
 			}
+
+			RefreshStartText ();
 		}
 
 		public void OnToggleButtonPressed()
@@ -568,13 +562,23 @@ namespace Stomt
 				OnStomtSend();
 			}
 		}
-
-		private void refreshTargetIcon()
+	
+		private void setTargetName()
 		{
-			StartCoroutine(refreshTargetIcon(0));
+			if(_api.TargetName != null)
+			{
+				if (_api.TargetName.Length > TargetNameCharLimit)
+				{
+					_targetText.text = _api.TargetName.Substring(0, TargetNameCharLimit);
+				}
+				else
+				{
+					_targetText.text = _api.TargetName;
+				}
+			}
 		}
 
-		private IEnumerator refreshTargetIcon(float DelayTime)
+		private IEnumerator refreshTargetIcon()
 		{
 			// check wether download needed
 			if (ImageDownload == null )
@@ -591,14 +595,7 @@ namespace Stomt
 					ImageDownload = www;
 				}
 			}
-
-			yield return new WaitForSeconds(DelayTime);
-
-			if(DelayTime > 0)
-			{
-				this.refreshTargetIcon();
-			}
-
+		
 			// check wether download finished
 			if (ImageDownload != null && !TargetImageApplied)
 			{
@@ -615,6 +612,7 @@ namespace Stomt
 					this.TargetImageApplied = true;
 				}
 			}
+			yield return 0;
 		}
 
 		IEnumerator MoveMessageCaretToEnd()

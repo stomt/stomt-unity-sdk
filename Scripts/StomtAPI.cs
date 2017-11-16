@@ -727,20 +727,16 @@ namespace Stomt
 
         void Awake()
         {
+			Debug.Log ("API Awake");
             this.config = new StomtConfig();
             this.config.Load();
-            StartCoroutine(LoadTarget(_targetId));
-
-            if( !string.IsNullOrEmpty(this.config.GetAccessToken()) )
-            {
-                StartCoroutine(LoadSession(this.config.GetAccessToken()));
-            }
 
             NetworkError = false;
         }
 
 		void Start()
 		{
+			Debug.Log ("API Start");
 			if (string.IsNullOrEmpty(_appId))
 			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
@@ -753,20 +749,95 @@ namespace Stomt
 			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
 			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
 
-			// Load target information
 			TargetName = _targetId;
-			StartCoroutine(LoadTarget(_targetId));
 		}
 
-        public void RequestTargetAndUserStomts()
+		public void RequestTargetAndUser(Action<LitJson.JsonData> callback)
         {
-            StartCoroutine(LoadTarget(_targetId));
+			RequestTarget (_targetId, callback);
 
             if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
             {
                 StartCoroutine(LoadSession(this.config.GetAccessToken()));
             }
         }
+
+		private void GetGETResponse(string uri, Action<LitJson.JsonData> callback)
+		{
+			Debug.Log ("GetGETResponse" + uri);
+			HttpWebRequest request = WebRequest("GET", uri);
+			request.Method = "GET";
+			request.ContentType = "text/plain;charset=utf-8";
+
+//			System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+//			byte[] bytes = encoding.GetBytes(data);
+//
+//			request.ContentLength = bytes.Length;
+//
+//			using (Stream requestStream = request.GetRequestStream())
+//			{
+//				// Send the data.
+//				requestStream.Write(bytes, 0, bytes.Length);
+//			}
+
+			request.BeginGetResponse((x) =>
+				{
+					using (HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(x))
+					{
+						if (callback != null)
+						{
+							var responseDataText = string.Empty;
+							//////////////////////////////////////////////////////////////////
+							// Read response stream
+							//////////////////////////////////////////////////////////////////
+
+							using (var responseStream = response.GetResponseStream())
+							{
+								if (responseStream == null)
+								{
+									return;
+								}
+
+								var buffer = new byte[2048];
+								int length;
+
+								while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+								{
+									responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+								}
+							}
+
+							//////////////////////////////////////////////////////////////////
+							// Analyze JSON data
+							//////////////////////////////////////////////////////////////////
+
+							LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+
+							if (responseData.Keys.Contains("error"))
+							{
+								Debug.LogError((string)responseData["error"]["msg"]);
+								return;
+							}
+
+							Debug.Log ("GetGETResponse response");
+							callback(responseData["data"]);
+						}
+					}
+				}, null);
+		}
+
+		private void RequestTarget(string target, Action<LitJson.JsonData> callback)
+		{
+			GetGETResponse (string.Format ("{0}/targets/{1}", restServerURL, target), (response) => {
+				TargetName = (string)response["displayname"];
+				TargetImageURL = (string)response["images"]["profile"]["url"];
+				stomtsReceivedTarget = (int)response["stats"]["amountStomtsReceived"];
+
+				if (callback != null) {
+					callback(response);
+				}
+			});
+		}
 
 		HttpWebRequest WebRequest(string method, string url)
 		{
@@ -889,8 +960,8 @@ namespace Stomt
 			responseData = responseData["data"];
 
 			TargetName = (string)responseData["displayname"];
-            TargetImageURL = (string)responseData["images"]["profile"][0];
-            stomtsReceivedTarget = (int)responseData["stats"][3];
+            TargetImageURL = (string)responseData["images"]["profile"]["url"];
+			stomtsReceivedTarget = (int)responseData["stats"]["amountStomtsReceived"];
 		}
 
         IEnumerator LoadSession(string accesstoken)
