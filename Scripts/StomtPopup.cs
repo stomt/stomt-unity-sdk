@@ -58,6 +58,12 @@ namespace Stomt
 		[SerializeField]
         [HideInInspector]
         public Text SentLayerMessage;
+        [SerializeField]
+        [HideInInspector]
+        public Text toggleItemEMail;
+        [SerializeField]
+        [HideInInspector]
+        public Text toggleItemSMS;
 
 		[SerializeField]
 		[HideInInspector]
@@ -115,6 +121,7 @@ namespace Stomt
 		private bool isStomtPositive;
 		private bool isLogFileReadComplete = false;
 		private Thread fileReadThread;
+        private bool useEmailOnSubscribe = true;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -251,6 +258,7 @@ namespace Stomt
 			_STOMTS_Number.text = _api.stomtsReceivedTarget.ToString();
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString();
 
+            useEmailOnSubscribe = true;
 
 			// Call Event
 			if (OnWidgetOpen != null)
@@ -523,6 +531,9 @@ namespace Stomt
 
             SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetName + " on";
 
+            _EmailInput.ActivateInputField();
+            _EmailInput.Select();
+
         }
 
 		private void LoadLogFile(object sender, DoWorkEventArgs e)
@@ -751,5 +762,28 @@ namespace Stomt
 		{
 			this.HideWidget();
 		}
+
+
+        // Email Toggle
+
+        public void OnSubscribeTogglePressed()
+        {
+            useEmailOnSubscribe = !useEmailOnSubscribe;
+            //Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
+
+            if (useEmailOnSubscribe)
+            {
+                toggleItemEMail.color = Color.black;
+                toggleItemSMS.color = Color.gray;
+            }
+            else
+            {
+                toggleItemEMail.color = Color.gray;
+                toggleItemSMS.color = Color.black;
+            }
+
+            _EmailInput.ActivateInputField();
+            _EmailInput.Select();
+        }
 	}
 }
