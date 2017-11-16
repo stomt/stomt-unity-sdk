@@ -55,6 +55,9 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public Text _YOURS_Number;
+		[SerializeField]
+        [HideInInspector]
+        public Text SentLayerMessage;
 
 		[SerializeField]
 		[HideInInspector]
@@ -106,7 +109,7 @@ namespace Stomt
 		public float AutoImageDownloadDelay = 5; // DelayTime in seconds
 		public int TargetNameCharLimit = 11;
 		public int ErrorMessageCharLimit = 20;
-        public bool ShowWidgetOnStart = false;
+		public bool ShowWidgetOnStart = false;
 		private int CharLimit = 120;
 		private string logFileContent;
 		private bool isStomtPositive;
@@ -142,10 +145,10 @@ namespace Stomt
 			Hide();
 
 
-            if(ShowWidgetOnStart)
-            {
-                this.ShowWidget();
-            }
+			if(ShowWidgetOnStart)
+			{
+				this.ShowWidget();
+			}
 		}
 
 		void Update()
@@ -517,7 +520,10 @@ namespace Stomt
 			{
 				this.handleStomtSending();
 			}
-		}
+
+            SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetName + " on";
+
+        }
 
 		private void LoadLogFile(object sender, DoWorkEventArgs e)
 		{
@@ -674,12 +680,12 @@ namespace Stomt
 			Application.OpenURL("https://www.stomt.com/" + _api.TargetId);
 		}
 
-        public void OpenUserProfileURL()
-        {
-            Application.OpenURL("https://www.stomt.com/" + _api.UserID);
-        }
+		public void OpenUserProfileURL()
+		{
+			Application.OpenURL("https://www.stomt.com/" + _api.UserID);
+		}
 
-        public void ShowErrorMessage(string message)
+		public void ShowErrorMessage(string message)
 		{
 			_postButton.GetComponent<Button>().interactable = false;
 			IsErrorState = true;
