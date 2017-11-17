@@ -11,20 +11,7 @@ using System.Threading;
 
 namespace Stomt
 {
-	/// <summary>
-	/// A single stomt item.
-	/// </summary>
-	public struct StomtItem
-	{
-		public string Id { get; set; }
-		public bool Positive { get; set; }
-		public string Text { get; set; }
-		public string Language { get; set; }
-		public DateTime CreationDate { get; set; }
-		public bool Anonym { get; set; }
-		public string CreatorId { get; set; }
-		public string CreatorName { get; set; }
-	}
+
 
     /// <summary>
     /// A single stomt-track.
@@ -1020,6 +1007,106 @@ namespace Stomt
 			}, null);
 		}
 
+		public void SendStomt(StomtCreation stomtCreation, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		{
+			// Upload file if pressent (and call function again)
+			if (stomtCreation.screenshot != null) {
+				SendImage(stomtCreation.screenshot, (response) => {
+					var img_name = (string)response["images"]["stomt"]["name"];
+					stomtCreation.img_name = img_name;
+					stomtCreation.screenshot = null;
+					SendStomt(stomtCreation, callbackSuccess, callbackError);
+				},  (response) => {
+					// upload even when scrennshot upload failed
+					stomtCreation.screenshot = null;
+					SendStomt(stomtCreation, callbackSuccess, callbackError);
+				});
+				return;
+			}
+
+			// Upload image if pressent (and call function again)
+			if (stomtCreation.logs != null) {
+				SendFile(stomtCreation.logs, (response) => {
+					var file_uid = (string)response["files"]["stomt"]["file_uid"];
+					stomtCreation.file_uid = file_uid;
+					stomtCreation.logs = null;
+					SendStomt(stomtCreation, callbackSuccess, callbackError);
+				},  (response) => {
+					// upload even when logs upload failed
+					stomtCreation.logs = null;
+					SendStomt(stomtCreation, callbackSuccess, callbackError);
+				});
+				return;
+			}
+
+			// Submit stomt
+			var url = string.Format ("{0}/stomts", restServerURL);
+			GetPOSTResponse (url, stomtCreation.ToString(), (response) => {
+				string stomt_id = (string)response["id"];
+				this.SendTrack(this.CreateTrack("stomt", "submit", stomt_id));
+
+				if (callbackSuccess != null) {
+					callbackSuccess(response);
+				}
+			}, callbackError);
+		}
+
+		private void SendFile(string fileContent, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+			// Convert to Base64
+			var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(fileContent);
+			var file = System.Convert.ToBase64String(plainTextBytes);
+
+			// Build Body
+			var jsonFileUpload = new StringBuilder();
+			var writerImage = new LitJson.JsonWriter(jsonFileUpload);
+
+			writerImage.WriteObjectStart();
+			writerImage.WritePropertyName("files");
+			writerImage.WriteObjectStart();
+			writerImage.WritePropertyName("stomt");
+			writerImage.WriteArrayStart();
+			writerImage.WriteObjectStart();
+			writerImage.WritePropertyName("data");
+			writerImage.Write(file);
+			writerImage.WritePropertyName("filename");
+			writerImage.Write("UnityLogs");
+			writerImage.WriteObjectEnd();
+			writerImage.WriteArrayEnd();
+			writerImage.WriteObjectEnd();
+			writerImage.WriteObjectEnd();
+
+			// Send Request
+			var url = string.Format("{0}/files", restServerURL);
+			GetPOSTResponse (url, jsonFileUpload.ToString(), callbackSuccess, callbackError);
+		}
+
+		private void SendImage(Texture2D image, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+			// Convert to Base64
+			byte[] imageBytes = image.EncodeToPNG();
+			var imageContent = Convert.ToBase64String (imageBytes);
+
+			// Build Body
+			var jsonImage = new StringBuilder();
+			var writerImage = new LitJson.JsonWriter(jsonImage);
+
+			writerImage.WriteObjectStart();
+			writerImage.WritePropertyName("images");
+			writerImage.WriteObjectStart();
+			writerImage.WritePropertyName("stomt");
+			writerImage.WriteArrayStart();
+			writerImage.WriteObjectStart();
+			writerImage.WritePropertyName("data");
+			writerImage.Write(imageContent);
+			writerImage.WriteObjectEnd();
+			writerImage.WriteArrayEnd();
+			writerImage.WriteObjectEnd();
+			writerImage.WriteObjectEnd();
+
+			// Send Request
+			var url = string.Format("{0}/images", restServerURL);
+			GetPOSTResponse (url, jsonImage.ToString(), callbackSuccess, callbackError);
+		}
+
 
 		// Private Request Handlers
 		private bool RemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -1085,7 +1172,6 @@ namespace Stomt
 			// Add data
 			//////////////////////////////////////////////////////////////////
 			if (data != null) {
-				Debug.Log ("Attach data");
 				var bytes = Encoding.UTF8.GetBytes(data);
 				request.ContentLength = bytes.Length;
 
@@ -1318,5 +1404,18 @@ namespace Stomt
 
             return content;
         }
+	
+
+		// StomtHandling
+		public StomtCreation initStomtCreation()
+		{
+			StomtCreation stomtCreation = new StomtCreation(this);
+
+			stomtCreation.target_id = this.TargetID;
+			stomtCreation.lang = "en";
+			stomtCreation.anonym = false;
+
+			return stomtCreation;
+		}
 	}
 }

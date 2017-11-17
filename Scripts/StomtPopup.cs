@@ -525,50 +525,41 @@ namespace Stomt
 
 		private void handleStomtSending()
 		{
-			// Send Stomt
-			if (_screenshotToggle.isOn)
-			{
-				if (this.LogFileUpload)
-				{
-					_api.CreateStomtWidthImageAndFile(this.isStomtPositive, _message.text, _screenshot, this.logFileContent, "UnityLogFile");
-				}
-				else
-				{
-					_api.CreateStomtWithImage(this.isStomtPositive, _message.text, _screenshot);
-				}
+			// send StomtCreation
+			StomtCreation stomtCreation = _api.initStomtCreation();
+
+			stomtCreation.text = this._message.text;
+			stomtCreation.positive = this.isStomtPositive;
+
+			// attach screenshot
+			if (this._screenshotToggle.isOn) {
+				stomtCreation.attachScreenshot (this._screenshot);
 			}
-			else
-			{
-				if (this.LogFileUpload)
-				{
-					_api.CreateStomtWidthFile(this.isStomtPositive, _message.text, this.logFileContent, "UnityLogFile");
-				}
-				else
-				{
-					_api.CreateStomt(this.isStomtPositive, _message.text);
-				}
+
+			// attach logs
+			if (this.LogFileUpload) {
+				stomtCreation.attachLogs (this.logFileContent);
 			}
+
+			stomtCreation.save();
 
 			_message.text = "";
 
-			if (OnStomtSend != null)
-			{
+			if (OnStomtSend != null) {
 				OnStomtSend();
 			}
 		}
 	
 		private void setTargetName()
 		{
-			if(_api.TargetDisplayname != null)
-			{
-				if (_api.TargetDisplayname.Length > TargetNameCharLimit)
-				{
-					_targetText.text = _api.TargetDisplayname.Substring(0, TargetNameCharLimit);
-				}
-				else
-				{
+			if (_api.TargetDisplayname != null) {
+				if (_api.TargetDisplayname.Length > TargetNameCharLimit) {
+					_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
+				} else {
 					_targetText.text = _api.TargetDisplayname;
 				}
+			} else {
+				_targetText.text = _api.TargetID;
 			}
 		}
 
