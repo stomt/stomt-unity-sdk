@@ -2,32 +2,13 @@
 using System.Collections;
 using System.Net;
 using System.Text;
-using System.IO;
 using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
-using System.Threading; 
 
 
 namespace Stomt
 {
-    /// <summary>
-    /// A single stomt-track.
-    /// </summary>
-    public struct StomtTrack
-    {
-        public string device_platform { get; set; }
-        public string device_id { get; set; }
-        public string sdk_type { get; set; }
-        public string sdk_version { get; set; }
-        public string sdk_integration { get; set; }
-        public string target_id { get; set; }
-        public string stomt_id { get; set; }
-        public string event_category { get; set; }
-        public string event_action { get; set; }
-        public string event_label { get; set; }
-    }
-
 	/// <summary>
 	/// Low-level stomt API component.
 	/// </summary>
@@ -126,88 +107,29 @@ namespace Stomt
 		}
 
 
-		// Tracks
-		public StomtTrack CreateTrack(string event_category, string event_action)
+		// Track Handling
+		public StomtTrack initStomtTrack()
 		{
-			return CreateTrack(event_category, event_action, "", "");
+			StomtTrack stomtTrack = new StomtTrack(this);
+
+			stomtTrack.device_platform = Application.platform.ToString();
+			stomtTrack.device_id = SystemInfo.deviceUniqueIdentifier;
+			stomtTrack.sdk_type = "Unity" + Application.unityVersion;
+			stomtTrack.sdk_version = "Beta - 2.0";
+			stomtTrack.sdk_integration = Application.productName;
+			stomtTrack.target_id = this.TargetID;
+
+			return stomtTrack;
 		}
 
-		public StomtTrack CreateTrack(string event_category, string event_action, string stomt_id)
+		public void SendTrack(StomtTrack track, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			return CreateTrack(event_category, event_action, "", stomt_id);
-		}
-
-		public StomtTrack CreateTrack(string event_category, string event_action, string event_label, string stomt_id)
-		{
-			StomtTrack track = new StomtTrack();
-
-			track.event_category = event_category;
-			track.event_action = event_action;
-			track.event_label = event_label;
-			track.stomt_id = stomt_id;
-
-			track.device_platform = Application.platform.ToString();
-			track.device_id = SystemInfo.deviceUniqueIdentifier;
-			track.sdk_type = "Unity" + Application.unityVersion;
-			track.sdk_version = "Beta - 2.0";
-			track.sdk_integration = Application.productName;
-			track.target_id = this.TargetID;
-
-			return track;
-		}
-
-		public void SendTrack(StomtTrack track)
-		{
-			var jsonTrack = new StringBuilder();
-			var writerTrack = new LitJson.JsonWriter(jsonTrack);
-
-			writerTrack.WriteObjectStart();
-
-			writerTrack.WritePropertyName("device_platform");
-			writerTrack.Write(track.device_platform);
-
-			writerTrack.WritePropertyName("device_id");
-			writerTrack.Write(track.device_id);
-
-			writerTrack.WritePropertyName("sdk_type");
-			writerTrack.Write(track.sdk_type);
-
-			writerTrack.WritePropertyName("sdk_version");
-			writerTrack.Write(track.sdk_version);
-
-			writerTrack.WritePropertyName("sdk_integration");
-			writerTrack.Write(track.sdk_integration);
-
-			writerTrack.WritePropertyName("target_id");
-			writerTrack.Write(track.target_id);
-
-			writerTrack.WritePropertyName("stomt_id");
-			writerTrack.Write(track.stomt_id);
-
-			writerTrack.WritePropertyName("event_category");
-			writerTrack.Write(track.event_category);
-
-			writerTrack.WritePropertyName("event_action");
-			writerTrack.Write(track.event_action);
-
-			if (!String.IsNullOrEmpty(track.event_label))
-			{
-				writerTrack.WritePropertyName("event_label");
-				writerTrack.Write(track.event_label);
-			}
-
-			writerTrack.WriteObjectEnd();
-
-			SendTrack (jsonTrack.ToString());
-		}
-
-		public void SendTrack(string json) {
 			var url = string.Format("{0}/tracks", restServerURL);
-			GetPOSTResponse (url, json, null, null);
+			GetPOSTResponse (url, track.ToString(), callbackSuccess, callbackError);
 		}
 
 
-		// Public Request Methodes
+		// Target / Session Handling
 		public void RequestTargetAndUser(Action<LitJson.JsonData> callback)
         {
 			RequestTarget (_targetId, callback);
@@ -266,11 +188,28 @@ namespace Stomt
 			var url = string.Format ("{0}/authentication/subscribe", restServerURL);
 			GetPOSTResponse (url, jsonSubscription.ToString(), (response) => {
 				this.config.SetSubscribed(true);
-				this.SendTrack(this.CreateTrack("auth", "subscribed"));
+
+				var track = initStomtTrack();
+				track.event_category = "auth";
+				track.event_action = "subscribed";
+				track.save ();
+
 //				if (callback != null) {
 //					callback(response);
 //				}
 			}, null);
+		}
+
+		// Stomt Handling
+		public StomtCreation initStomtCreation()
+		{
+			StomtCreation stomtCreation = new StomtCreation(this);
+
+			stomtCreation.target_id = this.TargetID;
+			stomtCreation.lang = "en";
+			stomtCreation.anonym = false;
+
+			return stomtCreation;
 		}
 
 		public void SendStomt(StomtCreation stomtCreation, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
@@ -295,6 +234,7 @@ namespace Stomt
 				SendFile(stomtCreation.logs, (response) => {
 					var file_uid = (string)response["files"]["stomt"]["file_uid"];
 					stomtCreation.file_uid = file_uid;
+					Debug.Log("file_uid " + file_uid);
 					stomtCreation.logs = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
 				},  (response) => {
@@ -309,7 +249,12 @@ namespace Stomt
 			var url = string.Format ("{0}/stomts", restServerURL);
 			GetPOSTResponse (url, stomtCreation.ToString(), (response) => {
 				string stomt_id = (string)response["id"];
-				this.SendTrack(this.CreateTrack("stomt", "submit", stomt_id));
+
+				var track = initStomtTrack();
+				track.event_category = "stomt";
+				track.event_action = "submit";
+				track.stomt_id = stomt_id;
+				track.save ();
 
 				if (callbackSuccess != null) {
 					callbackSuccess(response);
@@ -427,6 +372,7 @@ namespace Stomt
 		private void GetPOSTResponse(string uri, string data, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			Debug.Log ("GetPOSTResponse " + uri);
+			Debug.Log("body " + data);
 			HttpWebRequest request = WebRequest ("POST", uri);
 
 			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError));
@@ -579,109 +525,6 @@ namespace Stomt
 				callbackSuccess(responseData["data"]);
 			}
 		
-		}
-		       
-
-		// Logs
-        public string GetLogFilePath()
-        {
-            string logFilePath = "";
-            //////////////////////////////////////////////////////////////////
-            // Windows Paths
-            //////////////////////////////////////////////////////////////////
-
-            if(Application.platform == RuntimePlatform.WindowsEditor)
-            {
-                logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Unity\\Editor\\Editor.log";
-            }
-            
-            if(Application.platform == RuntimePlatform.WindowsPlayer)
-            {
-                logFilePath = "_EXECNAME_Data_\\output_log.txt";
-            }
-
-            //////////////////////////////////////////////////////////////////
-            // OSX Paths
-            //////////////////////////////////////////////////////////////////
-
-            if(Application.platform == RuntimePlatform.OSXEditor)
-            {
-                logFilePath = "~/Library/Logs/Unity/Editor.log";
-            }
-
-            if(Application.platform == RuntimePlatform.OSXPlayer)
-            {
-                logFilePath = "~/Library/Logs/Unity/Player.log";
-            }
-
-            //////////////////////////////////////////////////////////////////
-            // Linux Paths
-            //////////////////////////////////////////////////////////////////
-
-            if(Application.platform == RuntimePlatform.LinuxEditor)
-            {
-                logFilePath = "~/.config/unity3d/CompanyName/ProductName/Editor.log";
-            }
-
-            if(Application.platform == RuntimePlatform.LinuxPlayer)
-            {
-                logFilePath = "~/.config/unity3d/CompanyName/ProductName/Player.log";
-            }
-
-            if(!string.IsNullOrEmpty(logFilePath))
-            {
-                if (File.Exists(logFilePath))
-                {
-                    return logFilePath;
-                }
-            }
-
-            return "";
-        }
-
-        public string ReadFile(string FilePath)
-        {
-			if (string.IsNullOrEmpty(FilePath)) {
-				Debug.LogWarning("No FilePath specified");
-				return null;
-			}
-
-            var fileInfo = new System.IO.FileInfo(FilePath);
-
-            if (fileInfo.Length > 30000000) 
-            {
-                Debug.LogWarning("Log file too big. Size: " + fileInfo.Length + "Bytes. Path: " + FilePath);
-                this.SendTrack(this.CreateTrack("log", "tooBig"));
-                return null; 
-            }
-
-            string FileCopyPath = FilePath + ".tmp.copy";
-
-            // Copy File for reading an already opened file
-            File.Copy(FilePath, FileCopyPath, true);
-
-            // Read File
-            StreamReader reader = new StreamReader(FileCopyPath);
-            string content = reader.ReadToEnd();
-
-            // Close stream and delete file copy
-            reader.Close();
-            File.Delete(FilePath + ".tmp.copy");
-
-            return content;
-        }
-	
-
-		// StomtHandling
-		public StomtCreation initStomtCreation()
-		{
-			StomtCreation stomtCreation = new StomtCreation(this);
-
-			stomtCreation.target_id = this.TargetID;
-			stomtCreation.lang = "en";
-			stomtCreation.anonym = false;
-
-			return stomtCreation;
 		}
 	}
 }

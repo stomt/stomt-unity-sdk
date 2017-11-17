@@ -43,8 +43,14 @@ namespace Stomt
 			}
 
 			if(!string.IsNullOrEmpty(this.file_uid)) {
+				writerStomt.WritePropertyName("files");
+				writerStomt.WriteObjectStart();
+				writerStomt.WritePropertyName("stomt");
+				writerStomt.WriteObjectStart();
 				writerStomt.WritePropertyName("file_uid");
 				writerStomt.Write(this.file_uid);
+				writerStomt.WriteObjectEnd();
+				writerStomt.WriteObjectEnd();
 			}
 
 			writerStomt.WriteObjectEnd();
@@ -58,6 +64,11 @@ namespace Stomt
 
 		public void attachLogs(string logs) {
 			this.logs = logs;
+		}
+
+		public void attachLogs(StomtLog log) {
+			Debug.Log ("Attach Stomt Log");
+			this.logs = log.getFileConent ();
 		}
 
 		public void save() {

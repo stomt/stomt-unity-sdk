@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Threading;
 using System.ComponentModel;
 using System.Collections.Generic;
 
@@ -83,6 +82,7 @@ namespace Stomt
 		#endregion
 		StomtAPI _api;
 		Texture2D _screenshot;
+		StomtLog _log;
 		[SerializeField]
 		[HideInInspector]
 		public GameObject placeholderText;
@@ -106,10 +106,7 @@ namespace Stomt
 		public int ErrorMessageCharLimit = 20;
         public bool ShowWidgetOnStart = false;
 		private int CharLimit = 120;
-		private string logFileContent;
 		private bool isStomtPositive;
-		private bool isLogFileReadComplete = false;
-		private Thread fileReadThread;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -130,7 +127,6 @@ namespace Stomt
 
 		void Start()
 		{
-			fileReadThread = new Thread(LoadLogFile);
 			StartedTyping = false;
 
 			_api.RequestTargetAndUser((response) => {
@@ -152,26 +148,6 @@ namespace Stomt
 			if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
 			{
 				ShowError();
-			}
-
-			if(this.isLogFileReadComplete)
-			{
-				if(!string.IsNullOrEmpty(this.logFileContent))
-				{
-					if(!fileReadThread.IsAlive)
-					{
-						this.handleStomtSending();
-					}
-				}
-				else
-				{
-					bool tmp = this.LogFileUpload;
-					this.LogFileUpload = false;
-					this.handleStomtSending();
-					this.LogFileUpload = tmp;
-				}
-
-				this.isLogFileReadComplete = false;
 			}
 		}
 			
@@ -217,10 +193,21 @@ namespace Stomt
 		{
 			yield return new WaitForEndOfFrame();
 
-			_api.SendTrack(_api.CreateTrack("form", "open"));
+			var track = _api.initStomtTrack();
+			track.event_category = "form";
+			track.event_action = "open";
+			track.save ();
 
 			// Capture screenshot
 			_screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
+
+			// Get Logs
+			if (this.LogFileUpload) {
+				if (this._log != null) {
+					this._log.stopThread();
+				}
+				this._log = new StomtLog(this._api);
+			}
 
 			// Show UI
 			Reset();
@@ -474,7 +461,8 @@ namespace Stomt
 				return;
 			}
 
-			//Switch UI Layer
+			// Switch UI Layer
+			_LayerInput.SetActive(false);
 			if (this._api.config.GetSubscribed())
 			{
 				_LayerSuccessfulSent.SetActive(true);
@@ -484,43 +472,8 @@ namespace Stomt
 				_LayerSubscription.SetActive(true);
 			}
 
-			_LayerInput.SetActive(false);
-
-			this.isStomtPositive = _like.sortingOrder == 2;
-
-			if(this.LogFileUpload)
-			{
-				this.fileReadThread = new Thread(LoadLogFile);
-				this.fileReadThread.Start();
-
-				/*
-				// Read Log FIle and Sending Stomt
-				BackgroundWorker bg = new BackgroundWorker();
-				bg.DoWork += new DoWorkEventHandler(LoadLogFile);
-				bg.RunWorkerCompleted += new RunWorkerCompletedEventHandler(OnLogFileLoadFinish);
-				bg.RunWorkerAsync();
-				 */
-			}
-			else
-			{
-				this.handleStomtSending();
-			}
-		}
-
-		private void LoadLogFile(object sender, DoWorkEventArgs e)
-		{
-			logFileContent = _api.ReadFile(_api.GetLogFilePath());
-		}
-
-		private void LoadLogFile()
-		{
-			logFileContent = _api.ReadFile(_api.GetLogFilePath());
-			this.isLogFileReadComplete = true;
-		}
-
-		private void OnLogFileLoadFinish(object sender, RunWorkerCompletedEventArgs e)
-		{
-			this.isLogFileReadComplete = true;
+			// Submit
+			this.handleStomtSending();
 		}
 
 		private void handleStomtSending()
@@ -529,7 +482,7 @@ namespace Stomt
 			StomtCreation stomtCreation = _api.initStomtCreation();
 
 			stomtCreation.text = this._message.text;
-			stomtCreation.positive = this.isStomtPositive;
+			stomtCreation.positive = _like.sortingOrder == 2;
 
 			// attach screenshot
 			if (this._screenshotToggle.isOn) {
@@ -538,7 +491,7 @@ namespace Stomt
 
 			// attach logs
 			if (this.LogFileUpload) {
-				stomtCreation.attachLogs (this.logFileContent);
+				stomtCreation.attachLogs(this._log);
 			}
 
 			stomtCreation.save();
