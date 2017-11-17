@@ -135,7 +135,7 @@ namespace Stomt
 
 			_api.RequestTargetAndUser((response) => {
 				SetStomtNumbers();
-				_TargetURL.text = "stomt.com/" + _api.TargetId;
+				_TargetURL.text = "stomt.com/" + _api.TargetID;
 				setTargetName ();
 				StartCoroutine(refreshTargetIcon());
 			});
@@ -254,7 +254,7 @@ namespace Stomt
 
 		private void SetStomtNumbers()
 		{
-			_STOMTS_Number.text = _api.stomtsReceivedTarget.ToString ();
+			_STOMTS_Number.text = _api.amountStomtsReceived.ToString ();
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
 		}
 
@@ -559,15 +559,15 @@ namespace Stomt
 	
 		private void setTargetName()
 		{
-			if(_api.TargetName != null)
+			if(_api.TargetDisplayname != null)
 			{
-				if (_api.TargetName.Length > TargetNameCharLimit)
+				if (_api.TargetDisplayname.Length > TargetNameCharLimit)
 				{
-					_targetText.text = _api.TargetName.Substring(0, TargetNameCharLimit);
+					_targetText.text = _api.TargetDisplayname.Substring(0, TargetNameCharLimit);
 				}
 				else
 				{
-					_targetText.text = _api.TargetName;
+					_targetText.text = _api.TargetDisplayname;
 				}
 			}
 		}
@@ -663,7 +663,7 @@ namespace Stomt
 
 		public void OpenTargetURL()
 		{
-			Application.OpenURL("https://www.stomt.com/" + _api.TargetId);
+			Application.OpenURL("https://www.stomt.com/" + _api.TargetID);
 		}
 
         public void OpenUserProfileURL()
