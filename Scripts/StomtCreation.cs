@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Net;
 using UnityEngine;
 
 namespace Stomt
@@ -72,7 +73,11 @@ namespace Stomt
 		}
 
 		public void save() {
-			this._api.SendStomt(this, null, null);
+			this.save(null, null);
+		}
+
+		public void save(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+			this._api.SendStomt(this, callbackSuccess, callbackError);
 		}
 	}
 }

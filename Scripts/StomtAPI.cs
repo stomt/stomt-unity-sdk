@@ -130,17 +130,17 @@ namespace Stomt
 
 
 		// Target / Session Handling
-		public void RequestTargetAndUser(Action<LitJson.JsonData> callback)
+		public void RequestTargetAndUser(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
         {
-			RequestTarget (_targetId, callback);
+			RequestTarget (_targetId, callbackSuccess, callbackError);
 
             if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
             {
-				RequestSession (callback);
+				RequestSession (callbackSuccess, callbackError);
             }
         }
 
-		public void RequestTarget(string target, Action<LitJson.JsonData> callback)
+		public void RequestTarget(string target, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var url = string.Format ("{0}/targets/{1}", restServerURL, target);
 			GetGETResponse (url, (response) => {
@@ -148,8 +148,8 @@ namespace Stomt
 				TargetImageURL = (string)response["images"]["profile"]["url"];
 				amountStomtsReceived = (int)response["stats"]["amountStomtsReceived"];
 
-				if (callback != null) {
-					callback(response);
+				if (callbackSuccess != null) {
+					callbackSuccess(response);
 				}
 			}, (response) => {
 				if (response == null) {
@@ -157,12 +157,15 @@ namespace Stomt
 				}
 				if (response.StatusCode.ToString().Equals("419")) {
 					Debug.Log("RequestAgain");
-					RequestTarget(target, callback);
+					RequestTarget(target, callbackSuccess, callbackError);
+				}
+				if (callbackError != null) {
+					callbackError(response);
 				}
 			});
 		}
 
-		public void RequestSession(Action<LitJson.JsonData> callback)
+		public void RequestSession(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var url = string.Format ("{0}/authentication/session", restServerURL);
 			GetGETResponse (url, (response) => {
@@ -170,13 +173,13 @@ namespace Stomt
 				UserDisplayname = (string)response["user"]["displayname"];
 				UserID = (string)response["user"]["id"];
 
-				if (callback != null) {
-					callback(response);
+				if (callbackSuccess != null) {
+					callbackSuccess(response);
 				}
-			}, null);
+			}, callbackError);
 		}
 
-		public void SendSubscription(string email)
+		public void SendSubscription(string email, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var jsonSubscription = new StringBuilder();
 			var writerSubscription = new LitJson.JsonWriter(jsonSubscription);
@@ -194,10 +197,10 @@ namespace Stomt
 				track.event_action = "subscribed";
 				track.save ();
 
-//				if (callback != null) {
-//					callback(response);
-//				}
-			}, null);
+				if (callbackSuccess != null) {
+					callbackSuccess(response);
+				}
+			}, callbackError);
 		}
 
 		// Stomt Handling

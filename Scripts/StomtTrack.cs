@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Net;
 
 namespace Stomt
 {
@@ -71,7 +72,11 @@ namespace Stomt
 		}
 
 		public void save() {
-			this._api.SendTrack(this, null, null);
+			this.save(null, null);
+		}
+
+		public void save(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+			this._api.SendTrack(this, callbackSuccess, callbackError);
 		}
 	}
 }

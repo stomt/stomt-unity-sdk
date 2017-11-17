@@ -134,7 +134,7 @@ namespace Stomt
 				_TargetURL.text = "stomt.com/" + _api.TargetID;
 				setTargetName ();
 				StartCoroutine(refreshTargetIcon());
-			});
+			}, null);
 
             if(ShowWidgetOnStart)
             {
@@ -494,7 +494,19 @@ namespace Stomt
 				stomtCreation.attachLogs(this._log);
 			}
 
-			stomtCreation.save();
+			stomtCreation.save(null, (response) => {
+				if (response == null) {
+					return;
+				}
+				if (response.StatusCode.ToString().Equals("409")) {
+					Debug.Log("Duplicate");
+					// TODO return to form
+//					ShowErrorMessage("You already posted this stomt.");
+//					_LayerInput.SetActive(true);
+//					_LayerSuccessfulSent.SetActive(false);
+//					_LayerSubscription.SetActive(false);
+				}
+			});
 
 			_message.text = "";
 
@@ -653,7 +665,7 @@ namespace Stomt
 		{
 			if(!string.IsNullOrEmpty(_EmailInput.text))
 			{
-				this._api.SendSubscription(_EmailInput.text);
+				this._api.SendSubscription(_EmailInput.text, null, null);
 			}
 
 			this._LayerSuccessfulSent.SetActive(true);
