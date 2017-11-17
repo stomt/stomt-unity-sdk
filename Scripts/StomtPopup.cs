@@ -110,7 +110,6 @@ namespace Stomt
 		private bool isStomtPositive;
 		private bool isLogFileReadComplete = false;
 		private Thread fileReadThread;
-		private bool targetUpdated = true;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -135,7 +134,10 @@ namespace Stomt
 			StartedTyping = false;
 
 			_api.RequestTargetAndUser((response) => {
-				targetUpdated = true;
+				SetStomtNumbers();
+				_TargetURL.text = "stomt.com/" + _api.TargetId;
+				setTargetName ();
+				StartCoroutine(refreshTargetIcon());
 			});
 
             if(ShowWidgetOnStart)
@@ -147,14 +149,6 @@ namespace Stomt
 		// is called every frame
 		void Update()
 		{
-			if (targetUpdated) {
-				SetStomtNumbers();
-				_TargetURL.text = "stomt.com/" + _api.TargetId;
-				setTargetName ();
-				StartCoroutine(refreshTargetIcon());
-				targetUpdated = false;
-			}
-
 			if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
 			{
 				ShowError();
@@ -580,6 +574,7 @@ namespace Stomt
 
 		private IEnumerator refreshTargetIcon()
 		{
+			yield return 0;
 			// check wether download needed
 			if (ImageDownload == null )
 			{
@@ -612,7 +607,6 @@ namespace Stomt
 					this.TargetImageApplied = true;
 				}
 			}
-			yield return 0;
 		}
 
 		IEnumerator MoveMessageCaretToEnd()

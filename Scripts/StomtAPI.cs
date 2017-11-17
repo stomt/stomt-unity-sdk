@@ -113,10 +113,10 @@ namespace Stomt
 		/// <param name="callback">The <see cref="FeedCallback"/> delegate.</param>
 		/// <param name="offset">The offset from feed begin.</param>
 		/// <param name="limit">The maximum amount of stomts to load.</param>
-		public void LoadFeed(FeedCallback callback, int offset = 0, int limit = 15)
-		{
-			LoadFeed(_targetId, callback, offset, limit);
-		}
+//		public void LoadFeed(FeedCallback callback, int offset = 0, int limit = 15)
+//		{
+//			LoadFeed(_targetId, callback, offset, limit);
+//		}
 		/// <summary>
 		/// Requests the asynchronous feed download from the specified target.
 		/// </summary>
@@ -124,10 +124,10 @@ namespace Stomt
 		/// <param name="callback">The <see cref="FeedCallback"/> delegate.</param>
 		/// <param name="offset">The offset from feed begin.</param>
 		/// <param name="limit">The maximum amount of stomts to load.</param>
-		public void LoadFeed(string target, FeedCallback callback, int offset = 0, int limit = 15)
-		{
-			StartCoroutine(LoadFeedAsync(target, callback, offset, limit));
-		}
+//		public void LoadFeed(string target, FeedCallback callback, int offset = 0, int limit = 15)
+//		{
+//			StartCoroutine(LoadFeedAsync(target, callback, offset, limit));
+//		}
 		/// <summary>
 		/// Creates a new anonymous stomt on the game's target.
 		/// </summary>
@@ -504,108 +504,113 @@ namespace Stomt
 
             writerTrack.WriteObjectEnd();
 
-            StartCoroutine(SendTrack(jsonTrack.ToString()));
+			SendTrack (jsonTrack.ToString());
         }
 
-        IEnumerator SendTrack(string json)
-        {
-            var data = Encoding.UTF8.GetBytes(json);
+		public void SendTrack(string json) {
+			var url = string.Format("{0}/tracks", restServerURL);
+			GetPOSTResponse (url, json, null, null);
+		}
 
-            HttpWebRequest request = WebRequest("POST", string.Format("{0}/tracks", restServerURL));
-            request.ContentLength = data.Length;
-
-            // Workaround for certificate problem
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-
-
-            //////////////////////////////////////////////////////////////////
-            // Send request
-            //////////////////////////////////////////////////////////////////
-
-            var async1 = request.BeginGetRequestStream(null, null);
-
-            while (!async1.IsCompleted)
-            {
-                yield return null;
-            }
-
-            try
-            {
-                using (var requestStream = request.EndGetRequestStream(async1))
-                {
-                    requestStream.Write(data, 0, data.Length);
-                }
-            }
-            catch (WebException ex)
-            {
-                Debug.LogException(ex);
-                yield break;
-            }
-             
-
-            // Workaround for certificate problem
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-
-            // Wait for response
-            var async2 = request.BeginGetResponse(null, null);
-
-            while (!async2.IsCompleted)
-            {
-                yield return null;
-            }
-            
-            HttpWebResponse response;
-            var responseDataText = string.Empty;
-
-            try
-            {
-                response = (HttpWebResponse)request.EndGetResponse(async2);
-            }
-            catch (WebException ex)
-            {
-                Debug.LogException(ex);
-                yield break;
-            }
-
-            //////////////////////////////////////////////////////////////////
-            // Read response stream
-            //////////////////////////////////////////////////////////////////
-
-            using (var responseStream = response.GetResponseStream())
-            {
-                if (responseStream == null)
-                {
-                    yield break;
-                }
-
-                var buffer = new byte[2048];
-                int length;
-
-                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-                }
-            }
-
-            //////////////////////////////////////////////////////////////////
-            // Analyze JSON data
-            //////////////////////////////////////////////////////////////////
-
-            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
-
-            if (responseData.Keys.Contains("error"))
-            {
-                Debug.LogError((string)responseData["error"]["msg"]);
-                yield break;
-            }
-
-            // Store access token
-            if (responseData.Keys.Contains("meta"))
-            {
-                string accesstoken = (string)responseData["meta"]["accesstoken"];
-                this.config.SetAccessToken(accesstoken);
-            }
-        }
+//        IEnumerator SendTrackAsync(string json)
+//        {
+//            var data = Encoding.UTF8.GetBytes(json);
+//
+//            HttpWebRequest request = WebRequest("POST", string.Format("{0}/tracks", restServerURL));
+//            request.ContentLength = data.Length;
+//
+//            // Workaround for certificate problem
+//            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+//
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Send request
+//            //////////////////////////////////////////////////////////////////
+//
+//            var async1 = request.BeginGetRequestStream(null, null);
+//
+//            while (!async1.IsCompleted)
+//            {
+//                yield return null;
+//            }
+//
+//            try
+//            {
+//                using (var requestStream = request.EndGetRequestStream(async1))
+//                {
+//                    requestStream.Write(data, 0, data.Length);
+//                }
+//            }
+//            catch (WebException ex)
+//            {
+//                Debug.LogException(ex);
+//                yield break;
+//            }
+//             
+//
+//            // Workaround for certificate problem
+//            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+//
+//            // Wait for response
+//            var async2 = request.BeginGetResponse(null, null);
+//
+//            while (!async2.IsCompleted)
+//            {
+//                yield return null;
+//            }
+//            
+//            HttpWebResponse response;
+//            var responseDataText = string.Empty;
+//
+//            try
+//            {
+//                response = (HttpWebResponse)request.EndGetResponse(async2);
+//            }
+//            catch (WebException ex)
+//            {
+//                Debug.LogException(ex);
+//                yield break;
+//            }
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Read response stream
+//            //////////////////////////////////////////////////////////////////
+//
+//            using (var responseStream = response.GetResponseStream())
+//            {
+//                if (responseStream == null)
+//                {
+//                    yield break;
+//                }
+//
+//                var buffer = new byte[2048];
+//                int length;
+//
+//                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//                {
+//                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//                }
+//            }
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Analyze JSON data
+//            //////////////////////////////////////////////////////////////////
+//
+//            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//            if (responseData.Keys.Contains("error"))
+//            {
+//                Debug.LogError((string)responseData["error"]["msg"]);
+//                yield break;
+//            }
+//
+//            // Store access token
+//            if (responseData.Keys.Contains("meta"))
+//            {
+//                string accesstoken = (string)responseData["meta"]["accesstoken"];
+//                this.config.SetAccessToken(accesstoken);
+//            }
+//        }
 
         public void SendSubscription(string email)
         {
@@ -725,18 +730,32 @@ namespace Stomt
             this.SendTrack(this.CreateTrack("auth", "subscribed"));
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
         void Awake()
         {
-			Debug.Log ("API Awake");
             this.config = new StomtConfig();
             this.config.Load();
 
             NetworkError = false;
+
+			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
+			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+			//ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
         }
 
 		void Start()
 		{
-			Debug.Log ("API Start");
 			if (string.IsNullOrEmpty(_appId))
 			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
@@ -746,89 +765,25 @@ namespace Stomt
 				throw new ArgumentException("The stomt target ID variable cannot be empty.");
 			}
 
-			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
-			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
-
 			TargetName = _targetId;
 		}
 
+
+		// Public Request Methodes
 		public void RequestTargetAndUser(Action<LitJson.JsonData> callback)
         {
 			RequestTarget (_targetId, callback);
 
             if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
             {
-                StartCoroutine(LoadSession(this.config.GetAccessToken()));
+				RequestSession (callback);
             }
         }
 
-		private void GetGETResponse(string uri, Action<LitJson.JsonData> callback)
+		public void RequestTarget(string target, Action<LitJson.JsonData> callback)
 		{
-			Debug.Log ("GetGETResponse" + uri);
-			HttpWebRequest request = WebRequest("GET", uri);
-			request.Method = "GET";
-			request.ContentType = "text/plain;charset=utf-8";
-
-//			System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-//			byte[] bytes = encoding.GetBytes(data);
-//
-//			request.ContentLength = bytes.Length;
-//
-//			using (Stream requestStream = request.GetRequestStream())
-//			{
-//				// Send the data.
-//				requestStream.Write(bytes, 0, bytes.Length);
-//			}
-
-			request.BeginGetResponse((x) =>
-				{
-					using (HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(x))
-					{
-						if (callback != null)
-						{
-							var responseDataText = string.Empty;
-							//////////////////////////////////////////////////////////////////
-							// Read response stream
-							//////////////////////////////////////////////////////////////////
-
-							using (var responseStream = response.GetResponseStream())
-							{
-								if (responseStream == null)
-								{
-									return;
-								}
-
-								var buffer = new byte[2048];
-								int length;
-
-								while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-								{
-									responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-								}
-							}
-
-							//////////////////////////////////////////////////////////////////
-							// Analyze JSON data
-							//////////////////////////////////////////////////////////////////
-
-							LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
-
-							if (responseData.Keys.Contains("error"))
-							{
-								Debug.LogError((string)responseData["error"]["msg"]);
-								return;
-							}
-
-							Debug.Log ("GetGETResponse response");
-							callback(responseData["data"]);
-						}
-					}
-				}, null);
-		}
-
-		private void RequestTarget(string target, Action<LitJson.JsonData> callback)
-		{
-			GetGETResponse (string.Format ("{0}/targets/{1}", restServerURL, target), (response) => {
+			var url = string.Format ("{0}/targets/{1}", restServerURL, target);
+			GetGETResponse (url, (response) => {
 				TargetName = (string)response["displayname"];
 				TargetImageURL = (string)response["images"]["profile"]["url"];
 				stomtsReceivedTarget = (int)response["stats"]["amountStomtsReceived"];
@@ -836,10 +791,34 @@ namespace Stomt
 				if (callback != null) {
 					callback(response);
 				}
+			}, (response) => {
+				if (response == null) {
+					return;
+				}
+				if (response.StatusCode.ToString().Equals("419")) {
+					Debug.Log("RequestAgain");
+					RequestTarget(target, callback);
+				}
 			});
 		}
 
-		HttpWebRequest WebRequest(string method, string url)
+		public void RequestSession(Action<LitJson.JsonData> callback)
+		{
+			var url = string.Format ("{0}/authentication/session", restServerURL);
+			GetGETResponse (url, (response) => {
+				amountStomtsCreated = (int)response["user"]["stats"][4];
+				UserDisplayname = (string)response["user"]["displayname"];
+				UserID = (string)response["user"]["id"];
+
+				if (callback != null) {
+					callback(response);
+				}
+			}, null);
+		}
+
+
+		// Private Request Handlers
+		private HttpWebRequest WebRequest(string method, string url)
 		{
 			var request = (HttpWebRequest)System.Net.WebRequest.Create(url);
 			request.Method = method;
@@ -849,27 +828,60 @@ namespace Stomt
 
 			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
 			{
-				request.Headers["accesstoken"] = this.config.GetAccessToken();
+				request.Headers ["accesstoken"] = this.config.GetAccessToken();
 			}
 
 			return request;
 		}
-		
-		IEnumerator LoadTarget(string target)
+
+		private void GetGETResponse(string uri, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			HttpWebRequest request = WebRequest("GET", string.Format("{0}/targets/{1}", restServerURL, target));
+			Debug.Log ("GetGETResponse " + uri);
+			HttpWebRequest request = WebRequest ("GET", uri);
 
-            // Workaround for certificate problem
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+			this.StartCoroutine(ExecuteRequest(request, uri, null, callbackSuccess, callbackError));
+		}
 
-            //////////////////////////////////////////////////////////////////
-            // Send request and wait for response
-            //////////////////////////////////////////////////////////////////
-			
-			var async1 = request.BeginGetResponse(null, null);
+		private void GetPOSTResponse(string uri, string data, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		{
+			Debug.Log ("GetPOSTResponse " + uri);
+			HttpWebRequest request = WebRequest ("POST", uri);
 
-			while (!async1.IsCompleted)
-			{
+			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError));
+		}
+
+		private IEnumerator ExecuteRequest(HttpWebRequest request, string uri, string data, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+
+			//////////////////////////////////////////////////////////////////
+			// Add data
+			//////////////////////////////////////////////////////////////////
+			if (data != null) {
+				Debug.Log ("Attach data");
+				var bytes = Encoding.UTF8.GetBytes(data);
+				request.ContentLength = bytes.Length;
+
+				var async1 = request.BeginGetRequestStream (null, null);
+
+				while (!async1.IsCompleted) {
+					yield return null;
+				}
+
+				try {
+					using (var requestStream = request.EndGetRequestStream (async1)) {
+						requestStream.Write (bytes, 0, bytes.Length);
+					}
+				} catch (WebException ex) {
+					Debug.LogException (ex);
+					yield break;
+				}
+			}
+
+			//////////////////////////////////////////////////////////////////
+			// Send request and wait for response
+			//////////////////////////////////////////////////////////////////
+			var async2 = request.BeginGetResponse (null, null);
+
+			while (!async2.IsCompleted) {
 				yield return null;
 			}
 
@@ -878,55 +890,71 @@ namespace Stomt
 
 			try
 			{
-				response = (HttpWebResponse)request.EndGetResponse(async1);
-                this.NetworkError = false;
+				response = (HttpWebResponse)request.EndGetResponse(async2);
+				this.NetworkError = false;
 			}
 			catch (WebException ex)
 			{
-                if( ( (HttpWebResponse)ex.Response ).StatusCode.ToString().Equals("419") )
-                {
-                    Debug.Log("Wrong internal STOMT accesstoken! Accesstoken was deleted.");
-                    this.config.SetAccessToken("");
-                    this.StartCoroutine(LoadTarget(target));
-                    yield break;
-                }
-                else
-                {
-                    using (var responseStream = ex.Response.GetResponseStream())
-                    {
-                        if (responseStream == null)
-                        {
-                            yield break;
-                        }
+				var errorResponse = (HttpWebResponse)ex.Response;
+				var statusCode = "";
+				if (errorResponse != null) {
+					statusCode = errorResponse.StatusCode.ToString();
+				}
 
-                        var buffer = new byte[2048];
-                        int length;
+				Debug.LogException (ex);
+				Debug.Log ("ExecuteRequest exception " + statusCode);
 
-                        while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-                        }
-                    }
+				// Handle invalid Session
+				if (statusCode.Equals ("419")) {
+					this.config.SetAccessToken("");
+				}
 
-                    LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
+				// Handle Offline
+				if (errorResponse == null) {
+					this.NetworkError = true;
+				}
 
-                    if (ExceptionResponseData.Keys.Contains("error"))
-                    {
-                        Debug.LogError((string)ExceptionResponseData["error"]);
-                        yield break;
-                    }
+				if (callbackError != null) {
+					callbackError (errorResponse);
+				}
 
-                    this.NetworkError = true;
-                    Debug.LogException(ex);
-                    Debug.Log("Maybe wrong target id or accesstoken");
+				yield break;
 
-                    yield break;
-                }
+//					using (var responseStream = ex.Response.GetResponseStream())
+//					{
+//						if (responseStream == null)
+//						{
+//							yield break;
+//						}
+//
+//						var buffer = new byte[2048];
+//						int length;
+//
+//						while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//						{
+//							responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//						}
+//					}
+//
+//					LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//					if (ExceptionResponseData.Keys.Contains("error"))
+//					{
+//						Debug.LogError((string)ExceptionResponseData["error"]);
+//						yield break;
+//					}
+//
+//					this.NetworkError = true;
+//					Debug.LogException(ex);
+//					Debug.Log("Maybe wrong target id or accesstoken");
+//
+//					yield break;
+
 			}
 
 			//////////////////////////////////////////////////////////////////
 			// Read response stream
-            //////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////
 
 			using (var responseStream = response.GetResponseStream())
 			{
@@ -944,235 +972,432 @@ namespace Stomt
 				}
 			}
 
-            //////////////////////////////////////////////////////////////////
-            // Analyze JSON data
-            //////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////
+			// Analyze JSON data
+			//////////////////////////////////////////////////////////////////
 
 			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
 
 			if (responseData.Keys.Contains("error"))
 			{
 				Debug.LogError((string)responseData["error"]["msg"]);
+				Debug.Log ("ExecuteRequest error msg " + responseData["error"]["msg"]);
+				callbackError(response);
 				yield break;
 			}
 
-            // Read Data
-			responseData = responseData["data"];
-
-			TargetName = (string)responseData["displayname"];
-            TargetImageURL = (string)responseData["images"]["profile"]["url"];
-			stomtsReceivedTarget = (int)responseData["stats"]["amountStomtsReceived"];
-		}
-
-        IEnumerator LoadSession(string accesstoken)
-        {
-            if(string.IsNullOrEmpty(accesstoken))
-            {
-                yield break;
-            }
-
-            HttpWebRequest request = WebRequest("GET", string.Format("{0}/authentication/session", restServerURL));
-
-            // Workaround for certificate problem
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-
-            //////////////////////////////////////////////////////////////////
-            // Send request and wait for response
-            //////////////////////////////////////////////////////////////////
-
-            var async1 = request.BeginGetResponse(null, null);
-
-            while (!async1.IsCompleted)
-            {
-                yield return null;
-            }
-
-            HttpWebResponse response;
-            var responseDataText = string.Empty;
-
-            try
-            {
-                response = (HttpWebResponse)request.EndGetResponse(async1);
-                this.NetworkError = false;
-            }
-            catch (WebException ex)
-            {
-
-                if (((HttpWebResponse)ex.Response).StatusCode.ToString().Equals("419"))
-                {
-                    Debug.Log("Wrong internal STOMT accesstoken on LoadSession!");
-                    yield break;
-                }
-                else
-                {
-                    using (var responseStream = ex.Response.GetResponseStream())
-                    {
-                        if (responseStream == null)
-                        {
-                            yield break;
-                        }
-
-                        var buffer = new byte[2048];
-                        int length;
-
-                        while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-                        {
-                            responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-                        }
-                    }
-
-                    LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
-
-                    if (ExceptionResponseData.Keys.Contains("error"))
-                    {
-                        Debug.LogError((string)ExceptionResponseData["error"]);
-                        yield break;
-                    }
-
-                    this.NetworkError = true;
-                    Debug.LogException(ex);
-                    Debug.Log("Maybe wrong target id or accesstoken");
-
-                    yield break;
-                }
-            }
-
-            //////////////////////////////////////////////////////////////////
-            // Read response stream
-            //////////////////////////////////////////////////////////////////
-
-            using (var responseStream = response.GetResponseStream())
-            {
-                if (responseStream == null)
-                {
-                    yield break;
-                }
-
-                var buffer = new byte[2048];
-                int length;
-
-                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-                }
-            }
-
-            //////////////////////////////////////////////////////////////////
-            // Analyze JSON data
-            //////////////////////////////////////////////////////////////////
-
-            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
-
-            if (responseData.Keys.Contains("error"))
-            {
-                Debug.LogError((string)responseData["error"]["msg"]);
-                yield break;
-            }
-            // Read Data
-            amountStomtsCreated = (int)responseData["data"]["user"]["stats"][4];
-            UserDisplayname = (string)responseData["data"]["user"]["displayname"];
-            UserID = (string)responseData["data"]["user"]["id"];
-        }
+			Debug.Log ("ExecuteRequest response " + uri);
+			if (callbackSuccess != null) {
+				callbackSuccess(responseData["data"]);
+			}
 		
-		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
-		{
-			HttpWebRequest request = WebRequest("GET", string.Format("{0}/targets/{1}/stomts/received?offset={2}&limit={3}", restServerURL, target, offset, limit));
-
-            // Workaround for certificate problem
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-
-
-            //////////////////////////////////////////////////////////////////
-            // Send request and wait for response
-            //////////////////////////////////////////////////////////////////
-
-			var async1 = request.BeginGetResponse(null, null);
-
-			while (!async1.IsCompleted)
-			{
-				yield return null;
-			}
-
-			HttpWebResponse response;
-			var responseDataText = string.Empty;
-
-			try
-			{
-				response = (HttpWebResponse)request.EndGetResponse(async1);
-			}
-			catch (WebException ex)
-			{
-				Debug.LogException(ex);
-				yield break;
-			}
-
-            //////////////////////////////////////////////////////////////////
-            // Read response stream
-            //////////////////////////////////////////////////////////////////
-
-			using (var responseStream = response.GetResponseStream())
-			{
-				if (responseStream == null)
-				{
-					yield break;
-				}
-
-				var buffer = new byte[2048];
-				int length;
-
-				while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-				{
-					responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-				}
-			}
-
-            //////////////////////////////////////////////////////////////////
-            // Analyze JSON data
-            //////////////////////////////////////////////////////////////////
-
-			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
-
-			if (responseData.Keys.Contains("error"))
-			{
-				Debug.LogError((string)responseData["error"]["msg"]);
-				yield break;
-			}
-
-            // Store access token
-            if (responseData.Keys.Contains("meta"))
-            {
-                string accesstoken = (string)responseData["meta"]["accesstoken"];
-                this.config.SetAccessToken(accesstoken);
-            }
-
-			responseData = responseData["data"];
-
-			var feed = new StomtItem[responseData.Count];
-
-			for (int i = 0; i < responseData.Count; i++)
-			{
-				var item = responseData[i];
-
-				feed[i] = new StomtItem {
-					Id = (string)item["id"],
-					Positive = (bool)item["positive"],
-					Text = (string)item["text"],
-					Language = (string)item["lang"],
-					CreationDate = DateTime.Parse((string)item["created_at"]),
-					Anonym = (bool)item["anonym"]
-				};
-
-				if (feed[i].Anonym)
-				{
-					continue;
-				}
-
-				feed[i].CreatorId = (string)item["creator"]["id"];
-				feed[i].CreatorName = (string)item["creator"]["displayname"];
-			}
-
-			callback(feed);
 		}
+
+
+
+
+
+
+			
+//		private void GetGETResponseSync(string uri, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+//		{
+//			Debug.Log ("GetGETResponse " + uri);
+//			HttpWebRequest request = WebRequest("GET", uri);
+//			request.Method = "GET";
+//			request.ContentType = "text/plain;charset=utf-8";
+//
+//			//			System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+//			//			byte[] bytes = encoding.GetBytes(data);
+//			//
+//			//			request.ContentLength = bytes.Length;
+//			//
+//			//			using (Stream requestStream = request.GetRequestStream())
+//			//			{
+//			//				// Send the data.
+//			//				requestStream.Write(bytes, 0, bytes.Length);
+//			//			}
+//
+//
+//			request.BeginGetResponse((x) => {
+//				try {
+//					using (HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(x))
+//					{
+//
+//						var responseDataText = string.Empty;
+//						//////////////////////////////////////////////////////////////////
+//						// Read response stream
+//						//////////////////////////////////////////////////////////////////
+//
+//						using (var responseStream = response.GetResponseStream())
+//						{
+//							if (responseStream == null)
+//							{
+//								return;
+//							}
+//
+//							var buffer = new byte[2048];
+//							int length;
+//
+//							while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//							{
+//								responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//							}
+//						}
+//
+//						//////////////////////////////////////////////////////////////////
+//						// Analyze JSON data
+//						//////////////////////////////////////////////////////////////////
+//
+//						LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//						if (responseData.Keys.Contains("error"))
+//						{
+//							Debug.LogError((string)responseData["error"]["msg"]);
+//							Debug.Log ("GetGETResponse error msg " + responseData["error"]["msg"]);
+//							callbackError(response);
+//							return;
+//						}
+//
+//						Debug.Log ("GetGETResponse response " + uri);
+//						if (callbackSuccess != null) {
+//							callbackSuccess(responseData["data"]);
+//						}
+//					}
+//				} catch (WebException ex) {
+//					Debug.LogException (ex);
+//					var response = (HttpWebResponse)ex.Response;
+//					var statusCode = response.StatusCode.ToString();
+//					Debug.Log ("GetGETResponse error " + statusCode);
+//
+//					// Handle invalid Session
+//					if (statusCode.Equals ("419")) {
+//						this.config.SetAccessToken("");
+//					}
+//					if (callbackError != null) {
+//						callbackError (response);
+//					}
+//				}
+//			}, null);
+//		}
+
+//		IEnumerator LoadTarget(string target)
+//		{
+//			HttpWebRequest request = WebRequest("GET", string.Format("{0}/targets/{1}", restServerURL, target));
+//
+//            // Workaround for certificate problem
+//            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Send request and wait for response
+//            //////////////////////////////////////////////////////////////////
+//			
+//			var async1 = request.BeginGetResponse(null, null);
+//
+//			while (!async1.IsCompleted)
+//			{
+//				yield return null;
+//			}
+//
+//			HttpWebResponse response;
+//			var responseDataText = string.Empty;
+//
+//			try
+//			{
+//				response = (HttpWebResponse)request.EndGetResponse(async1);
+//                this.NetworkError = false;
+//			}
+//			catch (WebException ex)
+//			{
+//                if( ( (HttpWebResponse)ex.Response ).StatusCode.ToString().Equals("419") )
+//                {
+//                    Debug.Log("Wrong internal STOMT accesstoken! Accesstoken was deleted.");
+//                    this.config.SetAccessToken("");
+//                    this.StartCoroutine(LoadTarget(target));
+//                    yield break;
+//                }
+//                else
+//                {
+//                    using (var responseStream = ex.Response.GetResponseStream())
+//                    {
+//                        if (responseStream == null)
+//                        {
+//                            yield break;
+//                        }
+//
+//                        var buffer = new byte[2048];
+//                        int length;
+//
+//                        while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//                        {
+//                            responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//                        }
+//                    }
+//
+//                    LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//                    if (ExceptionResponseData.Keys.Contains("error"))
+//                    {
+//                        Debug.LogError((string)ExceptionResponseData["error"]);
+//                        yield break;
+//                    }
+//
+//                    this.NetworkError = true;
+//                    Debug.LogException(ex);
+//                    Debug.Log("Maybe wrong target id or accesstoken");
+//
+//                    yield break;
+//                }
+//			}
+//
+//			//////////////////////////////////////////////////////////////////
+//			// Read response stream
+//            //////////////////////////////////////////////////////////////////
+//
+//			using (var responseStream = response.GetResponseStream())
+//			{
+//				if (responseStream == null)
+//				{
+//					yield break;
+//				}
+//
+//				var buffer = new byte[2048];
+//				int length;
+//
+//				while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//				{
+//					responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//				}
+//			}
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Analyze JSON data
+//            //////////////////////////////////////////////////////////////////
+//
+//			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//			if (responseData.Keys.Contains("error"))
+//			{
+//				Debug.LogError((string)responseData["error"]["msg"]);
+//				yield break;
+//			}
+//
+//            // Read Data
+//			responseData = responseData["data"];
+//
+//			TargetName = (string)responseData["displayname"];
+//            TargetImageURL = (string)responseData["images"]["profile"]["url"];
+//			stomtsReceivedTarget = (int)responseData["stats"]["amountStomtsReceived"];
+//		}
+//
+//        IEnumerator LoadSession(string accesstoken)
+//        {
+//            if(string.IsNullOrEmpty(accesstoken))
+//            {
+//                yield break;
+//            }
+//
+//            HttpWebRequest request = WebRequest("GET", string.Format("{0}/authentication/session", restServerURL));
+//
+//            // Workaround for certificate problem
+//            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Send request and wait for response
+//            //////////////////////////////////////////////////////////////////
+//
+//            var async1 = request.BeginGetResponse(null, null);
+//
+//            while (!async1.IsCompleted)
+//            {
+//                yield return null;
+//            }
+//
+//            HttpWebResponse response;
+//            var responseDataText = string.Empty;
+//
+//            try
+//            {
+//                response = (HttpWebResponse)request.EndGetResponse(async1);
+//                this.NetworkError = false;
+//            }
+//            catch (WebException ex)
+//            {
+//
+//                if (((HttpWebResponse)ex.Response).StatusCode.ToString().Equals("419"))
+//                {
+//                    Debug.Log("Wrong internal STOMT accesstoken on LoadSession!");
+//                    yield break;
+//                }
+//                else
+//                {
+//                    using (var responseStream = ex.Response.GetResponseStream())
+//                    {
+//                        if (responseStream == null)
+//                        {
+//                            yield break;
+//                        }
+//
+//                        var buffer = new byte[2048];
+//                        int length;
+//
+//                        while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//                        {
+//                            responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//                        }
+//                    }
+//
+//                    LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//                    if (ExceptionResponseData.Keys.Contains("error"))
+//                    {
+//                        Debug.LogError((string)ExceptionResponseData["error"]);
+//                        yield break;
+//                    }
+//
+//                    this.NetworkError = true;
+//                    Debug.LogException(ex);
+//                    Debug.Log("Maybe wrong target id or accesstoken");
+//
+//                    yield break;
+//                }
+//            }
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Read response stream
+//            //////////////////////////////////////////////////////////////////
+//
+//            using (var responseStream = response.GetResponseStream())
+//            {
+//                if (responseStream == null)
+//                {
+//                    yield break;
+//                }
+//
+//                var buffer = new byte[2048];
+//                int length;
+//
+//                while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//                {
+//                    responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//                }
+//            }
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Analyze JSON data
+//            //////////////////////////////////////////////////////////////////
+//
+//            LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//            if (responseData.Keys.Contains("error"))
+//            {
+//                Debug.LogError((string)responseData["error"]["msg"]);
+//                yield break;
+//            }
+//            // Read Data
+//            amountStomtsCreated = (int)responseData["data"]["user"]["stats"][4];
+//            UserDisplayname = (string)responseData["data"]["user"]["displayname"];
+//            UserID = (string)responseData["data"]["user"]["id"];
+//        }
+		
+//		IEnumerator LoadFeedAsync(string target, FeedCallback callback, int offset, int limit)
+//		{
+//			HttpWebRequest request = WebRequest("GET", string.Format("{0}/targets/{1}/stomts/received?offset={2}&limit={3}", restServerURL, target, offset, limit));
+//
+//            // Workaround for certificate problem
+//            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+//
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Send request and wait for response
+//            //////////////////////////////////////////////////////////////////
+//
+//			var async1 = request.BeginGetResponse(null, null);
+//
+//			while (!async1.IsCompleted)
+//			{
+//				yield return null;
+//			}
+//
+//			HttpWebResponse response;
+//			var responseDataText = string.Empty;
+//
+//			try
+//			{
+//				response = (HttpWebResponse)request.EndGetResponse(async1);
+//			}
+//			catch (WebException ex)
+//			{
+//				Debug.LogException(ex);
+//				yield break;
+//			}
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Read response stream
+//            //////////////////////////////////////////////////////////////////
+//
+//			using (var responseStream = response.GetResponseStream())
+//			{
+//				if (responseStream == null)
+//				{
+//					yield break;
+//				}
+//
+//				var buffer = new byte[2048];
+//				int length;
+//
+//				while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+//				{
+//					responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
+//				}
+//			}
+//
+//            //////////////////////////////////////////////////////////////////
+//            // Analyze JSON data
+//            //////////////////////////////////////////////////////////////////
+//
+//			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+//
+//			if (responseData.Keys.Contains("error"))
+//			{
+//				Debug.LogError((string)responseData["error"]["msg"]);
+//				yield break;
+//			}
+//
+//            // Store access token
+//            if (responseData.Keys.Contains("meta"))
+//            {
+//                string accesstoken = (string)responseData["meta"]["accesstoken"];
+//                this.config.SetAccessToken(accesstoken);
+//            }
+//
+//			responseData = responseData["data"];
+//
+//			var feed = new StomtItem[responseData.Count];
+//
+//			for (int i = 0; i < responseData.Count; i++)
+//			{
+//				var item = responseData[i];
+//
+//				feed[i] = new StomtItem {
+//					Id = (string)item["id"],
+//					Positive = (bool)item["positive"],
+//					Text = (string)item["text"],
+//					Language = (string)item["lang"],
+//					CreationDate = DateTime.Parse((string)item["created_at"]),
+//					Anonym = (bool)item["anonym"]
+//				};
+//
+//				if (feed[i].Anonym)
+//				{
+//					continue;
+//				}
+//
+//				feed[i].CreatorId = (string)item["creator"]["id"];
+//				feed[i].CreatorName = (string)item["creator"]["displayname"];
+//			}
+//
+//			callback(feed);
+//		}
 		
 		IEnumerator CreateStomtAsync(string json)
 		{
@@ -1594,27 +1819,6 @@ namespace Stomt
             var filename = (string)responseData["data"]["files"]["stomt"]["file_uid"];
 
             yield return StartCoroutine(CreateStomtWithImageAsync(jsonImage, jsonStomt.Replace("{file_uid}", filename)));
-        }
-
-
-        public WWW LoadTargetImage()
-        {
-            
-            // Start download
-            if(TargetImageURL != null)
-            { 
-                var www = new WWW(TargetImageURL);
-                while (!www.isDone)
-                {
-                    // wait until the download is done
-                }
-
-                return www;
-            }
-            else
-            {
-                return null;
-            }
         }
 
         public bool RemoteCertificateValidationCallback(System.Object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
