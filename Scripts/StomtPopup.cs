@@ -64,6 +64,9 @@ namespace Stomt
         [SerializeField]
         [HideInInspector]
         public Text toggleItemSMS;
+        [SerializeField]
+        [HideInInspector]
+        public Text SubscribtionInfoText;
 
 		[SerializeField]
 		[HideInInspector]
@@ -533,6 +536,7 @@ namespace Stomt
 
             _EmailInput.ActivateInputField();
             _EmailInput.Select();
+            SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", true);
 
         }
 
@@ -768,6 +772,12 @@ namespace Stomt
 
         public void OnSubscribeTogglePressed()
         {
+            string finalInfoText = "";
+            string defaultText = "What's your ";
+            string phoneTextEnding = "phone number?";
+            string emailTextEnding = "email address?";
+
+            SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
             useEmailOnSubscribe = !useEmailOnSubscribe;
             //Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
 
@@ -775,15 +785,47 @@ namespace Stomt
             {
                 toggleItemEMail.color = Color.black;
                 toggleItemSMS.color = Color.gray;
+
+                finalInfoText = defaultText + emailTextEnding;
+
             }
             else
             {
                 toggleItemEMail.color = Color.gray;
                 toggleItemSMS.color = Color.black;
+
+                finalInfoText = defaultText + phoneTextEnding;
             }
 
             _EmailInput.ActivateInputField();
             _EmailInput.Select();
+
+
+            PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
+            //PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.6f);
+
         }
-	}
+
+        void PlayShowAnimation(Animator animator, float delayTime)
+        {
+            StartCoroutine(PlayShowAnimationAsync(animator, delayTime, null, null));
+        }
+
+        void PlayShowAnimation(Animator animator, float delayTime, Text TextToChange, string NewText)
+        {
+            StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText));
+        }
+
+        IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText)
+        {
+            yield return new WaitForSeconds(delayTime);
+
+            animator.SetBool("Show", true);
+
+            if(TextToChange != null && NewText != null)
+            {
+                TextToChange.text = NewText;
+            }
+        }
+    }
 }
