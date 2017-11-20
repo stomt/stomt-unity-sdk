@@ -66,6 +66,9 @@ namespace Stomt
         [SerializeField]
         [HideInInspector]
         public Text SubscribtionInfoText;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject ArrowFindStomt;
 
 		[SerializeField]
 		[HideInInspector]
@@ -478,11 +481,12 @@ namespace Stomt
 
 			// Switch UI Layer
 			_LayerInput.SetActive(false);
-			//if (this._api.config.GetSubscribed())
+			if (this._api.config.GetSubscribed())
 			{
-				//_LayerSuccessfulSent.SetActive(true);
-			}
-			//else
+				_LayerSuccessfulSent.SetActive(true);
+                OnSwitchToSuccessLayer();
+            }
+			else
 			{
 				_LayerSubscription.SetActive(true);
 				_EmailInput.ActivateInputField();
@@ -699,7 +703,9 @@ namespace Stomt
 
 			this._LayerSuccessfulSent.SetActive(true);
 			this._LayerSubscription.SetActive(false);
-		}
+            OnSwitchToSuccessLayer();
+
+        }
 
 		public void OnSubscriptionInputChanged()
 		{
@@ -722,6 +728,11 @@ namespace Stomt
 		{
 			this.HideWidget();
 		}
+
+        public void OnSwitchToSuccessLayer()
+        {
+            PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
+        }
 
 
         // Email Toggle
@@ -759,6 +770,9 @@ namespace Stomt
 
             PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
             //PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.6f);
+
+
+            
 
         }
 
