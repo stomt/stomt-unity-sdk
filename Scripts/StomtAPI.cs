@@ -430,7 +430,7 @@ namespace Stomt
 					statusCode = errorResponse.StatusCode.ToString();
 				}
 
-				Debug.LogException (ex);
+				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
 
 				// Handle invalid Session
