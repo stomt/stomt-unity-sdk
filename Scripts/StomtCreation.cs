@@ -68,7 +68,6 @@ namespace Stomt
 		}
 
 		public void attachLogs(StomtLog log) {
-			Debug.Log ("Attach Stomt Log");
 			this.logs = log.getFileConent ();
 		}
 

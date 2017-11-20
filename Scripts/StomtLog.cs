@@ -39,10 +39,8 @@ namespace Stomt
 
 		private void LoadLogFileThread()
 		{
-			Debug.Log ("Log Thread start");
 			logFileContent = ReadFile(GetLogFilePath());
 			this.isLogFileReadComplete = true;
-			Debug.Log ("Log Thread end");
 		}
 			
 		private string GetLogFilePath()
@@ -90,10 +88,6 @@ namespace Stomt
 				logFilePath = "~/.config/unity3d/CompanyName/ProductName/Player.log";
 			}
 
-			// DEBUG
-			logFilePath = "/Users/maxklenk/Desktop/small.tsv";
-			Debug.Log (logFilePath);
-
 			if(!string.IsNullOrEmpty(logFilePath))
 			{
 				if (File.Exists (logFilePath)) {
@@ -109,7 +103,6 @@ namespace Stomt
 		private string ReadFile(string FilePath)
 		{
 			if (string.IsNullOrEmpty(FilePath)) {
-				Debug.LogWarning("No FilePath specified");
 				return null;
 			}
 

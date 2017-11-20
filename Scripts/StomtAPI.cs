@@ -156,7 +156,6 @@ namespace Stomt
 					return;
 				}
 				if (response.StatusCode.ToString().Equals("419")) {
-					Debug.Log("RequestAgain");
 					RequestTarget(target, callbackSuccess, callbackError);
 				}
 				if (callbackError != null) {
@@ -237,7 +236,6 @@ namespace Stomt
 				SendFile(stomtCreation.logs, (response) => {
 					var file_uid = (string)response["files"]["stomt"]["file_uid"];
 					stomtCreation.file_uid = file_uid;
-					Debug.Log("file_uid " + file_uid);
 					stomtCreation.logs = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
 				},  (response) => {
@@ -366,7 +364,7 @@ namespace Stomt
 
 		private void GetGETResponse(string uri, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			Debug.Log ("GetGETResponse " + uri);
+			//Debug.Log ("GetGETResponse " + uri);
 			HttpWebRequest request = WebRequest ("GET", uri);
 
 			this.StartCoroutine(ExecuteRequest(request, uri, null, callbackSuccess, callbackError));
@@ -374,8 +372,8 @@ namespace Stomt
 
 		private void GetPOSTResponse(string uri, string data, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			Debug.Log ("GetPOSTResponse " + uri);
-			Debug.Log("body " + data);
+			//Debug.Log ("GetPOSTResponse " + uri);
+			//Debug.Log("body " + data);
 			HttpWebRequest request = WebRequest ("POST", uri);
 
 			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError));
@@ -449,37 +447,6 @@ namespace Stomt
 				}
 
 				yield break;
-
-//					using (var responseStream = ex.Response.GetResponseStream())
-//					{
-//						if (responseStream == null)
-//						{
-//							yield break;
-//						}
-//
-//						var buffer = new byte[2048];
-//						int length;
-//
-//						while ((length = responseStream.Read(buffer, 0, buffer.Length)) > 0)
-//						{
-//							responseDataText += Encoding.UTF8.GetString(buffer, 0, length);
-//						}
-//					}
-//
-//					LitJson.JsonData ExceptionResponseData = LitJson.JsonMapper.ToObject(responseDataText);
-//
-//					if (ExceptionResponseData.Keys.Contains("error"))
-//					{
-//						Debug.LogError((string)ExceptionResponseData["error"]);
-//						yield break;
-//					}
-//
-//					this.NetworkError = true;
-//					Debug.LogException(ex);
-//					Debug.Log("Maybe wrong target id or accesstoken");
-//
-//					yield break;
-
 			}
 
 			//////////////////////////////////////////////////////////////////
@@ -523,11 +490,10 @@ namespace Stomt
 				this.config.SetAccessToken(accesstoken);
 			}
 
-			Debug.Log ("ExecuteRequest response " + uri);
+			//Debug.Log ("ExecuteRequest response " + uri);
 			if (callbackSuccess != null) {
 				callbackSuccess(responseData["data"]);
 			}
-		
 		}
 	}
 }
