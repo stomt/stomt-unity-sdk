@@ -54,6 +54,18 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public Text _YOURS_Number;
+		[SerializeField]
+        [HideInInspector]
+        public Text SentLayerMessage;
+        [SerializeField]
+        [HideInInspector]
+        public Text toggleItemEMail;
+        [SerializeField]
+        [HideInInspector]
+        public Text toggleItemSMS;
+        [SerializeField]
+        [HideInInspector]
+        public Text SubscribtionInfoText;
 
 		[SerializeField]
 		[HideInInspector]
@@ -104,9 +116,10 @@ namespace Stomt
 		public bool WouldBecauseText = true; // activates the would/because text
 		public int TargetNameCharLimit = 11;
 		public int ErrorMessageCharLimit = 20;
-        public bool ShowWidgetOnStart = false;
+		public bool ShowWidgetOnStart = false;
 		private int CharLimit = 120;
 		private bool isStomtPositive;
+        private bool useEmailOnSubscribe = true;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -136,10 +149,10 @@ namespace Stomt
 				StartCoroutine(refreshTargetIcon());
 			}, null);
 
-            if(ShowWidgetOnStart)
-            {
-                this.ShowWidget();
-            }
+			if(ShowWidgetOnStart)
+			{
+				this.ShowWidget();
+			}
 		}
 
 		// is called every frame
@@ -231,6 +244,8 @@ namespace Stomt
 			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
 			_like.GetComponent<Animator>().SetBool("OnTop", false);
 			_wish.GetComponent<Animator>().SetBool("OnTop", true);
+
+            useEmailOnSubscribe = true;
 
 			// Call Event
 			if (OnWidgetOpen != null)
@@ -470,11 +485,16 @@ namespace Stomt
 			else
 			{
 				_LayerSubscription.SetActive(true);
+				_EmailInput.ActivateInputField();
+				_EmailInput.Select();
+				SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", true);
 			}
 
 			// Submit
 			this.handleStomtSending();
-		}
+
+            SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetDisplayname + " on";
+        }
 
 		private void handleStomtSending()
 		{
@@ -624,12 +644,12 @@ namespace Stomt
 			Application.OpenURL("https://www.stomt.com/" + _api.TargetID);
 		}
 
-        public void OpenUserProfileURL()
-        {
-            Application.OpenURL("https://www.stomt.com/" + _api.UserID);
-        }
+		public void OpenUserProfileURL()
+		{
+			Application.OpenURL("https://www.stomt.com/" + _api.UserID);
+		}
 
-        public void ShowErrorMessage(string message)
+		public void ShowErrorMessage(string message)
 		{
 			_postButton.GetComponent<Button>().interactable = false;
 			IsErrorState = true;
@@ -695,5 +715,66 @@ namespace Stomt
 		{
 			this.HideWidget();
 		}
-	}
+
+
+        // Email Toggle
+
+        public void OnSubscribeTogglePressed()
+        {
+            string finalInfoText = "";
+            string defaultText = "What's your ";
+            string phoneTextEnding = "phone number?";
+            string emailTextEnding = "email address?";
+
+            SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
+            useEmailOnSubscribe = !useEmailOnSubscribe;
+            //Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
+
+            if (useEmailOnSubscribe)
+            {
+                toggleItemEMail.color = Color.black;
+                toggleItemSMS.color = Color.gray;
+
+                finalInfoText = defaultText + emailTextEnding;
+
+            }
+            else
+            {
+                toggleItemEMail.color = Color.gray;
+                toggleItemSMS.color = Color.black;
+
+                finalInfoText = defaultText + phoneTextEnding;
+            }
+
+            _EmailInput.ActivateInputField();
+            _EmailInput.Select();
+
+
+            PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
+            //PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.6f);
+
+        }
+
+        void PlayShowAnimation(Animator animator, float delayTime)
+        {
+            StartCoroutine(PlayShowAnimationAsync(animator, delayTime, null, null));
+        }
+
+        void PlayShowAnimation(Animator animator, float delayTime, Text TextToChange, string NewText)
+        {
+            StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText));
+        }
+
+        IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText)
+        {
+            yield return new WaitForSeconds(delayTime);
+
+            animator.SetBool("Show", true);
+
+            if(TextToChange != null && NewText != null)
+            {
+                TextToChange.text = NewText;
+            }
+        }
+    }
 }
