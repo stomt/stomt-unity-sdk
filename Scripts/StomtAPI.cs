@@ -249,6 +249,7 @@ namespace Stomt
 			// Submit stomt
 			var url = string.Format ("{0}/stomts", restServerURL);
 			GetPOSTResponse (url, stomtCreation.ToString(), (response) => {
+				amountStomtsCreated += 1;
 				string stomt_id = (string)response["id"];
 
 				var track = initStomtTrack();

@@ -494,7 +494,9 @@ namespace Stomt
 				stomtCreation.attachLogs(this._log);
 			}
 
-			stomtCreation.save(null, (response) => {
+			stomtCreation.save((response) => {
+				SetStomtNumbers();
+			}, (response) => {
 				if (response == null) {
 					return;
 				}
