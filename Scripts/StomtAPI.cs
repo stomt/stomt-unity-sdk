@@ -9,10 +9,10 @@ using System.Net.Security;
 
 namespace Stomt
 {
-	/// <summary>
-	/// Low-level stomt API component.
-	/// </summary>
-	public class StomtAPI : MonoBehaviour
+    /// <summary>
+    /// Low-level stomt API component.
+    /// </summary>
+    public class StomtAPI : MonoBehaviour
 	{
 		#region Inspector Variables
 		[SerializeField]
@@ -27,11 +27,12 @@ namespace Stomt
 
 		public StomtConfig config;
 
-        
-		/// <summary>
-		/// The targets amount of received stomts.
-		/// </summary>
-		public int amountStomtsReceived { get; set; }
+        public enum SubscriptionType { EMail, Phone };
+
+        /// <summary>
+        /// The targets amount of received stomts.
+        /// </summary>
+        public int amountStomtsReceived { get; set; }
 
         /// <summary>
         /// The users amount of created stomts.
@@ -178,13 +179,21 @@ namespace Stomt
 			}, callbackError);
 		}
 
-		public void SendSubscription(string email, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendSubscription(string addressOrNumber, SubscriptionType type, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var jsonSubscription = new StringBuilder();
 			var writerSubscription = new LitJson.JsonWriter(jsonSubscription);
 			writerSubscription.WriteObjectStart();
-			writerSubscription.WritePropertyName("email");
-			writerSubscription.Write(email);
+
+            switch (type)
+            {
+                case SubscriptionType.EMail: writerSubscription.WritePropertyName("email");
+                break;
+                case SubscriptionType.Phone: writerSubscription.WritePropertyName("phone");
+                break;
+            }
+
+			writerSubscription.Write(addressOrNumber);
 			writerSubscription.WriteObjectEnd();
 
 			var url = string.Format ("{0}/authentication/subscribe", restServerURL);
@@ -194,6 +203,7 @@ namespace Stomt
 				var track = initStomtTrack();
 				track.event_category = "auth";
 				track.event_action = "subscribed";
+                track.event_label = type.ToString();
 				track.save ();
 
 				if (callbackSuccess != null) {

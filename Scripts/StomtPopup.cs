@@ -478,11 +478,11 @@ namespace Stomt
 
 			// Switch UI Layer
 			_LayerInput.SetActive(false);
-			if (this._api.config.GetSubscribed())
+			//if (this._api.config.GetSubscribed())
 			{
-				_LayerSuccessfulSent.SetActive(true);
+				//_LayerSuccessfulSent.SetActive(true);
 			}
-			else
+			//else
 			{
 				_LayerSubscription.SetActive(true);
 				_EmailInput.ActivateInputField();
@@ -687,7 +687,14 @@ namespace Stomt
 		{
 			if(!string.IsNullOrEmpty(_EmailInput.text))
 			{
-				this._api.SendSubscription(_EmailInput.text, null, null);
+                if (useEmailOnSubscribe)
+                {
+                    this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
+                }
+                else
+                {
+                    this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
+                }	
 			}
 
 			this._LayerSuccessfulSent.SetActive(true);
