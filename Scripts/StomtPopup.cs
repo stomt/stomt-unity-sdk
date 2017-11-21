@@ -179,6 +179,7 @@ namespace Stomt
 			}
 		}
 
+
 		/**
 		 *  Disables the Widget/Popup when active
 		 */
@@ -225,10 +226,8 @@ namespace Stomt
 				this._log = new StomtLog(this._api);
 			}
 
-			// Show UI
-			Reset();
-			_ui.SetActive(true);
-			_closeButton.SetActive(ShowCloseButton);
+            // Show UI
+            ResetUILayer();
 
 			if(this.IsMessageLengthCorrect())
 			{
@@ -239,14 +238,7 @@ namespace Stomt
 				_postButton.GetComponent<Button>().interactable = false;
 			}
 
-			ResetUILayer();
-
 			ShowError();
-
-			// Handle Animations
-			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
-			_like.GetComponent<Animator>().SetBool("OnTop", false);
-			_wish.GetComponent<Animator>().SetBool("OnTop", true);
 
             useEmailOnSubscribe = true;
 
@@ -634,14 +626,23 @@ namespace Stomt
 
 		public void ResetUILayer()
 		{
-			this._LayerInput.SetActive(true);
+            Reset();
+
+            _ui.SetActive(true);
+            _closeButton.SetActive(ShowCloseButton);
+
+            this._LayerInput.SetActive(true);
 			this._LayerSuccessfulSent.SetActive(false);
 
 			// Reset Subscription Layer
 			this._LayerSubscription.SetActive(false);
 			_EmailInput.text = "";
 
-		}
+            // Handle Animations
+            _characterLimit.GetComponent<Animator>().SetBool("Active", false);
+            _like.GetComponent<Animator>().SetBool("OnTop", false);
+            _wish.GetComponent<Animator>().SetBool("OnTop", true);
+        }
 
 		public void OpenTargetURL()
 		{
