@@ -123,6 +123,7 @@ namespace Stomt
 		private int CharLimit = 120;
 		private bool isStomtPositive;
         private bool useEmailOnSubscribe = true;
+        private bool onMobile = false;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -131,7 +132,10 @@ namespace Stomt
 
 		void Awake()
 		{
-			if(placeholderText == null)
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+                this.onMobile = true;
+
+            if (placeholderText == null)
 			{
 				Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
 			}
@@ -332,6 +336,7 @@ namespace Stomt
 			likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
 			wishAnimator.SetBool("OnTop", tmp);
 
+            
 			if (_like.sortingOrder == 2)
 			{
 				// I wish
@@ -339,9 +344,9 @@ namespace Stomt
 				_wish.sortingOrder = 2;
 				_wouldBecauseText.text = "would";
 
-				if (!this.IsMessageLengthCorrect())
+                if (!this.IsMessageLengthCorrect() && (!onMobile && WouldBecauseText))
 				{
-					_message.text = "because ";
+					_message.text = "would ";
 				}
 			}
 			else
@@ -351,7 +356,7 @@ namespace Stomt
 				_wish.sortingOrder = 1;
 				_wouldBecauseText.text = "because";
 			   
-				if(!this.IsMessageLengthCorrect())
+				if(!this.IsMessageLengthCorrect() && (!onMobile && WouldBecauseText))
 				{
 					_message.text = "because ";
 				}
@@ -408,7 +413,10 @@ namespace Stomt
 
 		public void RefreshStartText()
 		{
-			if (this.StartedTyping && WouldBecauseText)
+            if (!WouldBecauseText || onMobile)
+                return;
+
+			if (this.StartedTyping)
 			{
 				if (_like.sortingOrder == 1)
 				{
@@ -669,9 +677,15 @@ namespace Stomt
 			}
 
 			_ErrorMessageObject.SetActive(true);
-			_screenshotToggle.GetComponent<Animator>().SetBool("Show", false);
-			_postButton.GetComponent<Animator>().SetBool("Left", true);
-			_ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", true);
+
+            if((_screenshotToggle.GetComponent<Animator>().isInitialized))
+			    _screenshotToggle.GetComponent<Animator>().SetBool("Show", false);
+
+            if ((_postButton.GetComponent<Animator>().isInitialized))
+                _postButton.GetComponent<Animator>().SetBool("Left", true);
+
+            if ((_ErrorMessageObject.GetComponent<Animator>().isInitialized))
+                _ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", true);
 		}
 
 		public void HideErrorMessage()
@@ -796,6 +810,21 @@ namespace Stomt
             if(TextToChange != null && NewText != null)
             {
                 TextToChange.text = NewText;
+            }
+        }
+
+        public void OnMobileInput()
+        {
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            {
+                if (!useEmailOnSubscribe)
+                {
+                    TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
+                }
+                else
+                {
+                    TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, false, true);
+                }
             }
         }
     }

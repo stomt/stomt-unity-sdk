@@ -25,7 +25,9 @@ namespace Stomt
 
 		public string restServerURL;
 
-		public StomtConfig config;
+        public bool DebugDisableConfigFile = false;
+
+        public StomtConfig config;
 
         public enum SubscriptionType { EMail, Phone };
 
@@ -84,7 +86,9 @@ namespace Stomt
         void Awake()
         {
             this.config = new StomtConfig();
-            this.config.Load();
+            if (!DebugDisableConfigFile)
+                this.config.Load();
+
 
             NetworkError = false;
 
@@ -95,7 +99,17 @@ namespace Stomt
 
 		void Start()
 		{
-			if (string.IsNullOrEmpty(_appId))
+            if(DebugDisableConfigFile)
+            {
+                this.config.SetLoggedin(false);
+                this.config.SetSubscribed(false);
+            }
+            else
+            {
+                this.config.Load();
+            }
+
+            if (string.IsNullOrEmpty(_appId))
 			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
