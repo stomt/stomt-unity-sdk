@@ -1,4 +1,5 @@
-# STOMT Unity-SDK (Still in Beta) [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
+# Collect Feedback In-Game | STOMT Unity-SDK (Beta) [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
+#### Implementation Time: ~20 Minutes (incl. Triggers)
 
 <p align="center">
   <img alt="STOMT Unity Feedback Integration" src="https://schukies.io/images/stomt/stomtunity9.png" />
