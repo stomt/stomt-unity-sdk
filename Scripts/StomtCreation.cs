@@ -2,6 +2,7 @@
 using System.Text;
 using System.Net;
 using UnityEngine;
+using LitJsonStomt;
 
 namespace Stomt
 {
@@ -26,7 +27,7 @@ namespace Stomt
 
 		public override string ToString() {
 			var jsonStomt = new StringBuilder();
-			var writerStomt = new LitJson.JsonWriter(jsonStomt);
+			var writerStomt = new LitJsonStomt.JsonWriter(jsonStomt);
 
 			writerStomt.WriteObjectStart();
 			writerStomt.WritePropertyName("anonym");
@@ -75,7 +76,7 @@ namespace Stomt
 			this.save(null, null);
 		}
 
-		public void save(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
 			this._api.SendStomt(this, callbackSuccess, callbackError);
 		}
 	}

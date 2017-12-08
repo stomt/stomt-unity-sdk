@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
-
+using LitJsonStomt;
 
 namespace Stomt
 {
@@ -137,7 +137,7 @@ namespace Stomt
 			return stomtTrack;
 		}
 
-		public void SendTrack(StomtTrack track, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendTrack(StomtTrack track, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var url = string.Format("{0}/tracks", restServerURL);
 			GetPOSTResponse (url, track.ToString(), callbackSuccess, callbackError);
@@ -145,7 +145,7 @@ namespace Stomt
 
 
 		// Target / Session Handling
-		public void RequestTargetAndUser(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void RequestTargetAndUser(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
         {
 			RequestTarget (_targetId, callbackSuccess, callbackError);
 
@@ -155,7 +155,7 @@ namespace Stomt
             }
         }
 
-		public void RequestTarget(string target, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void RequestTarget(string target, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var url = string.Format ("{0}/targets/{1}", restServerURL, target);
 			GetGETResponse (url, (response) => {
@@ -179,7 +179,7 @@ namespace Stomt
 			});
 		}
 
-		public void RequestSession(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void RequestSession(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var url = string.Format ("{0}/authentication/session", restServerURL);
 			GetGETResponse (url, (response) => {
@@ -193,10 +193,10 @@ namespace Stomt
 			}, callbackError);
 		}
 
-		public void SendSubscription(string addressOrNumber, SubscriptionType type, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendSubscription(string addressOrNumber, SubscriptionType type, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var jsonSubscription = new StringBuilder();
-			var writerSubscription = new LitJson.JsonWriter(jsonSubscription);
+			var writerSubscription = new LitJsonStomt.JsonWriter(jsonSubscription);
 			writerSubscription.WriteObjectStart();
 
             switch (type)
@@ -238,7 +238,7 @@ namespace Stomt
 			return stomtCreation;
 		}
 
-		public void SendStomt(StomtCreation stomtCreation, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendStomt(StomtCreation stomtCreation, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			// Upload file if pressent (and call function again)
 			if (stomtCreation.screenshot != null) {
@@ -288,14 +288,14 @@ namespace Stomt
 			}, callbackError);
 		}
 
-		private void SendFile(string fileContent, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		private void SendFile(string fileContent, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
 			// Convert to Base64
 			var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(fileContent);
 			var file = System.Convert.ToBase64String(plainTextBytes);
 
 			// Build Body
 			var jsonFileUpload = new StringBuilder();
-			var writerImage = new LitJson.JsonWriter(jsonFileUpload);
+			var writerImage = new LitJsonStomt.JsonWriter(jsonFileUpload);
 
 			writerImage.WriteObjectStart();
 			writerImage.WritePropertyName("files");
@@ -317,14 +317,14 @@ namespace Stomt
 			GetPOSTResponse (url, jsonFileUpload.ToString(), callbackSuccess, callbackError);
 		}
 
-		private void SendImage(Texture2D image, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		private void SendImage(Texture2D image, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
 			// Convert to Base64
 			byte[] imageBytes = image.EncodeToPNG();
 			var imageContent = Convert.ToBase64String (imageBytes);
 
 			// Build Body
 			var jsonImage = new StringBuilder();
-			var writerImage = new LitJson.JsonWriter(jsonImage);
+			var writerImage = new LitJsonStomt.JsonWriter(jsonImage);
 
 			writerImage.WriteObjectStart();
 			writerImage.WritePropertyName("images");
@@ -387,7 +387,7 @@ namespace Stomt
 			return request;
 		}
 
-		private void GetGETResponse(string uri, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		private void GetGETResponse(string uri, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			//Debug.Log ("GetGETResponse " + uri);
 			HttpWebRequest request = WebRequest ("GET", uri);
@@ -395,7 +395,7 @@ namespace Stomt
 			this.StartCoroutine(ExecuteRequest(request, uri, null, callbackSuccess, callbackError));
 		}
 
-		private void GetPOSTResponse(string uri, string data, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		private void GetPOSTResponse(string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			//Debug.Log ("GetPOSTResponse " + uri);
 			//Debug.Log("body " + data);
@@ -404,7 +404,7 @@ namespace Stomt
 			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError));
 		}
 
-		private IEnumerator ExecuteRequest(HttpWebRequest request, string uri, string data, Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		private IEnumerator ExecuteRequest(HttpWebRequest request, string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
 
 			//////////////////////////////////////////////////////////////////
 			// Add data
@@ -498,7 +498,7 @@ namespace Stomt
 			// Analyze JSON data
 			//////////////////////////////////////////////////////////////////
 
-			LitJson.JsonData responseData = LitJson.JsonMapper.ToObject(responseDataText);
+			LitJsonStomt.JsonData responseData = LitJsonStomt.JsonMapper.ToObject(responseDataText);
 
 			if (responseData.Keys.Contains("error"))
 			{

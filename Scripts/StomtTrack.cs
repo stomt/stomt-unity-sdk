@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Net;
+using LitJsonStomt;
 
 namespace Stomt
 {
@@ -29,7 +30,7 @@ namespace Stomt
 
 		public override string ToString() {
 			var jsonTrack = new StringBuilder();
-			var writerTrack = new LitJson.JsonWriter(jsonTrack);
+			var writerTrack = new LitJsonStomt.JsonWriter(jsonTrack);
 
 			writerTrack.WriteObjectStart();
 
@@ -75,7 +76,7 @@ namespace Stomt
 			this.save(null, null);
 		}
 
-		public void save(Action<LitJson.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
 			this._api.SendTrack(this, callbackSuccess, callbackError);
 		}
 	}
