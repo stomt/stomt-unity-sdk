@@ -51,10 +51,10 @@ namespace Stomt
         /// </summary>
         public string UserID { get; set; }
 
-		/// <summary>
-		/// Flag if client is offline.
-		/// </summary>
-		public bool NetworkError { get; set; }
+	/// <summary>
+	/// Flag if client is offline.
+	/// </summary>
+	public bool NetworkError { get; set; }
 
 		/// <summary>
 		/// The application ID for your game.
