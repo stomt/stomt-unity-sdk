@@ -1,4 +1,4 @@
-# Collect Feedback In-Game | STOMT-SDK for Unity 3D [![STOMT API](https://img.shields.io/badge/stomt-v2.10.X-brightgreen.png)](https://rest.stomt.com/)
+# Collect Feedback In-Game | STOMT-SDK for Unity 3D
 #### Version: Beta
 #### Implementation Time: ~20 Minutes (incl. Triggers)
 
@@ -82,16 +82,6 @@ public class StomtEventCallbackExample : MonoBehaviour
     }
 } 
 ```
-
-## Use our Sandbox
-
-If you want to test the integration please feel free to do what you want on [test.stomt.com](https://test.stomt.com/) 
-
-Just go through the configuration steps again using the test server:
-
-1. Register on [test.stomt.com](https://test.stomt.com/signup/game).
-2. And create an [App Id](https://test.stomt.com/integrate) for your project.
-3. Enter "https://test.rest.stomt.com" as `Rest URL` in the widget.
 
 
 ## Common Issues
