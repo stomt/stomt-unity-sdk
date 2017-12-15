@@ -509,12 +509,15 @@ namespace Stomt
 			}
 
 			// Store access token
-			if (responseData.Keys.Contains("meta") && responseData["meta"].Keys.Contains("accesstoken"))
+			if (responseData.Keys.Contains("meta") && !responseData["meta"].IsArray)
 			{
-				string accesstoken = (string)responseData["meta"]["accesstoken"];
-				this.config.SetAccessToken(accesstoken);
+                if (responseData["meta"].Keys.Contains("accesstoken"))
+                {
+                    string accesstoken = (string)responseData["meta"]["accesstoken"];
+                    this.config.SetAccessToken(accesstoken);
+                }
 			}
-
+            
 			//Debug.Log ("ExecuteRequest response " + uri);
 			if (callbackSuccess != null) {
 				callbackSuccess(responseData["data"]);
