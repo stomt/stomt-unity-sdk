@@ -69,8 +69,11 @@ namespace Stomt
         [SerializeField]
         [HideInInspector]
         public GameObject ArrowFindStomt;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject CustomPlaceholderText;
 
-		[SerializeField]
+        [SerializeField]
 		[HideInInspector]
 		GameObject _ui;
 		[SerializeField]
@@ -124,6 +127,8 @@ namespace Stomt
 		private bool isStomtPositive;
         private bool useEmailOnSubscribe = true;
         private bool onMobile = false;
+        private string wouldText = "would ";
+        private string becauseText = "because ";
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -298,7 +303,8 @@ namespace Stomt
 
 		void Reset()
 		{
-			this.StartedTyping = false;
+            this.CustomPlaceholderText.SetActive(true);
+            this.StartedTyping = false;
 			_screenshotToggle.isOn = true;
 
 			if (_like.sortingOrder == 2)
@@ -409,6 +415,18 @@ namespace Stomt
 					_characterLimit.GetComponent<Animator>().SetBool("Active", false);
 				}
 			}
+
+            if(StartedTyping)
+            {
+                if(_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
+                {
+                    this.CustomPlaceholderText.SetActive(true);
+                }
+                else
+                {
+                    this.CustomPlaceholderText.SetActive(false);
+                }
+            }
 		}
 
 		public void RefreshStartText()
