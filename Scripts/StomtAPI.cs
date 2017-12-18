@@ -99,6 +99,7 @@ namespace Stomt
             else
             {
                 this.restServerURL = "https://rest.stomt.com";
+                this.DebugDisableConfigFile = false;
             }
             
 
