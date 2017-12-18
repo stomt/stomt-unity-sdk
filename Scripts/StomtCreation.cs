@@ -20,8 +20,9 @@ namespace Stomt
 		public bool anonym  { get; set; }
 		public string img_name  { get; set; }
 		public string file_uid  { get; set; }
+        public string[] labels { get; set; }
 
-		public StomtCreation(StomtAPI api) {
+        public StomtCreation(StomtAPI api) {
 			this._api = api;
 		}
 
@@ -39,7 +40,24 @@ namespace Stomt
 			writerStomt.WritePropertyName("text");
 			writerStomt.Write(this.text);
 
-			if(!string.IsNullOrEmpty(this.img_name)) {
+            // Add labels
+            if(labels.Length > 0)
+            {
+                writerStomt.WritePropertyName("extradata");
+                writerStomt.WriteObjectStart();
+                writerStomt.WritePropertyName("labels");
+                writerStomt.WriteArrayStart();
+
+                foreach (string label in labels)
+                {
+                    writerStomt.Write(label);
+                }
+
+                writerStomt.WriteArrayEnd();
+                writerStomt.WriteObjectEnd();
+            }
+
+            if (!string.IsNullOrEmpty(this.img_name)) {
 				writerStomt.WritePropertyName("img_name");
 				writerStomt.Write(this.img_name);
 			}
@@ -56,7 +74,7 @@ namespace Stomt
 			}
 
 			writerStomt.WriteObjectEnd();
-
+            //Debug.Log(jsonStomt.ToString());
 			return jsonStomt.ToString();
 		}
 

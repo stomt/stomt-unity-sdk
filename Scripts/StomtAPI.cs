@@ -82,6 +82,11 @@ namespace Stomt
 		/// </summary>
         public string TargetImageURL { get; set; }
 
+        /// <summary>
+        /// labels attached to the stomt.
+        /// </summary>
+        public string[] Labels;
+
 
         void Awake()
         {
@@ -234,6 +239,7 @@ namespace Stomt
 			stomtCreation.target_id = this.TargetID;
 			stomtCreation.lang = "en";
 			stomtCreation.anonym = false;
+            stomtCreation.labels = this.Labels;
 
 			return stomtCreation;
 		}
@@ -272,6 +278,8 @@ namespace Stomt
 
 			// Submit stomt
 			var url = string.Format ("{0}/stomts", restServerURL);
+
+            // Send Stomt
 			GetPOSTResponse (url, stomtCreation.ToString(), (response) => {
 				amountStomtsCreated += 1;
 				string stomt_id = (string)response["id"];
