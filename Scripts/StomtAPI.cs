@@ -18,12 +18,12 @@ namespace Stomt
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
 		string _appId = "";
-		[SerializeField]
-		[Tooltip("The ID of the target page for your game on https://www.stomt.com/.")]
-		string _targetId = "";
-		#endregion
+        #endregion
 
-		public string restServerURL;
+        //The ID of the target page for your game on https://www.stomt.com/.
+        string _targetId = "";
+
+        private string restServerURL = "https://rest.stomt.com";
 
         public bool DebugDisableConfigFile = false;
 
@@ -90,6 +90,18 @@ namespace Stomt
 
         void Awake()
         {
+            // Debug/Testing on the test-server
+            if (this.AppId.Equals("Copy_your_AppID_here"))
+            {
+                this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
+                this.restServerURL = "https://test.rest.stomt.com";
+            }
+            else
+            {
+                this.restServerURL = "https://rest.stomt.com";
+            }
+            
+
             this.config = new StomtConfig();
             if (!DebugDisableConfigFile)
                 this.config.Load();
@@ -104,6 +116,8 @@ namespace Stomt
 
 		void Start()
 		{
+
+
             if(DebugDisableConfigFile)
             {
                 this.config.SetLoggedin(false);
@@ -118,13 +132,14 @@ namespace Stomt
 			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
-			if (string.IsNullOrEmpty(_targetId))
+            /*if (string.IsNullOrEmpty(_targetId))
 			{
 				throw new ArgumentException("The stomt target ID variable cannot be empty.");
-			}
+			}*/
 
-			TargetDisplayname = _targetId;
-		}
+            //TargetDisplayname = _targetId;
+            TargetDisplayname = "Loading";
+        }
 
 
 		// Track Handling
@@ -162,9 +177,10 @@ namespace Stomt
 
 		public void RequestTarget(string target, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			var url = string.Format ("{0}/targets/{1}", restServerURL, target);
+			var url = string.Format ("{0}/targets/", restServerURL, target);
 			GetGETResponse (url, (response) => {
-				TargetDisplayname = (string)response["displayname"];
+                this._targetId = (string)response["id"];
+                TargetDisplayname = (string)response["displayname"];
 				TargetImageURL = (string)response["images"]["profile"]["url"];
 				amountStomtsReceived = (int)response["stats"]["amountStomtsReceived"];
 
