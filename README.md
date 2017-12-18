@@ -33,11 +33,10 @@ Example Games that use our integrations:
 
 3. Enter all necessary data into the ```StomtAPI``` component on the prefab.     
 
-* Enter the `Rest Server Url`: `https://rest.stomt.com` (Or use our Sandbox for testing - See below)
-* Enter the `App Id` you obtained in the second step     
-* Enter the `page username (as Target Id)` (you find it in your profile-url. E.g. stomt.com/stomt => stomt)     
+* Enter the `App Id` you obtained in the second step
+* Optional: Enter `Labels` that will be attached to every stomt
 
-<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/config.gif" />
+<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" />
 
 Finished! *Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*    
 
@@ -46,12 +45,11 @@ Finished! *Regularly communicate your page on social channels and checkout our [
 
 The Widget can be enabled by using a toggle key or calling the API Methods.
 
+Add Labels that will be attached to every stomt the user sends via script `_api.Labels` or in the inspector.
+
 StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
-
-<img alt="STOMT Unity Feedback Integration" src="https://cdn.stomt.com/uploads/Dh1x/origin/Dh1xzkpSoHXH2UGuh3rNX35WR4DSjiqq4TLeu9Ag_origin.gif" />
-
 
 ## Event Callbacks
 
