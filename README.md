@@ -51,6 +51,8 @@ StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
 
+<img alt="STOMT Unity Feedback Integration" src="http://schukies.io/images/stomt/StomtUnityUsage.gif" />
+
 ## Event Callbacks
 
 
