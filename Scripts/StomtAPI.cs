@@ -481,6 +481,7 @@ namespace Stomt
 
 				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
+                Debug.Log("Request: " + data);
 
 				// Handle invalid Session
 				if (statusCode.Equals ("419")) {
