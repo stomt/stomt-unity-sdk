@@ -338,9 +338,13 @@ namespace Stomt
 			var likeAnimator = _like.GetComponent<Animator>();
 			var wishAnimator = _wish.GetComponent<Animator>();
 
-			bool tmp = likeAnimator.GetBool("OnTop");
-			likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
-			wishAnimator.SetBool("OnTop", tmp);
+            if (likeAnimator.isInitialized && wishAnimator.isInitialized)
+            {
+                bool tmp = likeAnimator.GetBool("OnTop");
+                likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
+                wishAnimator.SetBool("OnTop", tmp);
+            }
+
 
             
 			if (_like.sortingOrder == 2)
