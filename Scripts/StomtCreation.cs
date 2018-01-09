@@ -3,6 +3,7 @@ using System.Text;
 using System.Net;
 using UnityEngine;
 using LitJsonStomt;
+using System.Collections.Generic;
 
 namespace Stomt
 {
@@ -20,13 +21,17 @@ namespace Stomt
 		public bool anonym  { get; set; }
 		public string img_name  { get; set; }
 		public string file_uid  { get; set; }
-        public string[] labels { get; set; }
+        public string[] labels;
+        public List<List<string>> CustomKeyValuePairs;
 
-        public StomtCreation(StomtAPI api) {
+        public StomtCreation(StomtAPI api)
+        {
 			this._api = api;
-		}
+            CustomKeyValuePairs = new List<List<string>>();
+        }
 
-		public override string ToString() {
+		public override string ToString()
+        {
 			var jsonStomt = new StringBuilder();
 			var writerStomt = new LitJsonStomt.JsonWriter(jsonStomt);
 
@@ -41,28 +46,47 @@ namespace Stomt
 			writerStomt.Write(this.text);
 
             // Add labels
-            if(labels.Length > 0)
+            if( (labels.Length > 0 || CustomKeyValuePairs.Count > 0) )
             {
                 writerStomt.WritePropertyName("extradata");
                 writerStomt.WriteObjectStart();
-                writerStomt.WritePropertyName("labels");
-                writerStomt.WriteArrayStart();
 
-                foreach (string label in labels)
+                if(labels.Length > 0)
                 {
-                    writerStomt.Write(label);
+                    writerStomt.WritePropertyName("labels");
+                    writerStomt.WriteArrayStart();
+
+                    foreach (string label in labels)
+                    {
+                        writerStomt.Write(label);
+                    }
+
+                    writerStomt.WriteArrayEnd();
                 }
 
-                writerStomt.WriteArrayEnd();
+                if(CustomKeyValuePairs.Count > 0)
+                {
+                    foreach (List<string> PairList in CustomKeyValuePairs)
+                    {
+                        if(PairList.Count > 1)
+                        {
+                            writerStomt.WritePropertyName(PairList[0]);
+                            writerStomt.Write(PairList[1]);
+                        }  
+                    }
+                }
+
                 writerStomt.WriteObjectEnd();
             }
 
-            if (!string.IsNullOrEmpty(this.img_name)) {
+            if (!string.IsNullOrEmpty(this.img_name))
+            {
 				writerStomt.WritePropertyName("img_name");
 				writerStomt.Write(this.img_name);
 			}
 
-			if(!string.IsNullOrEmpty(this.file_uid)) {
+			if(!string.IsNullOrEmpty(this.file_uid))
+            {
 				writerStomt.WritePropertyName("files");
 				writerStomt.WriteObjectStart();
 				writerStomt.WritePropertyName("stomt");
@@ -75,26 +99,40 @@ namespace Stomt
 
 			writerStomt.WriteObjectEnd();
             //Debug.Log(jsonStomt.ToString());
-			return jsonStomt.ToString();
+            return jsonStomt.ToString();
 		}
 
-		public void attachScreenshot(Texture2D screenshot) {
+        public void AddCustomKeyValuePair(string key, string value)
+        {
+            List<string> pair = new List<string>();
+            pair.Add(key);
+            pair.Add(value);
+
+            CustomKeyValuePairs.Add(pair);
+        }
+
+        public void attachScreenshot(Texture2D screenshot)
+        {
 			this.screenshot = screenshot;
 		}
 
-		public void attachLogs(string logs) {
+		public void attachLogs(string logs)
+        {
 			this.logs = logs;
 		}
 
-		public void attachLogs(StomtLog log) {
+		public void attachLogs(StomtLog log)
+        {
 			this.logs = log.getFileConent ();
 		}
 
-		public void save() {
+		public void save()
+        {
 			this.save(null, null);
 		}
 
-		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+        {
 			this._api.SendStomt(this, callbackSuccess, callbackError);
 		}
 	}

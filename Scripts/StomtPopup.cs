@@ -124,7 +124,6 @@ namespace Stomt
 		public int ErrorMessageCharLimit = 20;
 		public bool ShowWidgetOnStart = false;
 		private int CharLimit = 120;
-		private bool isStomtPositive;
         private bool useEmailOnSubscribe = true;
         private bool onMobile = false;
         private string wouldText = "would ";
@@ -165,7 +164,7 @@ namespace Stomt
 			{
 				this.ShowWidget();
 			}
-		}
+        }
 
 		// is called every frame
 		void Update()

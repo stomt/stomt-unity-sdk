@@ -6,50 +6,51 @@ using UnityEngine;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using LitJsonStomt;
+using System.Collections.Generic;
 
 namespace Stomt
 {
-    /// <summary>
-    /// Low-level stomt API component.
-    /// </summary>
-    public class StomtAPI : MonoBehaviour
+	/// <summary>
+	/// Low-level stomt API component.
+	/// </summary>
+	public class StomtAPI : MonoBehaviour
 	{
 		#region Inspector Variables
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
 		string _appId = "";
-        #endregion
+		#endregion
 
-        //The ID of the target page for your game on https://www.stomt.com/.
-        string _targetId = "";
+		//The ID of the target page for your game on https://www.stomt.com/.
+		string _targetId = "";
 
-        private string restServerURL = "https://rest.stomt.com";
+		private string restServerURL = "https://rest.stomt.com";
 
-        public bool DebugDisableConfigFile = false;
+		public bool DebugDisableConfigFile = false;
 
-        public StomtConfig config;
+		public StomtConfig config;
 
-        public enum SubscriptionType { EMail, Phone };
+		public enum SubscriptionType { EMail, Phone };
 
-        /// <summary>
-        /// The targets amount of received stomts.
-        /// </summary>
-        public int amountStomtsReceived { get; set; }
+		/// <summary>
+		/// The targets amount of received stomts.
+		/// </summary>
+		public int amountStomtsReceived { get; set; }
 
-        /// <summary>
-        /// The users amount of created stomts.
-        /// </summary>
-        public int amountStomtsCreated { get; set; }
+		/// <summary>
+		/// The users amount of created stomts.
+		/// </summary>
+		public int amountStomtsCreated { get; set; }
 
-        /// <summary>
-        /// The stomt username.
-        /// </summary>
-        public string UserDisplayname { get; set; }
+		/// <summary>
+		/// The stomt username.
+		/// </summary>
+		public string UserDisplayname { get; set; }
 
-        /// <summary>
-        /// The stomt user ID.
-        /// </summary>
-        public string UserID { get; set; }
+		/// <summary>
+		/// The stomt user ID.
+		/// </summary>
+		public string UserID { get; set; }
 
 		/// <summary>
 		/// Flag if client is offline.
@@ -80,67 +81,77 @@ namespace Stomt
 		/// <summary>
 		/// The image url of your target page.
 		/// </summary>
-        public string TargetImageURL { get; set; }
+		public string TargetImageURL { get; set; }
 
-        /// <summary>
-        /// labels attached to the stomt.
-        /// </summary>
-        public string[] Labels;
+		/// <summary>
+		/// labels attached to the stomt.
+		/// </summary>
+		public string[] Labels;
 
+		/// <summary>
+		/// AdditionalData attached to the stomt.
+		/// </summary>
+		private List<List<string>> CustomKeyValuePairs;
 
-        void Awake()
-        {
-            // Debug/Testing on the test-server
-            if (this.AppId.Equals("Copy_your_AppID_here"))
-            {
-                this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
-                this.restServerURL = "https://test.rest.stomt.com";
-            }
-            else
-            {
-                this.restServerURL = "https://rest.stomt.com";
-                this.DebugDisableConfigFile = false;
-            }
-            
-
-            this.config = new StomtConfig();
-            if (!DebugDisableConfigFile)
-                this.config.Load();
+		public StomtAPI()
+		{
+			CustomKeyValuePairs = new List<List<string>>();
+		}
 
 
-            NetworkError = false;
+		void Awake()
+		{
+			// Debug/Testing on the test-server
+			if (this.AppId.Equals("Copy_your_AppID_here"))
+			{
+				this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
+				this.restServerURL = "https://test.rest.stomt.com";
+			}
+			else
+			{
+				this.restServerURL = "https://rest.stomt.com";
+				this.DebugDisableConfigFile = false;
+			}
+			
+
+			this.config = new StomtConfig();
+			if (!DebugDisableConfigFile)
+				this.config.Load();
+
+
+			NetworkError = false;
 
 			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
 			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
 			//ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
-        }
+		}
 
 		void Start()
 		{
 
 
-            if(DebugDisableConfigFile)
-            {
-                this.config.SetLoggedin(false);
-                this.config.SetSubscribed(false);
-            }
-            else
-            {
-                this.config.Load();
-            }
+			if(DebugDisableConfigFile)
+			{
+				this.config.SetLoggedin(false);
+				this.config.SetSubscribed(false);
+			}
+			else
+			{
+				this.config.Load();
+			}
 
-            if (string.IsNullOrEmpty(_appId))
+			if (string.IsNullOrEmpty(_appId))
 			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
-            /*if (string.IsNullOrEmpty(_targetId))
+			/*if (string.IsNullOrEmpty(_targetId))
 			{
 				throw new ArgumentException("The stomt target ID variable cannot be empty.");
 			}*/
 
-            //TargetDisplayname = _targetId;
-            TargetDisplayname = "Loading";
-        }
+			//TargetDisplayname = _targetId;
+			TargetDisplayname = "Loading";
+		}
 
 
 		// Track Handling
@@ -167,21 +178,21 @@ namespace Stomt
 
 		// Target / Session Handling
 		public void RequestTargetAndUser(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
-        {
+		{
 			RequestTarget (_targetId, callbackSuccess, callbackError);
 
-            if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
-            {
+			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
+			{
 				RequestSession (callbackSuccess, callbackError);
-            }
-        }
+			}
+		}
 
 		public void RequestTarget(string target, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var url = string.Format ("{0}/targets/", restServerURL, target);
 			GetGETResponse (url, (response) => {
-                this._targetId = (string)response["id"];
-                TargetDisplayname = (string)response["displayname"];
+				this._targetId = (string)response["id"];
+				TargetDisplayname = (string)response["displayname"];
 				TargetImageURL = (string)response["images"]["profile"]["url"];
 				amountStomtsReceived = (int)response["stats"]["amountStomtsReceived"];
 
@@ -221,13 +232,13 @@ namespace Stomt
 			var writerSubscription = new LitJsonStomt.JsonWriter(jsonSubscription);
 			writerSubscription.WriteObjectStart();
 
-            switch (type)
-            {
-                case SubscriptionType.EMail: writerSubscription.WritePropertyName("email");
-                break;
-                case SubscriptionType.Phone: writerSubscription.WritePropertyName("phone");
-                break;
-            }
+			switch (type)
+			{
+				case SubscriptionType.EMail: writerSubscription.WritePropertyName("email");
+				break;
+				case SubscriptionType.Phone: writerSubscription.WritePropertyName("phone");
+				break;
+			}
 
 			writerSubscription.Write(addressOrNumber);
 			writerSubscription.WriteObjectEnd();
@@ -239,7 +250,7 @@ namespace Stomt
 				var track = initStomtTrack();
 				track.event_category = "auth";
 				track.event_action = "subscribed";
-                track.event_label = type.ToString();
+				track.event_label = type.ToString();
 				track.save ();
 
 				if (callbackSuccess != null) {
@@ -256,7 +267,8 @@ namespace Stomt
 			stomtCreation.target_id = this.TargetID;
 			stomtCreation.lang = "en";
 			stomtCreation.anonym = false;
-            stomtCreation.labels = Labels;
+			stomtCreation.labels = Labels;
+			stomtCreation.CustomKeyValuePairs = this.CustomKeyValuePairs;
 
 			return stomtCreation;
 		}
@@ -296,7 +308,7 @@ namespace Stomt
 			// Submit stomt
 			var url = string.Format ("{0}/stomts", restServerURL);
 
-            // Send Stomt
+			// Send Stomt
 			GetPOSTResponse (url, stomtCreation.ToString(), (response) => {
 				amountStomtsCreated += 1;
 				string stomt_id = (string)response["id"];
@@ -481,7 +493,7 @@ namespace Stomt
 
 				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
-                Debug.Log("Request: " + data);
+				Debug.Log("Request: " + data);
 
 				// Handle invalid Session
 				if (statusCode.Equals ("419")) {
@@ -537,17 +549,32 @@ namespace Stomt
 			// Store access token
 			if (responseData.Keys.Contains("meta") && !responseData["meta"].IsArray)
 			{
-                if (responseData["meta"].Keys.Contains("accesstoken"))
-                {
-                    string accesstoken = (string)responseData["meta"]["accesstoken"];
-                    this.config.SetAccessToken(accesstoken);
-                }
+				if (responseData["meta"].Keys.Contains("accesstoken"))
+				{
+					string accesstoken = (string)responseData["meta"]["accesstoken"];
+					this.config.SetAccessToken(accesstoken);
+				}
 			}
-            
+			
 			//Debug.Log ("ExecuteRequest response " + uri);
 			if (callbackSuccess != null) {
 				callbackSuccess(responseData["data"]);
 			}
+		}
+
+
+		/// <summary>
+		/// AdditionalData attached to the stomt.
+		/// @key data name
+		/// @value string has to be escaped!
+		/// </summary>
+		public void AddCustomKeyValuePair(string key, string value)
+		{
+			List<string> pair = new List<string>();
+			pair.Add(key);
+			pair.Add(value);
+
+			CustomKeyValuePairs.Add(pair);
 		}
 	}
 }
