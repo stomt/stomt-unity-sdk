@@ -45,6 +45,8 @@ Finished! *Regularly communicate your page on social channels and checkout our [
 
 The Widget can be enabled by using a toggle key or calling the API Methods.
 
+<img alt="STOMT Unity Feedback Integration" src="https://i.imgur.com/p8bdLL3.gif" />
+
 Add Labels that will be attached to every stomt the user sends via script `_api.Labels` or in the inspector.
 
 StomtPopup Class
@@ -52,7 +54,6 @@ StomtPopup Class
 * Disable:	HideWidget()
 
 
-<img alt="STOMT Unity Feedback Integration" src="https://i.imgur.com/p8bdLL3.gif" />
 
 
 
