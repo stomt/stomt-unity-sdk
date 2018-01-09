@@ -91,7 +91,26 @@ public class StomtLabelExample : MonoBehaviour
 }
 
 ```
+## Append Additional Data
 
+You can add additional data to a stomt by adding custom key value pairs.
+
+```
+using UnityEngine;
+using System.Collections;
+using Stomt;
+
+public class StomtAdditionalDataExample : MonoBehaviour 
+{
+	// Use this for initialization
+	void Start () 
+	{
+		StomtAPI api = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
+
+		api.AddCustomKeyValuePair("CustomKey", "Value/Data");
+	}
+} 
+```
 
 ## Event Callbacks
 
