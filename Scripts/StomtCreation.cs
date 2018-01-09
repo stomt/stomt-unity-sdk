@@ -46,38 +46,41 @@ namespace Stomt
 			writerStomt.Write(this.text);
 
             // Add labels
-            if( (labels.Length > 0 || CustomKeyValuePairs.Count > 0) )
+            writerStomt.WritePropertyName("extradata");
+            writerStomt.WriteObjectStart();
+
+            writerStomt.WritePropertyName("labels");
+            writerStomt.WriteArrayStart();
+
+            if (labels.Length > 0)
             {
-                writerStomt.WritePropertyName("extradata");
-                writerStomt.WriteObjectStart();
-
-                if(labels.Length > 0)
+                foreach (string label in labels)
                 {
-                    writerStomt.WritePropertyName("labels");
-                    writerStomt.WriteArrayStart();
-
-                    foreach (string label in labels)
-                    {
-                        writerStomt.Write(label);
-                    }
-
-                    writerStomt.WriteArrayEnd();
+                    writerStomt.Write(label);
                 }
-
-                if(CustomKeyValuePairs.Count > 0)
-                {
-                    foreach (List<string> PairList in CustomKeyValuePairs)
-                    {
-                        if(PairList.Count > 1)
-                        {
-                            writerStomt.WritePropertyName(PairList[0]);
-                            writerStomt.Write(PairList[1]);
-                        }  
-                    }
-                }
-
-                writerStomt.WriteObjectEnd();
             }
+
+            // Add default labels
+            writerStomt.Write(Application.platform.ToString());
+            writerStomt.Write(Screen.currentResolution.ToString());
+
+            writerStomt.WriteArrayEnd();
+
+            // Add CustomKeyValuePairs
+            if (CustomKeyValuePairs.Count > 0)
+            {
+                foreach (List<string> PairList in CustomKeyValuePairs)
+                {
+                    if(PairList.Count > 1)
+                    {
+                        writerStomt.WritePropertyName(PairList[0]);
+                        writerStomt.Write(PairList[1]);
+                    }  
+                }
+            }
+
+            writerStomt.WriteObjectEnd();
+            
 
             if (!string.IsNullOrEmpty(this.img_name))
             {
