@@ -51,9 +51,10 @@ StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
 
-<p align="center">
+
 <img alt="STOMT Unity Feedback Integration" src="https://i.imgur.com/p8bdLL3.gif" />
-</p>
+
+
 
 ## Labels
 
@@ -64,9 +65,9 @@ Append labels, as for example your game-version or the player position.
 </p>
 
 Unity Inspector:
-<p align="center">
+
 <img alt="Events" src="https://i.imgur.com/qS6IdZL.png" />
-</p>
+
 
 From Code:
 ```
@@ -76,16 +77,16 @@ using Stomt;
 
 public class StomtLabelExample : MonoBehaviour 
 {
-    private StomtAPI StomtAPI;
+	private StomtAPI StomtAPI;
 
 	// Use this for initialization
 	void Start () 
-    {
-        // Find StomtPopup
-        StomtAPI = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
-        
-        // Add your labels
-        StomtAPI.Labels = new string[] { "label1", "label2" };
+	{
+		// Find StomtPopup
+		StomtAPI = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
+
+		// Add your labels
+		StomtAPI.Labels = new string[] { "label1", "label2" };
 	}
 }
 
