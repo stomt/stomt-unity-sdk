@@ -51,7 +51,47 @@ StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
 
-<img alt="STOMT Unity Feedback Integration" src="http://schukies.io/images/stomt/StomtUnityUsage.gif" />
+
+<img alt="STOMT Unity Feedback Integration" src="https://i.imgur.com/p8bdLL3.gif" />
+
+
+
+## Labels
+
+Labels will help you track down user issues.
+Append labels, as for example your game-version or the player position.
+<p align="center">
+<img alt="Events" src="https://i.imgur.com/sS8T8Fy.png" />
+</p>
+
+Unity Inspector:
+
+<img alt="Events" src="https://i.imgur.com/qS6IdZL.png" />
+
+
+From Code:
+```
+using UnityEngine;
+using System.Collections;
+using Stomt;
+
+public class StomtLabelExample : MonoBehaviour 
+{
+	private StomtAPI StomtAPI;
+
+	// Use this for initialization
+	void Start () 
+	{
+		// Find StomtPopup
+		StomtAPI = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
+
+		// Add your labels
+		StomtAPI.Labels = new string[] { "label1", "label2" };
+	}
+}
+
+```
+
 
 ## Event Callbacks
 
