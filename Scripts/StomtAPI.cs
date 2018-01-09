@@ -256,7 +256,7 @@ namespace Stomt
 			stomtCreation.target_id = this.TargetID;
 			stomtCreation.lang = "en";
 			stomtCreation.anonym = false;
-            stomtCreation.labels = this.Labels;
+            stomtCreation.labels = Labels;
 
 			return stomtCreation;
 		}
