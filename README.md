@@ -1,5 +1,4 @@
 # Collect Feedback In-Game | STOMT-SDK for Unity 3D
-#### Version: Beta
 #### Implementation Time: ~20 Minutes (incl. Triggers)
 
 <p align="center">
