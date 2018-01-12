@@ -2,7 +2,7 @@
 #### Implementation Time: ~20 Minutes (incl. Triggers)
 
 <p align="center">
-  <img alt="STOMT Unity Feedback Integration" style="width:441px;height:282px" src="https://i.imgur.com/IfnTfpr.gif" />
+  <img alt="STOMT Unity Feedback Integration" width="441px" height="282px" src="https://i.imgur.com/IfnTfpr.gif" />
 </p>
 
 We have created a custom feedback solution at [www.stomt.com](https://www.stomt.com/), which easily allows you to collect feedback from your users. This Unity plug-in allows you to integrate our solution in your app or game. You can download and install or download from the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669). Our web platform helps you to manage all incoming feedback and build a community uppon it.
