@@ -24,9 +24,9 @@ Example Games that use our integrations:
 
 ## Configuration
 
-1. Register on [www.stomt.com](https://www.stomt.com/signup/game) 
+1. Create a page for your game on [www.stomt.com](https://www.stomt.com/signup/game).
 
-2. And create an [App Id](https://www.stomt.com/integrate) for your project.
+2. Create an [App Id](https://www.stomt.com/integrate) for Unity.
 
 3. Enter all necessary data into the ```StomtAPI``` component on the prefab.   
 
@@ -36,6 +36,7 @@ Example Games that use our integrations:
 <p align="center">
 <img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" /> 
 </p>
+
 4. Finished!  
 
 ## Form Triggers
@@ -48,24 +49,25 @@ That allows you to:
 * Only show the button to certain players (e.g. power users)
 * Trigger the form after certain events
 
-StomtPopup Class
+**StomtPopup Class**
 * Enable:	```ShowWidget()```
 * Disable:	```HideWidget()```
 
-## Labels
+## In-Game Labeling
 
 Labels will help you track down user issues.
-Append labels, as for example your game-version or the player position.
+Append labels, as for example your game-version or the player position/level. You can either hardcode them in the Unity Inspector or use a script to add them in a flexible way based on the information you have.    
+
 <p align="center">
 <img alt="Events" width="600" height="auto" src="https://i.imgur.com/sS8T8Fy.png" />
 </p>
 
-Hardcoded via Unity Inspector:
+**Hardcoded via Unity Inspector:**
 <p align="center">
 <img alt="Events" src="https://i.imgur.com/qS6IdZL.png" />
 </p>
 
-Flexible via Script:
+**Flexible via Script:**
 ```
 using UnityEngine;
 using System.Collections;
