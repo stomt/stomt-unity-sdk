@@ -28,15 +28,15 @@ Example Games that use our integrations:
 
 2. And create an [App Id](https://www.stomt.com/integrate) for your project.
 
-3. Enter all necessary data into the ```StomtAPI``` component on the prefab.     
+3. Enter all necessary data into the ```StomtAPI``` component on the prefab.   
 
 * Enter the `App Id` you obtained in the second step
 * Optional: Enter `Labels` that will be attached to every stomt. [(See also Section "In-Game Labeling")](https://github.com/stomt/stomt-unity-sdk#in-game-labeling)
 
-<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" />
-
-Finished! *Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*    
-
+<p align="center">
+<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" /> 
+</p>
+4. Finished!  
 
 ## Form Triggers
 
@@ -60,12 +60,12 @@ Append labels, as for example your game-version or the player position.
 <img alt="Events" width="600" height="auto" src="https://i.imgur.com/sS8T8Fy.png" />
 </p>
 
-Unity Inspector:
+Hardcoded via Unity Inspector:
 <p align="center">
 <img alt="Events" src="https://i.imgur.com/qS6IdZL.png" />
 </p>
 
-From Code:
+Flexible via Script:
 ```
 using UnityEngine;
 using System.Collections;
@@ -162,6 +162,8 @@ Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with 
 See also the list of [contributors](https://github.com/stomt/stomt-unity-sdk/contributors) who participated in this project.
 
 ## More about STOMT
+
+*Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*   
 
 * On the web [www.stomt.com](https://www.stomt.com)
 * [STOMT for iOS](http://stomt.co/ios)
