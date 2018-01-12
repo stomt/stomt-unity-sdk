@@ -52,9 +52,61 @@ StomtPopup Class
 * Enable:	```ShowWidget()```
 * Disable:	```HideWidget()```
 
-## In-Game Labeling
+## Labels
 
-Add Labels that will be attached to every stomt via script `_api.Labels` or in the inspector. That way you can label the feedback directly in-game with useful player or system information.
+Labels will help you track down user issues.
+Append labels, as for example your game-version or the player position.
+<p align="center">
+<img alt="Events" width="600" height="auto" src="https://i.imgur.com/sS8T8Fy.png" />
+</p>
+
+Unity Inspector:
+<p align="center">
+<img alt="Events" src="https://i.imgur.com/qS6IdZL.png" />
+</p>
+
+From Code:
+```
+using UnityEngine;
+using System.Collections;
+using Stomt;
+
+public class StomtLabelExample : MonoBehaviour 
+{
+	private StomtAPI StomtAPI;
+
+	// Use this for initialization
+	void Start () 
+	{
+		// Find StomtPopup
+		StomtAPI = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
+
+		// Add your labels
+		StomtAPI.Labels = new string[] { "label1", "label2" };
+	}
+}
+
+```
+## Append Additional Data
+
+If you need more data but you do not want to flood the labels, you can add additional data to a stomt by adding custom key value pairs.
+
+```
+using UnityEngine;
+using System.Collections;
+using Stomt;
+
+public class StomtAdditionalDataExample : MonoBehaviour 
+{
+	// Use this for initialization
+	void Start () 
+	{
+		StomtAPI api = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
+
+		api.AddCustomKeyValuePair("CustomKey", "Value/Data");
+	}
+} 
+```
 
 ## Event Callbacks
 
