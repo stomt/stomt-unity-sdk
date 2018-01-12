@@ -7,15 +7,13 @@
 
 We have created a custom feedback solution at [www.stomt.com](https://www.stomt.com/), which easily allows you to collect feedback from your users. This Unity plug-in allows you to integrate our solution in your app or game. You can download and install or download from the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669). Our web platform helps you to manage all incoming feedback and build a community uppon it.
 
-## Use-Cases
-
-_What will the result look like?_ 
+## Examples / Use-Cases / Demo
 
 Example Games that use our integrations:
 
 * [Empires of the Undergrowth](https://www.stomt.com/empires-of-the-undergrowth)      
 * [All Walls Must Fall](https://www.stomt.com/AWMF)
-
+* [Pantropy](https://www.stomt.com/pantropy)
 
 ## Installation
 
