@@ -1,6 +1,4 @@
 # Collect Feedback In-Game | STOMT-SDK for Unity 3D
-[![https://twitter.com/stomt](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&style=for-the-badge)]()
-[![https://github.com/stomt/stomt-unity-sdk/releases](https://img.shields.io/github/downloads/atom/atom/total.svg?style=for-the-badge)]()
 #### Implementation Time: ~20 Minutes (incl. Triggers)
 
 <p align="center">
