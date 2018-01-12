@@ -45,8 +45,8 @@ Finished! *Regularly communicate your page on social channels and checkout our [
 The widget can be opened and closed whenever you want by using our trigger functions.     
     
 That allows you to:    
-* Put a button into the main menu
-* Put a button into the HUD
+* Put a button into the main menu [(Example)](https://imgur.com/5SoQzfj)
+* Put a button into the HUD [(Example)](https://imgur.com/t9wPpJj)
 * Only show the button to certain players (e.g. power users)
 * Trigger the form after certain events
 
