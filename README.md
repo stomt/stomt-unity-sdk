@@ -85,7 +85,7 @@ public class StomtEventCallbackExample : MonoBehaviour
 ## Common Issues
 
 * Error (401) Unauthorized: Is your application ID right? ```test.stomt.com``` and ```stomt.com``` use different ID's.
-* Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
+* Error (500) Internal Server Error: [Report](https://www.stomt.com/dev/unity-sdk) us the problem.
 * Stomts are not sent out on Android: change the API Compatibility Level from `.NET 2.0 Subset` to `.NET 2.0` in the Player Settings.
 
 ## Versioning
