@@ -101,7 +101,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Contribution
 
-We would love to see you contributing to this project. Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.    
+We would love to see you contributing to this project. Please read [CONTRIBUTING.md](https://github.com/stomt/stomt-unity-sdk/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.    
     
 Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
 
