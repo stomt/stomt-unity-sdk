@@ -42,7 +42,13 @@ Finished! *Regularly communicate your page on social channels and checkout our [
 
 ## Form Triggers
 
-The widget can be opened and closed whenever you want by using our trigger functions. That allows you to only thow the widget to certain players.
+The widget can be opened and closed whenever you want by using our trigger functions.     
+    
+That allows you to:    
+* Put a button into the main menu
+* Put a button into the HUD
+* Only show the button to certain players (e.g. power users)
+* Trigger the form after certain events
 
 StomtPopup Class
 * Enable:	```ShowWidget()```
