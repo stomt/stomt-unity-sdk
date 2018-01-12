@@ -2,7 +2,7 @@
 #### Implementation Time: ~20 Minutes (incl. Triggers)
 
 <p align="center">
-  <img alt="STOMT Unity Feedback Integration" src="https://schukies.io/images/stomt/stomtunity9.png" />
+  <img alt="STOMT Unity Feedback Integration" src="https://i.imgur.com/IfnTfpr.gif" />
 </p>
 
 We have created a custom feedback solution at [www.stomt.com](https://www.stomt.com/), which easily allows you to collect feedback from your users. This Unity plug-in allows you to integrate our solution in your app or game. You can download and install or download from the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669). Our web platform helps you to manage all incoming feedback and build a community uppon it.
@@ -42,15 +42,14 @@ Finished! *Regularly communicate your page on social channels and checkout our [
 
 ## Usage
 
-The Widget can be enabled by using a toggle key or calling the API Methods.
+The Widget can be opened and closed whenever you want by using our trigger functions. That allows you to only thow the widget to certain players.
 
-Add Labels that will be attached to every stomt the user sends via script `_api.Labels` or in the inspector.
+Add Labels that will be attached to every stomt via script `_api.Labels` or in the inspector. That way you can label the feedback directly in-game with useful player or system information.
 
 StomtPopup Class
 * Enable:	ShowWidget()
 * Disable:	HideWidget()
 
-<img alt="STOMT Unity Feedback Integration" src="http://schukies.io/images/stomt/StomtUnityUsage.gif" />
 
 ## Event Callbacks
 
