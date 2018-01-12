@@ -89,17 +89,21 @@ public class StomtEventCallbackExample : MonoBehaviour
 * Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
 * Stomts are not sent out on Android: change the API Compatibility Level from `.NET 2.0 Subset` to `.NET 2.0` in the Player Settings.
 
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/stomt/stomt-unity-sdk/tags). 
 
 ## Contribution
 
-We would love to see you contributing to this project. Feel free to fork it and send in your pull requests! Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
-
+We would love to see you contributing to this project. Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.    
+    
+Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
 
 ## Authors
 
-[Daniel Schukies](https://github.com/daniel-schukies) | [Follow Daniel Schukies on STOMT](https://www.stomt.com/danielschukies)    
-[Patrick Mours](https://github.com/crosire) | [Follow Patrick Mours on STOMT](https://www.stomt.com/crosire)
+[Daniel Schukies](https://github.com/daniel-schukies) | [Follow Daniel Schukies on STOMT](https://www.stomt.com/danielschukies)
 
+See also the list of [contributors](https://github.com/stomt/stomt-unity-sdk/contributors) who participated in this project.
 
 ## More about STOMT
 
