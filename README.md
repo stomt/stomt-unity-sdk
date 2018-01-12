@@ -33,23 +33,24 @@ Example Games that use our integrations:
 3. Enter all necessary data into the ```StomtAPI``` component on the prefab.     
 
 * Enter the `App Id` you obtained in the second step
-* Optional: Enter `Labels` that will be attached to every stomt
+* Optional: Enter `Labels` that will be attached to every stomt. [(See also Section "In-Game Labeling")](https://github.com/stomt/stomt-unity-sdk#in-game-labeling)
 
 <img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" />
 
 Finished! *Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*    
 
 
-## Usage
+## Form Triggers
 
-The Widget can be opened and closed whenever you want by using our trigger functions. That allows you to only thow the widget to certain players.
-
-Add Labels that will be attached to every stomt via script `_api.Labels` or in the inspector. That way you can label the feedback directly in-game with useful player or system information.
+The widget can be opened and closed whenever you want by using our trigger functions. That allows you to only thow the widget to certain players.
 
 StomtPopup Class
-* Enable:	ShowWidget()
-* Disable:	HideWidget()
+* Enable:	```ShowWidget()```
+* Disable:	```HideWidget()```
 
+## In-Game Labeling
+
+Add Labels that will be attached to every stomt via script `_api.Labels` or in the inspector. That way you can label the feedback directly in-game with useful player or system information.
 
 ## Event Callbacks
 
