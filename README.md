@@ -1,22 +1,19 @@
 # Collect Feedback In-Game | STOMT-SDK for Unity 3D
-#### Version: Beta
 #### Implementation Time: ~20 Minutes (incl. Triggers)
 
 <p align="center">
-  <img alt="STOMT Unity Feedback Integration" src="https://schukies.io/images/stomt/stomtunity9.png" />
+  <img alt="STOMT Unity Feedback Integration" width="441px" height="282px" src="https://i.imgur.com/IfnTfpr.gif" />
 </p>
 
 We have created a custom feedback solution at [www.stomt.com](https://www.stomt.com/), which easily allows you to collect feedback from your users. This Unity plug-in allows you to integrate our solution in your app or game. You can download and install or download from the [Unity Asset Store](https://www.assetstore.unity3d.com/en/#!/content/64669). Our web platform helps you to manage all incoming feedback and build a community uppon it.
 
-## Use-Cases
-
-_What will the result look like?_ 
+## Examples / Use-Cases / Demo
 
 Example Games that use our integrations:
 
 * [Empires of the Undergrowth](https://www.stomt.com/empires-of-the-undergrowth)      
 * [All Walls Must Fall](https://www.stomt.com/AWMF)
-
+* [Pantropy](https://www.stomt.com/pantropy)
 
 ## Installation
 
@@ -27,50 +24,50 @@ Example Games that use our integrations:
 
 ## Configuration
 
-1. Register on [www.stomt.com](https://www.stomt.com/signup/game) 
+1. Create a page for your game on [www.stomt.com](https://www.stomt.com/signup/game).
 
-2. And create an [App Id](https://www.stomt.com/integrate) for your project.
+2. Create an [App Id](https://www.stomt.com/integrate) for Unity.
 
-3. Enter all necessary data into the ```StomtAPI``` component on the prefab.     
+3. Enter all necessary data into the ```StomtAPI``` component on the prefab.   
 
 * Enter the `App Id` you obtained in the second step
-* Optional: Enter `Labels` that will be attached to every stomt
+* Optional: Enter `Labels` that will be attached to every stomt. [(See also Section "In-Game Labeling")](https://github.com/stomt/stomt-unity-sdk#in-game-labeling)
 
-<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" />
-
-Finished! *Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*    
-
-
-## Usage
-
-The Widget can be enabled by using a toggle key or calling the API Methods.
-
-<img alt="STOMT Unity Feedback Integration" src="https://i.imgur.com/p8bdLL3.gif" />
-
-Add Labels that will be attached to every stomt the user sends via script `_api.Labels` or in the inspector.
-
-StomtPopup Class
-* Enable:	ShowWidget()
-* Disable:	HideWidget()
-
-
-
-
-
-## Labels
-
-Labels will help you track down user issues.
-Append labels, as for example your game-version or the player position.
 <p align="center">
-<img alt="Events" src="https://i.imgur.com/sS8T8Fy.png" />
+<img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" /> 
 </p>
 
-Unity Inspector:
+4. Finished!  
 
+## Form Triggers
+
+The widget can be opened and closed whenever you want by using our trigger functions.     
+    
+That allows you to:    
+* Put a button into the main menu [(Example)](https://imgur.com/5SoQzfj)
+* Put a button into the HUD [(Example)](https://imgur.com/t9wPpJj)
+* Only show the button to certain players (e.g. power users)
+* Trigger the form after certain events
+
+**StomtPopup Class**
+* Enable:	```ShowWidget()```
+* Disable:	```HideWidget()```
+
+## In-Game Labeling
+
+Labels will help you track down user issues.
+Append labels, as for example your game-version or the player position/level. You can either hardcode them in the Unity Inspector or use a script to add them in a flexible way based on the information you have.    
+
+<p align="center">
+<img alt="Events" width="600" height="auto" src="https://i.imgur.com/sS8T8Fy.png" />
+</p>
+
+**Hardcoded via Unity Inspector:**
+<p align="center">
 <img alt="Events" src="https://i.imgur.com/qS6IdZL.png" />
+</p>
 
-
-From Code:
+**Flexible via Script:**
 ```
 using UnityEngine;
 using System.Collections;
@@ -94,7 +91,7 @@ public class StomtLabelExample : MonoBehaviour
 ```
 ## Append Additional Data
 
-You can add additional data to a stomt by adding custom key value pairs.
+If you need more data but you do not want to flood the labels, you can add additional data to a stomt by adding custom key value pairs.
 
 ```
 using UnityEngine;
@@ -147,22 +144,28 @@ public class StomtEventCallbackExample : MonoBehaviour
 ## Common Issues
 
 * Error (401) Unauthorized: Is your application ID right? ```test.stomt.com``` and ```stomt.com``` use different ID's.
-* Error (500) Internal Server Error: [Report] (https://www.stomt.com/dev/unity-sdk) us the problem.
+* Error (500) Internal Server Error: [Report](https://www.stomt.com/dev/unity-sdk) us the problem.
 * Stomts are not sent out on Android: change the API Compatibility Level from `.NET 2.0 Subset` to `.NET 2.0` in the Player Settings.
 
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/stomt/stomt-unity-sdk/tags). 
 
 ## Contribution
 
-We would love to see you contributing to this project. Feel free to fork it and send in your pull requests! Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
-
+We would love to see you contributing to this project. Please read [CONTRIBUTING.md](https://github.com/stomt/stomt-unity-sdk/blob/master/CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.    
+    
+Visit the [project on STOMT](https://www.stomt.com/stomt-unity) to support with your ideas, wishes and feedback.
 
 ## Authors
 
-[Daniel Schukies](https://github.com/daniel-schukies) | [Follow Daniel Schukies on STOMT](https://www.stomt.com/danielschukies)    
-[Patrick Mours](https://github.com/crosire) | [Follow Patrick Mours on STOMT](https://www.stomt.com/crosire)
+[Daniel Schukies](https://github.com/daniel-schukies) | [Follow Daniel Schukies on STOMT](https://www.stomt.com/danielschukies)
 
+See also the list of [contributors](https://github.com/stomt/stomt-unity-sdk/contributors) who participated in this project.
 
 ## More about STOMT
+
+*Regularly communicate your page on social channels and checkout our [Website-Widget](https://www.stomt.com/dev/js-sdk) for your websites to collect feedback from anywhere.*   
 
 * On the web [www.stomt.com](https://www.stomt.com)
 * [STOMT for iOS](http://stomt.co/ios)
