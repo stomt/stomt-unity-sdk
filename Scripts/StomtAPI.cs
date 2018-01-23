@@ -26,6 +26,8 @@ namespace Stomt
 
 		private string restServerURL = "https://rest.stomt.com";
 
+        public bool DisableDefaultLabels;
+
 		public bool DebugDisableConfigFile = false;
 
 		public StomtConfig config;
@@ -264,7 +266,9 @@ namespace Stomt
 		{
 			StomtCreation stomtCreation = new StomtCreation(this);
 
-			stomtCreation.target_id = this.TargetID;
+            stomtCreation.DisableDefaultLabels = DisableDefaultLabels;
+
+            stomtCreation.target_id = this.TargetID;
 			stomtCreation.lang = "en";
 			stomtCreation.anonym = false;
 			stomtCreation.labels = Labels;

@@ -23,7 +23,7 @@ namespace Stomt
 		public string file_uid  { get; set; }
         public string[] labels;
         public List<List<string>> CustomKeyValuePairs;
-
+        public bool DisableDefaultLabels;
         public StomtCreation(StomtAPI api)
         {
 			this._api = api;
@@ -61,8 +61,11 @@ namespace Stomt
             }
 
             // Add default labels
-            writerStomt.Write(Application.platform.ToString());
-            writerStomt.Write(Screen.currentResolution.ToString());
+            if(!DisableDefaultLabels)
+            {
+                writerStomt.Write(Application.platform.ToString());
+                writerStomt.Write(Screen.currentResolution.ToString());
+            }
 
             writerStomt.WriteArrayEnd();
 
