@@ -56,7 +56,9 @@ That allows you to:
 ## In-Game Labeling
 
 Labels will help you track down user issues.
-Append labels, as for example your game-version or the player position/level. You can either hardcode them in the Unity Inspector or use a script to add them in a flexible way based on the information you have.    
+Append labels, as for example your game-version or the player position/level. You can either hardcode them in the Unity Inspector or use a script to add them in a flexible way based on the information you have.
+
+If you want different labels for every stomt then you have to clear the label array and set new labels.
 
 <p align="center">
 <img alt="Events" width="600" height="auto" src="https://i.imgur.com/sS8T8Fy.png" />
