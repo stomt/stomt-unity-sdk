@@ -415,7 +415,7 @@ namespace Stomt
 				_wish.sortingOrder = 2;
 				_wouldBecauseText.text = "would";
 
-                if (!this.IsMessageLengthCorrect() && (!onMobile && WouldBecauseText))
+                if (!this.IsMessageLengthCorrect() && WouldBecauseText)
 				{
 					_message.text = "would ";
 				}
@@ -427,7 +427,7 @@ namespace Stomt
 				_wish.sortingOrder = 1;
 				_wouldBecauseText.text = "because";
 			   
-				if(!this.IsMessageLengthCorrect() && (!onMobile && WouldBecauseText))
+				if(!this.IsMessageLengthCorrect() && WouldBecauseText)
 				{
 					_message.text = "because ";
 				}
