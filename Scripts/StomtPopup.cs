@@ -33,8 +33,10 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public GameObject _postButtonSubscription;
-		[HideInInspector]
-		public GameObject _LayerSuccessfulSent;
+        [HideInInspector]
+        public GameObject _LayerNetworkError;
+        [HideInInspector]
+        public GameObject _LayerSuccessfulSent;
 		[HideInInspector]
 		public GameObject _LayerInput;
 		[HideInInspector]
@@ -134,7 +136,11 @@ namespace Stomt
 		public static event StomtAction OnWidgetClosed;
 		public static event StomtAction OnWidgetOpen;
 
-		void Awake()
+        enum UILayer { Input, Subscription, Success, Error };
+
+        UILayer CurrentLayer;
+
+        void Awake()
 		{
             if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
                 this.onMobile = true;
@@ -147,11 +153,12 @@ namespace Stomt
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 			_ui.SetActive(false);
-		}
+        }
 
 		void Start()
 		{
-			StartedTyping = false;
+            CurrentLayer = UILayer.Input;
+            StartedTyping = false;
 
 			_api.RequestTargetAndUser((response) => {
 				SetStomtNumbers();
@@ -169,10 +176,17 @@ namespace Stomt
 		// is called every frame
 		void Update()
 		{
-			if( (_ui.activeSelf && _api.NetworkError) && !_errorMessage.activeSelf)
-			{
-				ShowError();
-			}
+            if (_ui.activeSelf)
+            {
+                if (!_LayerNetworkError.activeSelf && _api.NetworkError)
+                {
+                    ShowNetworkErrorLayer();
+                }
+                else if(_LayerNetworkError.activeSelf && !_api.NetworkError)
+                {
+                    HideNetworkErrorLayer();
+                }
+            }
 		}
 			
 
@@ -218,7 +232,9 @@ namespace Stomt
 		{
 			yield return new WaitForEndOfFrame();
 
-			var track = _api.initStomtTrack();
+            _api.NetworkError = false;
+
+            var track = _api.initStomtTrack();
 			track.event_category = "form";
 			track.event_action = "open";
 			track.save ();
@@ -233,10 +249,16 @@ namespace Stomt
 				}
 				this._log = new StomtLog(this._api);
 			}
-
-            // Show UI
-            ResetUILayer();
-
+            if(_api.NetworkError)
+            {
+                ShowNetworkErrorLayer();
+            }
+            else
+            {
+                // Show UI
+                ResetUILayer();
+            }
+            
 			if(this.IsMessageLengthCorrect())
 			{
 				_postButton.GetComponent<Button>().interactable = true;
@@ -245,8 +267,6 @@ namespace Stomt
 			{
 				_postButton.GetComponent<Button>().interactable = false;
 			}
-
-			ShowError();
 
             useEmailOnSubscribe = true;
 
@@ -263,31 +283,72 @@ namespace Stomt
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
 		}
 
+        public void Reconnect()
+        {
+            if(CurrentLayer == UILayer.Success)
+            {
+                if(this._api.config.GetSubscribed())
+                {
+                    handleStomtSending();
+                }
+                else
+                {
+                    SubmitSubscription();
+                }
+            }
 
-		void ShowError()
+            if(CurrentLayer == UILayer.Subscription)
+            {
+                handleStomtSending();
+            }
+
+            if (CurrentLayer == UILayer.Input)
+            {
+                this.HideWidget();
+                this.ShowWidget();
+            }
+        }
+
+        void HideNetworkErrorLayer()
+        {
+            _LayerNetworkError.SetActive(false);
+
+            if (CurrentLayer == UILayer.Input)
+            {
+                _LayerInput.SetActive(true);
+            }
+
+            if (CurrentLayer == UILayer.Subscription)
+            {
+                _LayerSubscription.SetActive(true);
+            }
+
+            if (CurrentLayer == UILayer.Success)
+            {
+                _LayerSuccessfulSent.SetActive(true);
+            }
+        }
+
+
+		void ShowNetworkErrorLayer()
 		{
-			if (_api.NetworkError)
-			{
-				// Diable GUI
-				_messageObj.SetActive(false);
-				_typeObj.SetActive(false);
-				_targetNameObj.SetActive(false);
-				// Enable Error MSG
-				_errorMessage.SetActive(true);
-				TargetIcon.enabled = false;
+            _LayerNetworkError.SetActive(true);
 
-			}
-			else
-			{
-				// Diable GUI
-				_messageObj.SetActive(true);
-				_typeObj.SetActive(true);
-				_targetNameObj.SetActive(true);
-				// Enable Error MSG
-				_errorMessage.SetActive(false);
-				TargetIcon.enabled = true;
-			}
-		}
+            if(CurrentLayer == UILayer.Input)
+            {
+                _LayerInput.SetActive(false);
+            }
+                
+            if(CurrentLayer == UILayer.Subscription)
+            {
+                _LayerSubscription.SetActive(false);
+            }
+
+            if (CurrentLayer == UILayer.Success)
+            {
+                _LayerSuccessfulSent.SetActive(false);
+            }
+        }
 
 		public void Hide()
 		{
@@ -505,12 +566,14 @@ namespace Stomt
 			if (this._api.config.GetSubscribed())
 			{
 				_LayerSuccessfulSent.SetActive(true);
+                CurrentLayer = UILayer.Success;
                 OnSwitchToSuccessLayer();
             }
 			else
 			{
 				_LayerSubscription.SetActive(true);
-				_EmailInput.ActivateInputField();
+                CurrentLayer = UILayer.Subscription;
+                _EmailInput.ActivateInputField();
 				_EmailInput.Select();
 				SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", true);
 			}
@@ -663,6 +726,9 @@ namespace Stomt
             this._LayerInput.SetActive(true);
 			this._LayerSuccessfulSent.SetActive(false);
 
+            // Reset Error Layer
+            // TODO
+
 			// Reset Subscription Layer
 			this._LayerSubscription.SetActive(false);
 			_EmailInput.text = "";
@@ -671,6 +737,8 @@ namespace Stomt
             _characterLimit.GetComponent<Animator>().SetBool("Active", false);
             _like.GetComponent<Animator>().SetBool("OnTop", false);
             _wish.GetComponent<Animator>().SetBool("OnTop", true);
+
+            CurrentLayer = UILayer.Input;
         }
 
 		public void OpenTargetURL()
@@ -723,10 +791,10 @@ namespace Stomt
 			}
 		}
 
-		public void SubmitSubscriptionLayer()
-		{
-			if(!string.IsNullOrEmpty(_EmailInput.text))
-			{
+        public void SubmitSubscription()
+        {
+            if (!string.IsNullOrEmpty(_EmailInput.text))
+            {
                 if (useEmailOnSubscribe)
                 {
                     this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
@@ -734,10 +802,15 @@ namespace Stomt
                 else
                 {
                     this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
-                }	
-			}
+                }
+            }
+        }
 
-			this._LayerSuccessfulSent.SetActive(true);
+		public void SubmitSubscriptionLayer()
+		{
+            SubmitSubscription();
+
+            this._LayerSuccessfulSent.SetActive(true);
 			this._LayerSubscription.SetActive(false);
             OnSwitchToSuccessLayer();
 
@@ -768,11 +841,11 @@ namespace Stomt
         public void OnSwitchToSuccessLayer()
         {
             PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
+            CurrentLayer = UILayer.Success;
         }
 
 
         // Email Toggle
-
         public void OnSubscribeTogglePressed()
         {
             string finalInfoText = "";
@@ -806,10 +879,6 @@ namespace Stomt
 
             PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
             //PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.6f);
-
-
-            
-
         }
 
         void PlayShowAnimation(Animator animator, float delayTime)
@@ -826,8 +895,11 @@ namespace Stomt
         {
             yield return new WaitForSeconds(delayTime);
 
-            animator.SetBool("Show", true);
-
+            if (animator.isInitialized)
+            {
+                animator.SetBool("Show", true);
+            }
+                
             if(TextToChange != null && NewText != null)
             {
                 TextToChange.text = NewText;

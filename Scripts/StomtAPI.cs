@@ -465,7 +465,8 @@ namespace Stomt
 						requestStream.Write (bytes, 0, bytes.Length);
 					}
 				} catch (WebException ex) {
-					Debug.LogException (ex);
+					Debug.Log (ex);
+                    this.NetworkError = true;
 					yield break;
 				}
 			}
@@ -489,11 +490,15 @@ namespace Stomt
 			}
 			catch (WebException ex)
 			{
-				var errorResponse = (HttpWebResponse)ex.Response;
+                var errorResponse = (HttpWebResponse)ex.Response;
 				var statusCode = "";
 				if (errorResponse != null) {
 					statusCode = errorResponse.StatusCode.ToString();
 				}
+                else
+                {
+                    this.NetworkError = false;
+                }
 
 				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
