@@ -13,6 +13,7 @@ namespace Stomt
 		#region Inspector Variables
 		[SerializeField]
 		KeyCode _toggleKey = KeyCode.F1;
+        public string DisplayGameName;
 
 		[SerializeField]
 		[HideInInspector]
@@ -114,7 +115,7 @@ namespace Stomt
 		public Image TargetIcon;
 
 		private WWW ImageDownload;
-		private Texture2D ProfileImageTexture;
+		public Texture2D ProfileImageTexture;
 		private bool TargetImageApplied = false;
 		private bool StartedTyping;
 		private bool IsErrorState;
@@ -627,15 +628,27 @@ namespace Stomt
 	
 		private void setTargetName()
 		{
-			if (_api.TargetDisplayname != null) {
-				if (_api.TargetDisplayname.Length > TargetNameCharLimit) {
-					_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
-				} else {
-					_targetText.text = _api.TargetDisplayname;
-				}
-			} else {
-				_targetText.text = _api.TargetID;
-			}
+            if(string.IsNullOrEmpty(DisplayGameName))
+            {
+			    if (_api.TargetDisplayname != null)
+                {
+				    if (_api.TargetDisplayname.Length > TargetNameCharLimit)
+                    {
+					    _targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
+				    } else
+                    {
+					    _targetText.text = _api.TargetDisplayname;
+				    }
+			    } else
+                {
+				    _targetText.text = _api.TargetID;
+			    }
+            }
+            else
+            {
+                _targetText.text = DisplayGameName;
+            }
+
 		}
 
 		private IEnumerator refreshTargetIcon()
