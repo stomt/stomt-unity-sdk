@@ -112,11 +112,12 @@ namespace Stomt
 			{
 				Debug.LogWarning("Log file too big. Size: " + fileInfo.Length + "Bytes. Path: " + FilePath);
 
+                /*
 				var track = this._api.initStomtTrack();
 				track.event_category = "log";
 				track.event_action = "tooBig";
 				track.save ();
-
+                */
 				return null; 
 			}
 
