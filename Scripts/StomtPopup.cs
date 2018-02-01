@@ -392,7 +392,7 @@ namespace Stomt
             else
 			{
 				_message.ActivateInputField();
-				//_message.Select();
+				_message.Select();
 
 				this.StartedTyping = true;
 				StartCoroutine(MoveMessageCaretToEnd());
