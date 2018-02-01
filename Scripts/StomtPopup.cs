@@ -386,11 +386,13 @@ namespace Stomt
 			{
 				this.StartedTyping = true;
 				this.RefreshStartText();
-			}
-			else
+                _message.ActivateInputField();
+                _message.Select();
+            }
+            else
 			{
 				_message.ActivateInputField();
-				_message.Select();
+				//_message.Select();
 
 				this.StartedTyping = true;
 				StartCoroutine(MoveMessageCaretToEnd());
@@ -692,7 +694,7 @@ namespace Stomt
 		{
 			yield return 0; // Skip the first frame
 			_message.MoveTextEnd(false);
-		}
+        }
 
 		public void OnPointerEnterMessage()
 		{
