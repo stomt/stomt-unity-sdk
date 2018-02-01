@@ -115,24 +115,18 @@ namespace Stomt
 				this.DebugDisableConfigFile = false;
 			}
 			
-
-			this.config = new StomtConfig();
-			if (!DebugDisableConfigFile)
-				this.config.Load();
-
-
 			NetworkError = false;
 
 			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
-			ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
-			//ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+			//ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+			ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 		}
 
 		void Start()
 		{
+            this.config = new StomtConfig();
 
-
-			if(DebugDisableConfigFile)
+            if (DebugDisableConfigFile)
 			{
 				this.config.SetLoggedin(false);
 				this.config.SetSubscribed(false);
@@ -146,10 +140,6 @@ namespace Stomt
 			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
-			/*if (string.IsNullOrEmpty(_targetId))
-			{
-				throw new ArgumentException("The stomt target ID variable cannot be empty.");
-			}*/
 
 			//TargetDisplayname = _targetId;
 			TargetDisplayname = "Loading";
