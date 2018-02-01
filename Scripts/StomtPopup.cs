@@ -143,21 +143,23 @@ namespace Stomt
 
         void Awake()
 		{
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-                this.onMobile = true;
-
-            if (placeholderText == null)
-			{
-				Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
-			}
-
-			_api = GetComponent<StomtAPI>();
-			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 			_ui.SetActive(false);
         }
 
 		void Start()
 		{
+            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+                this.onMobile = true;
+
+            if (placeholderText == null)
+            {
+                Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
+            }
+
+            _api = GetComponent<StomtAPI>();
+            _screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
+
+
             CurrentLayer = UILayer.Input;
             StartedTyping = false;
 
