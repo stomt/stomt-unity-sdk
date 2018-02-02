@@ -764,7 +764,7 @@ namespace Stomt
 
             if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
             {
-                url += string.Format("?access_token=[{0}]", this._api.config.GetAccessToken());
+                url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
             }
 
             Application.OpenURL(url);
@@ -776,7 +776,7 @@ namespace Stomt
 
             if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
             {
-                url += string.Format("?access_token=[{0}]", this._api.config.GetAccessToken());
+                url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
             }
 
             Application.OpenURL(url);
