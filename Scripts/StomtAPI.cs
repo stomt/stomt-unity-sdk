@@ -26,6 +26,8 @@ namespace Stomt
 
 		private string restServerURL = "https://rest.stomt.com";
 
+        public string stomtURL = "https://stomt.com";
+
         public bool DisableDefaultLabels;
 
 		public bool DebugDisableConfigFile = false;
@@ -108,11 +110,14 @@ namespace Stomt
 			{
 				this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
 				this.restServerURL = "https://test.rest.stomt.com";
-			}
+                this.stomtURL = "https://test.stomt.com";
+
+            }
 			else
 			{
 				this.restServerURL = "https://rest.stomt.com";
-				this.DebugDisableConfigFile = false;
+                this.stomtURL = "https://stomt.com";
+                this.DebugDisableConfigFile = false;
 			}
 			
 			NetworkError = false;

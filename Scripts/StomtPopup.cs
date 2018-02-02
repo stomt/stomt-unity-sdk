@@ -760,13 +760,27 @@ namespace Stomt
 
 		public void OpenTargetURL()
 		{
-			Application.OpenURL("https://www.stomt.com/" + _api.TargetID);
-		}
+            string url = this._api.stomtURL + "/" + _api.TargetID;
+
+            if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
+            {
+                url += string.Format("?access_token=[{0}]", this._api.config.GetAccessToken());
+            }
+
+            Application.OpenURL(url);
+        }
 
 		public void OpenUserProfileURL()
 		{
-			Application.OpenURL("https://www.stomt.com/" + _api.UserID);
-		}
+            string url = this._api.stomtURL + "/" + _api.UserID;
+
+            if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
+            {
+                url += string.Format("?access_token=[{0}]", this._api.config.GetAccessToken());
+            }
+
+            Application.OpenURL(url);
+        }
 
 		public void ShowErrorMessage(string message)
 		{
