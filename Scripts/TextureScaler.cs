@@ -5,7 +5,7 @@
 /// Scale is performed on the GPU using RTT, so it's blazing fast.
 /// Setting up and Getting back the texture data is the bottleneck.
 /// But Scaling itself costs only 1 draw call and 1 RTT State setup!
-/// WARNING: This script override the RTT Setup! (It sets a RTT!)        
+/// WARNING: This script override the RTT Setup! (It sets a RTT!)
 ///
 /// Note: This scaler does NOT support aspect ratio based scaling. You will have to do it yourself!
 /// It supports Alpha, but you will have to divide by alpha in your shaders,
