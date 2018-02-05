@@ -19,6 +19,9 @@ namespace Stomt
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
 		string _appId = "";
+        [SerializeField]
+        [Tooltip("The language file: languages.json")]
+        public TextAsset languageFile;
 		#endregion
 
 		//The ID of the target page for your game on https://www.stomt.com/.
@@ -26,7 +29,12 @@ namespace Stomt
 
 		private string restServerURL = "https://rest.stomt.com";
 
-        public string stomtURL = "https://stomt.com";
+        [HideInInspector]
+        public string stomtURL = "https://www.stomt.com";
+        [HideInInspector]
+        public StomtLang lang;
+
+        public string defaultLanguage;
 
         public bool DisableDefaultLabels;
 
@@ -110,28 +118,30 @@ namespace Stomt
 			{
 				this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
 				this.restServerURL = "https://test.rest.stomt.com";
-                this.stomtURL = "https://test.stomt.com";
+				this.stomtURL = "https://test.stomt.com";
 
-            }
+			}
 			else
 			{
 				this.restServerURL = "https://rest.stomt.com";
-                this.stomtURL = "https://stomt.com";
-                this.DebugDisableConfigFile = false;
+				this.stomtURL = "https://stomt.com";
+				this.DebugDisableConfigFile = false;
 			}
 			
 			NetworkError = false;
 
-			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
-			//ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
-			ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+            this.lang = new StomtLang(this, defaultLanguage);
+
+            // TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
+            //ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 		}
 
 		void Start()
 		{
-            this.config = new StomtConfig();
+			this.config = new StomtConfig();
 
-            if (DebugDisableConfigFile)
+			if (DebugDisableConfigFile)
 			{
 				this.config.SetLoggedin(false);
 				this.config.SetSubscribed(false);
@@ -148,7 +158,9 @@ namespace Stomt
 
 			//TargetDisplayname = _targetId;
 			TargetDisplayname = "Loading";
-		}
+
+
+        }
 
 
 		// Track Handling
@@ -261,9 +273,9 @@ namespace Stomt
 		{
 			StomtCreation stomtCreation = new StomtCreation(this);
 
-            stomtCreation.DisableDefaultLabels = DisableDefaultLabels;
+			stomtCreation.DisableDefaultLabels = DisableDefaultLabels;
 
-            stomtCreation.target_id = this.TargetID;
+			stomtCreation.target_id = this.TargetID;
 			stomtCreation.lang = "en";
 			stomtCreation.anonym = false;
 			stomtCreation.labels = Labels;
@@ -461,7 +473,7 @@ namespace Stomt
 					}
 				} catch (WebException ex) {
 					Debug.Log (ex);
-                    this.NetworkError = true;
+					this.NetworkError = true;
 					yield break;
 				}
 			}
@@ -485,15 +497,15 @@ namespace Stomt
 			}
 			catch (WebException ex)
 			{
-                var errorResponse = (HttpWebResponse)ex.Response;
+				var errorResponse = (HttpWebResponse)ex.Response;
 				var statusCode = "";
 				if (errorResponse != null) {
 					statusCode = errorResponse.StatusCode.ToString();
 				}
-                else
-                {
-                    this.NetworkError = false;
-                }
+				else
+				{
+					this.NetworkError = false;
+				}
 
 				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
@@ -536,9 +548,9 @@ namespace Stomt
 				}
 			}
 
-			//////////////////////////////////////////////////////////////////
-			// Analyze JSON data
-			//////////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////////
+            // Analyze JSON data
+            //////////////////////////////////////////////////////////////////
 
 			LitJsonStomt.JsonData responseData = LitJsonStomt.JsonMapper.ToObject(responseDataText);
 
