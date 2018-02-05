@@ -42,13 +42,13 @@ public class StomtConfig
     {
         if (PlayerPrefs.HasKey(this.StomtAccesstokenKey))
         {
-            if(PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(accesstoken))
+            if (PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(accesstoken))
             {
                 return;
             }
         }
 
-        if( accesstoken != null)
+        if ( accesstoken != null)
         {
             this.Accesstoken = accesstoken;
             PlayerPrefs.SetString(this.StomtAccesstokenKey, this.Accesstoken);
