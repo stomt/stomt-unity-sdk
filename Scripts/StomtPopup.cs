@@ -498,7 +498,7 @@ namespace Stomt
 
 			if(StartedTyping && _message.text.Length < 6)
 			{
-				this.ShowErrorMessage("Please write a bit more.");
+				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
 			}
 
 			if(_characterLimit.GetComponent<Animator>().isInitialized)
@@ -589,7 +589,7 @@ namespace Stomt
 
 			if (!IsMessageLengthCorrect())
 			{
-				this.ShowErrorMessage("Please write a bit more");
+				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
 				Debug.Log("_message to short!");
 				return;
 			}
