@@ -21,5 +21,6 @@ ProjectSettings/
 
 # Temporary OS files
 .DS_Store
+.DS_Store.meta
 Thumbs.db
 Thumbs.db.meta
