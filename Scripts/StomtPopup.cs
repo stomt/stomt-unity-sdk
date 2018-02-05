@@ -659,7 +659,7 @@ namespace Stomt
 		{
 			yield return 0;
 			// check wether download needed
-			if (ImageDownload == null )
+			if (ImageDownload == null && ProfileImageTexture == null)
 			{
 				// Start download
 				if (this._api.TargetImageURL != null)
@@ -677,11 +677,11 @@ namespace Stomt
 			// check wether download finished
 			if (ImageDownload != null && !TargetImageApplied)
 			{
-
 				if (ProfileImageTexture != null) // already loaded, apply now
 				{
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
-				}
+                    this.TargetImageApplied = true;
+                }
 				else if (ImageDownload.texture != null) // scale now and apply
 				{
 					ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
@@ -690,6 +690,14 @@ namespace Stomt
 					this.TargetImageApplied = true;
 				}
 			}
+            else
+            {
+                if (ProfileImageTexture != null && !TargetImageApplied) // already loaded, apply now
+                {
+                    TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
+                    TargetImageApplied = true;
+                }
+            }
 		}
 
 		IEnumerator MoveMessageCaretToEnd()
