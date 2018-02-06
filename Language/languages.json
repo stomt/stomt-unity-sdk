@@ -9,7 +9,7 @@
 			"BECAUSE": "weil ",
 			"STOMTS": "STOMTS",
 			"YOURS": "DEINE",
-			"JUST_FINISH": "... einfach den Satz beenden",
+			"JUST_FINISH": "...bitte beende diesen Satz",
 			"WRITE_MORE": "Bitte schreibe etwas mehr.",
 			
 			"GET_NOTIFIED": "Werde benachrichtigt, wenn jemand reagiert.",
@@ -22,7 +22,7 @@
 			"CREATE_ANO_WISH": "Erstellen Sie einen weiteren Wunsch",
 			"FIND_YOUR_W": "Klicken Sie hier, um Ihre Stomts zu finden",
 			
-			"NOT_CONNECT": "Konnte keine Verbindung zu stomt herstellen",
+			"NOT_CONNECT": "Konnte keine Verbindung zu STOMT herstellen",
 			"NO_INTERNET": "Keine Internetverbindung",
 			"RECONNECT": "Wiederverbinden"
 		},	
@@ -34,7 +34,7 @@
 			"BECAUSE": "because ",
 			"STOMTS": "STOMTS",
 			"YOURS": "YOURS",
-			"JUST_FINISH": "... just finish the sentence",
+			"JUST_FINISH": "...please finish the sentence",
 			"WRITE_MORE": "Please write a bit more.",
 			
 			"GET_NOTIFIED": "Get notified when someone reacts.",
@@ -47,7 +47,7 @@
 			"CREATE_ANO_WISH": "Create another wish",
 			"FIND_YOUR_W": "click to find your stomts here",
 			
-			"NOT_CONNECT": "Could not connect to stomt",
+			"NOT_CONNECT": "Could not connect to STOMT",
 			"NO_INTERNET": "No internet connection",
 			"RECONNECT": "Reconnect"
 		}
