@@ -5,8 +5,8 @@
 		{
 			"I_WISH": "Ich wünschte",
 			"I_LIKE": "Ich mag",
-			"WOULD": "würde",
-			"BECAUSE": "weil",
+			"WOULD": "würde ",
+			"BECAUSE": "weil ",
 			"STOMTS": "STOMTS",
 			"YOURS": "DEINE",
 			"JUST_FINISH": "... einfach den Satz beenden!",
@@ -30,8 +30,8 @@
 		{
 			"I_WISH": "I wish",
 			"I_LIKE": "I like",
-			"WOULD": "would",
-			"BECAUSE": "because",
+			"WOULD": "would ",
+			"BECAUSE": "because ",
 			"STOMTS": "STOMTS",
 			"YOURS": "YOURS",
 			"JUST_FINISH": "... just finish the sentence!",
