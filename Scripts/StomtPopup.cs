@@ -137,8 +137,10 @@ namespace Stomt
 		private string wouldText = "would ";
 		private string becauseText = "because ";
         private Vector3 targetLocalStartPostion;
+        private Vector3 placeholderLocalStartPosition;
 
-		public delegate void StomtAction();
+
+        public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
 		public static event StomtAction OnWidgetClosed;
 		public static event StomtAction OnWidgetOpen;
@@ -151,8 +153,10 @@ namespace Stomt
 		{
 			_ui.SetActive(false);
 
-            targetLocalStartPostion.x = _targetObj.GetComponent<RectTransform>().localPosition.x;
-            targetLocalStartPostion.y = _targetObj.GetComponent<RectTransform>().localPosition.y;
+            // Set local start positions
+            targetLocalStartPostion = _targetObj.GetComponent<RectTransform>().localPosition;
+            placeholderLocalStartPosition = placeholderText.transform.localPosition;
+            placeholderLocalStartPosition.x -= 130; // offset
         }
 
 		void Start()
@@ -160,14 +164,8 @@ namespace Stomt
 			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
 				this.onMobile = true;
 
-			if (placeholderText == null)
-			{
-				Debug.Log("PlaceholderText not found: Find(\"/Message/PlaceholderText\")");
-			}
-
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
-
 
 			CurrentLayer = UILayer.Input;
 			StartedTyping = false;
@@ -184,12 +182,7 @@ namespace Stomt
 				this.ShowWidget();
 			}
 
-			this.wouldText = _api.lang.getString("WOULD") + " ";
-			this.becauseText = _api.lang.getString("BECAUSE") + " ";
-			this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
-			this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
-            this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
-            this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
+            ApplyLanguage();
         }
 
 		// is called every frame
@@ -298,14 +291,21 @@ namespace Stomt
 			Canvas.ForceUpdateCanvases();
 
             /** Move Target (Fit with Toggle) */
-            MovetargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
+            MoveTargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
+
+            MovePlaceholderBasedOnMessage();
         }
 
-        private void MovetargetBasedOnToggle(Rect toggleRect)
+        private void MoveTargetBasedOnToggle(Rect toggleRect)
         {
             float width = toggleRect.width;
             float height = toggleRect.height;
             _targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
+        }
+
+        private void MovePlaceholderBasedOnMessage()
+        {
+            CustomPlaceholderText.transform.localPosition = new Vector3( placeholderLocalStartPosition.x + CalculateLengthOfMessage(messageText.GetComponent<Text>()), CustomPlaceholderText.transform.localPosition.y, placeholderLocalStartPosition.z);
         }
 
         private void SetStomtNumbers()
@@ -466,7 +466,9 @@ namespace Stomt
 			}
 
 			OnMessageChanged();
-		}
+            MovePlaceholderBasedOnMessage();
+
+        }
 		public void OnMessageChanged()
 		{
 			int limit = CharLimit;
@@ -779,9 +781,6 @@ namespace Stomt
 			this._LayerInput.SetActive(true);
 			this._LayerSuccessfulSent.SetActive(false);
 
-			// Reset Error Layer
-			// TODO
-
 			// Reset Subscription Layer
 			this._LayerSubscription.SetActive(false);
 			_EmailInput.text = "";
@@ -945,7 +944,6 @@ namespace Stomt
 
 
 			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
-			//PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.6f);
 		}
 
 		void PlayShowAnimation(Animator animator, float delayTime)
@@ -1010,5 +1008,36 @@ namespace Stomt
 
 			return 0.0f;
 		}
-	}
+
+
+        int CalculateLengthOfMessage(Text textComponent)
+        {
+            int totalLength = 0;
+
+            Font font = textComponent.font;
+            CharacterInfo characterInfo = new CharacterInfo();
+
+            char[] arr = textComponent.text.ToCharArray();
+
+            foreach (char c in arr)
+            {
+                font.GetCharacterInfo(c, out characterInfo, textComponent.fontSize); 
+
+                totalLength += characterInfo.advance;
+            }
+
+            return totalLength;
+        }
+
+        public void ApplyLanguage()
+        {
+            // Setup multi-language strings
+            this.wouldText = _api.lang.getString("WOULD") + " ";
+            this.becauseText = _api.lang.getString("BECAUSE") + " ";
+            this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
+            this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
+            this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
+            this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
+        }
+    }
 }
