@@ -136,6 +136,7 @@ namespace Stomt
 		private bool onMobile = false;
 		private string wouldText = "would ";
 		private string becauseText = "because ";
+        private Vector3 targetLocalStartPostion;
 
 		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -150,8 +151,9 @@ namespace Stomt
 		{
 			_ui.SetActive(false);
 
-
-		}
+            targetLocalStartPostion.x = _targetObj.GetComponent<RectTransform>().localPosition.x;
+            targetLocalStartPostion.y = _targetObj.GetComponent<RectTransform>().localPosition.y;
+        }
 
 		void Start()
 		{
@@ -188,12 +190,7 @@ namespace Stomt
 			this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
             this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
             this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
-
-
-            Canvas.ForceUpdateCanvases();
-
-
-		}
+        }
 
 		// is called every frame
 		void Update()
@@ -301,14 +298,17 @@ namespace Stomt
 			Canvas.ForceUpdateCanvases();
 
             /** Move Target (Fit with Toggle) */
-			float x = _targetObj.GetComponent<RectTransform>().localPosition.x;
-			float y = _targetObj.GetComponent<RectTransform>().localPosition.y;
-			float width = _targetObj.GetComponent<RectTransform>().rect.width;
-			float height = _targetObj.GetComponent<RectTransform>().rect.height;
-			_targetObj.GetComponent<RectTransform>().localPosition = new Vector3(x + CalculateTargetXOffset(320), y, 0);
-		}
+            MovetargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
+        }
 
-		private void SetStomtNumbers()
+        private void MovetargetBasedOnToggle(Rect toggleRect)
+        {
+            float width = toggleRect.width;
+            float height = toggleRect.height;
+            _targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
+        }
+
+        private void SetStomtNumbers()
 		{
 			_STOMTS_Number.text = _api.amountStomtsReceived.ToString ();
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
