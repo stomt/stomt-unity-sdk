@@ -999,7 +999,7 @@ namespace Stomt
 				CurrentMaxWidth = _wish.GetComponent<RectTransform>().rect.width;
 			}
 
-			Debug.Log("CurrentMaxWidth: " + CurrentMaxWidth);
+			//Debug.Log("CurrentMaxWidth: " + CurrentMaxWidth);
 
 			if(CurrentMaxWidth > ReferenceValue)
 			{

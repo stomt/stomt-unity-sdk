@@ -41,7 +41,8 @@ namespace Stomt
                 Debug.LogWarning(string.Format("StringDefinition {0} not found in {1}", stringDefinition, Currentlanguage));
                 return "";
             }
-            Debug.Log((string)languages["data"][Currentlanguage][stringDefinition]);
+
+            //Debug.Log((string)languages["data"][Currentlanguage][stringDefinition]);
             return (string)languages["data"][Currentlanguage][stringDefinition];
         }
 
