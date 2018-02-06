@@ -77,16 +77,37 @@ namespace Stomt
 		public GameObject CustomPlaceholderText;
 
         //Subscription Layer
+        [SerializeField]
+        [HideInInspector]
         public Text SkipButton;
+        [SerializeField]
+        [HideInInspector]
         public Text GetNotifiedText;
 
         //Success Layer
+        [SerializeField]
+        [HideInInspector]
         public Text CreateButtonText;
+        [SerializeField]
+        [HideInInspector]
         public Text ThankYouText;
+        [SerializeField]
+        [HideInInspector]
         public Text ArrowText;
         [SerializeField]
         [HideInInspector]
         public Text SentLayerMessage;
+
+        //Error Layer
+        [SerializeField]
+        [HideInInspector]
+        public Text ReconnectText;
+        [SerializeField]
+        [HideInInspector]
+        public Text ErrorHeaderText;
+        [SerializeField]
+        [HideInInspector]
+        public Text ErrorMessageText;
 
 
         [SerializeField]
@@ -1065,6 +1086,11 @@ namespace Stomt
             ThankYouText.text = _api.lang.getString("THANK_YOU");
             ArrowText.text = _api.lang.getString("FIND_YOUR_W");
             SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
+
+            //Error Layer
+            ReconnectText.text = _api.lang.getString("RECONNECT");
+            ErrorHeaderText.text = _api.lang.getString("NOT_CONNECT");
+            ErrorMessageText.text = _api.lang.getString("NO_INTERNET");
         }
     }
 }

@@ -27,7 +27,7 @@
 			"CREATE_ANO_WISH": "Wünsch dir noch was",
 			"FIND_YOUR_W": "Finde deine stomts",
 			
-			"NOT_CONNECT": "Konnte keine Verbindung zu STOMT herstellen",
+			"NOT_CONNECT": "Verbindung zu STOMT unterbrochen",
 			"NO_INTERNET": "Keine Internetverbindung",
 			"RECONNECT": "Wiederverbinden"
 		},	
