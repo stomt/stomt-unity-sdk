@@ -79,9 +79,6 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
 
-        //Input Layer
-
-
         //Subscription Layer
         [SerializeField]
         [HideInInspector]
@@ -115,7 +112,6 @@ namespace Stomt
         [HideInInspector]
         public Text ErrorMessageText;
 
-
         [SerializeField]
 		[HideInInspector]
 		GameObject _ui;
@@ -140,19 +136,19 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		Toggle _screenshotToggle;
-		#endregion
-		StomtAPI _api;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject placeholderText;
+        [SerializeField]
+        [HideInInspector]
+        public GameObject messageText;
+        [SerializeField]
+        [HideInInspector]
+        public Image TargetIcon;
+        #endregion
+        StomtAPI _api;
 		Texture2D _screenshot;
 		StomtLog _log;
-		[SerializeField]
-		[HideInInspector]
-		public GameObject placeholderText;
-		[SerializeField]
-		[HideInInspector]
-		public GameObject messageText;
-		[SerializeField]
-		[HideInInspector]
-		public Image TargetIcon;
 
 		public Texture2D ProfileImageTexture;
 		public bool LogFileUpload = true;
@@ -175,7 +171,6 @@ namespace Stomt
 		private string becauseText = "because ";
         private Vector3 targetLocalStartPostion;
         private Vector3 placeholderLocalStartPosition;
-
 
         public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
@@ -397,7 +392,6 @@ namespace Stomt
 			}
 		}
 
-
 		void ShowNetworkErrorLayer()
 		{
 			_LayerNetworkError.SetActive(true);
@@ -474,9 +468,7 @@ namespace Stomt
 				likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
 				wishAnimator.SetBool("OnTop", tmp);
 			}
-
-
-			
+		
 			if (_like.sortingOrder == 2)
 			{
 				// I wish
@@ -603,7 +595,6 @@ namespace Stomt
 				}
 			}
 		}
-
 
 		private bool IsMessageLengthCorrect()
 		{
