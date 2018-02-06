@@ -8,10 +8,12 @@ namespace Stomt
     {
         private LitJsonStomt.JsonData languages;
         private string Currentlanguage;
+        private bool ForceDefaultLanguage;
 
         public StomtLang(StomtAPI api, string language)
         {
             this.Currentlanguage = language;
+            this.ForceDefaultLanguage = api.ForceDefaultLanguage;
 
             if (api.languageFile != null)
             {
@@ -21,11 +23,24 @@ namespace Stomt
             {
                 Debug.Log("languageFile not found! Please set the language file in StomtAPI Inspector.");
             }
+
+            if(!this.ForceDefaultLanguage)
+            {
+                if( Application.systemLanguage == SystemLanguage.English )
+                {
+                    this.Currentlanguage = "en";
+                }
+
+                if(Application.systemLanguage == SystemLanguage.German )
+                {
+                    this.Currentlanguage = "de";
+                }
+            }
         }
 
         public void setLanguage(string language)
         {
-            this.Currentlanguage = language;
+            this.Currentlanguage = language; 
         }
 
         public string getString(string stringDefinition)
@@ -33,7 +48,7 @@ namespace Stomt
             if(!this.languages["data"].Keys.Contains(Currentlanguage))
             {
                 Debug.LogWarning(string.Format("Language {0} not supported (does not exist in language file)", Currentlanguage));
-                return "";
+                this.Currentlanguage = "en";
             }
 
             if (!this.languages["data"][Currentlanguage].Keys.Contains(stringDefinition))

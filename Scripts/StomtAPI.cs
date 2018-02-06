@@ -31,10 +31,13 @@ namespace Stomt
 
         [HideInInspector]
         public string stomtURL = "https://www.stomt.com";
+
         [HideInInspector]
         public StomtLang lang;
 
         public string defaultLanguage;
+
+        public bool ForceDefaultLanguage;
 
         public bool DisableDefaultLabels;
 

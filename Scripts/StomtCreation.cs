@@ -21,17 +21,18 @@ namespace Stomt
 		public bool anonym  { get; set; }
 		public string img_name  { get; set; }
 		public string file_uid  { get; set; }
-        public string[] labels;
-        public List<List<string>> CustomKeyValuePairs;
-        public bool DisableDefaultLabels;
-        public StomtCreation(StomtAPI api)
-        {
+		public string[] labels;
+		public List<List<string>> CustomKeyValuePairs;
+		public bool DisableDefaultLabels;
+
+		public StomtCreation(StomtAPI api)
+		{
 			this._api = api;
-            CustomKeyValuePairs = new List<List<string>>();
-        }
+			CustomKeyValuePairs = new List<List<string>>();
+		}
 
 		public override string ToString()
-        {
+		{
 			var jsonStomt = new StringBuilder();
 			var writerStomt = new LitJsonStomt.JsonWriter(jsonStomt);
 
@@ -45,54 +46,54 @@ namespace Stomt
 			writerStomt.WritePropertyName("text");
 			writerStomt.Write(this.text);
 
-            // Add labels
-            writerStomt.WritePropertyName("extradata");
-            writerStomt.WriteObjectStart();
+			// Add labels
+			writerStomt.WritePropertyName("extradata");
+			writerStomt.WriteObjectStart();
 
-            writerStomt.WritePropertyName("labels");
-            writerStomt.WriteArrayStart();
+			writerStomt.WritePropertyName("labels");
+			writerStomt.WriteArrayStart();
 
-            if (labels.Length > 0)
-            {
-                foreach (string label in labels)
-                {
-                    writerStomt.Write(label);
-                }
-            }
+			if (labels.Length > 0)
+			{
+				foreach (string label in labels)
+				{
+					writerStomt.Write(label);
+				}
+			}
 
-            // Add default labels
-            if(!DisableDefaultLabels)
-            {
-                writerStomt.Write(Application.platform.ToString());
-                writerStomt.Write(Screen.currentResolution.ToString());
-            }
+			// Add default labels
+			if(!DisableDefaultLabels)
+			{
+				writerStomt.Write(Application.platform.ToString());
+				writerStomt.Write(Screen.currentResolution.ToString());
+			}
 
-            writerStomt.WriteArrayEnd();
+			writerStomt.WriteArrayEnd();
 
-            // Add CustomKeyValuePairs
-            if (CustomKeyValuePairs.Count > 0)
-            {
-                foreach (List<string> PairList in CustomKeyValuePairs)
-                {
-                    if(PairList.Count > 1)
-                    {
-                        writerStomt.WritePropertyName(PairList[0]);
-                        writerStomt.Write(PairList[1]);
-                    }  
-                }
-            }
+			// Add CustomKeyValuePairs
+			if (CustomKeyValuePairs.Count > 0)
+			{
+				foreach (List<string> PairList in CustomKeyValuePairs)
+				{
+					if(PairList.Count > 1)
+					{
+						writerStomt.WritePropertyName(PairList[0]);
+						writerStomt.Write(PairList[1]);
+					}  
+				}
+			}
 
-            writerStomt.WriteObjectEnd();
-            
+			writerStomt.WriteObjectEnd();
+			
 
-            if (!string.IsNullOrEmpty(this.img_name))
-            {
+			if (!string.IsNullOrEmpty(this.img_name))
+			{
 				writerStomt.WritePropertyName("img_name");
 				writerStomt.Write(this.img_name);
 			}
 
 			if(!string.IsNullOrEmpty(this.file_uid))
-            {
+			{
 				writerStomt.WritePropertyName("files");
 				writerStomt.WriteObjectStart();
 				writerStomt.WritePropertyName("stomt");
@@ -104,41 +105,41 @@ namespace Stomt
 			}
 
 			writerStomt.WriteObjectEnd();
-            //Debug.Log(jsonStomt.ToString());
-            return jsonStomt.ToString();
+			//Debug.Log(jsonStomt.ToString());
+			return jsonStomt.ToString();
 		}
 
-        public void AddCustomKeyValuePair(string key, string value)
-        {
-            List<string> pair = new List<string>();
-            pair.Add(key);
-            pair.Add(value);
+		public void AddCustomKeyValuePair(string key, string value)
+		{
+			List<string> pair = new List<string>();
+			pair.Add(key);
+			pair.Add(value);
 
-            CustomKeyValuePairs.Add(pair);
-        }
+			CustomKeyValuePairs.Add(pair);
+		}
 
-        public void attachScreenshot(Texture2D screenshot)
-        {
+		public void attachScreenshot(Texture2D screenshot)
+		{
 			this.screenshot = screenshot;
 		}
 
 		public void attachLogs(string logs)
-        {
+		{
 			this.logs = logs;
 		}
 
 		public void attachLogs(StomtLog log)
-        {
+		{
 			this.logs = log.getFileConent ();
 		}
 
 		public void save()
-        {
+		{
 			this.save(null, null);
 		}
 
 		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
-        {
+		{
 			this._api.SendStomt(this, callbackSuccess, callbackError);
 		}
 	}
