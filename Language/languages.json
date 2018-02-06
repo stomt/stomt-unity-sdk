@@ -15,9 +15,16 @@
 			"GET_NOTIFIED": "Werde benachrichtigt, wenn jemand reagiert.",
 			"WHAT_EMAIL": "Wie lautet deine E-Mail-Adresse?",
 			"WHAT_SMS": "Wie lautet deine Telefonnummer?",
+			"WHATS_YOUR" : "Was ist deine ",
+			"PHONE_END" : "Telefonnummer?",
+			"EMAIL_END" : "E-Mail Adresse?",
+			"PHONE_PLH" : "+4915203959902",
+			"EMAIL_PLH" : "deine@email.com",
 			"SKIP": "Überspringen",
-			"THANK_YOU": "DANKE!",
+
+
 			
+			"THANK_YOU": "DANKE!",
 			"FIND_M_WISHES": "Super, finde mehr Wünsche",
 			"CREATE_ANO_WISH": "Erstellen Sie einen weiteren Wunsch",
 			"FIND_YOUR_W": "Klicken Sie hier, um Ihre Stomts zu finden",
@@ -40,6 +47,11 @@
 			"GET_NOTIFIED": "Get notified when someone reacts.",
 			"WHAT_EMAIL": "What's your email address?",
 			"WHAT_SMS": "What's your phone number?",
+			"WHATS_YOUR" : "What's your ",
+			"PHONE_END" : "phone number?",
+			"EMAIL_END" : "email address?",
+			"PHONE_PLH" : "+4915203959902",
+			"EMAIL_PLH" : "your@gmail.com",
 			"SKIP": "Skip",
 			
 			"THANK_YOU": "THANK YOU!",

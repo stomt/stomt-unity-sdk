@@ -79,7 +79,12 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
 
-		[SerializeField]
+        //Subscription Layer
+        public Text SkipButton;
+        public Text GetNotifiedText;
+
+
+        [SerializeField]
 		[HideInInspector]
 		GameObject _ui;
 		[SerializeField]
@@ -915,11 +920,11 @@ namespace Stomt
 		public void OnSubscribeTogglePressed()
 		{
 			string finalInfoText = "";
-			string defaultText = "What's your ";
-			string phoneTextEnding = "phone number?";
-			string emailTextEnding = "email address?";
+            string defaultText = _api.lang.getString("WHATS_YOUR");
+			string phoneTextEnding = _api.lang.getString("PHONE_END");
+            string emailTextEnding = _api.lang.getString("EMAIL_END");
 
-			SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
+            SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
 			useEmailOnSubscribe = !useEmailOnSubscribe;
 			//Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
 
@@ -930,14 +935,17 @@ namespace Stomt
 
 				finalInfoText = defaultText + emailTextEnding;
 
-			}
+                _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
+            }
 			else
 			{
 				toggleItemEMail.color = Color.gray;
 				toggleItemSMS.color = Color.black;
 
 				finalInfoText = defaultText + phoneTextEnding;
-			}
+
+                _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("PHONE_PLH");
+            }
 
 			_EmailInput.ActivateInputField();
 			_EmailInput.Select();
@@ -1032,12 +1040,21 @@ namespace Stomt
         public void ApplyLanguage()
         {
             // Setup multi-language strings
+
+            // Input Layer
             this.wouldText = _api.lang.getString("WOULD") + " ";
             this.becauseText = _api.lang.getString("BECAUSE") + " ";
             this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
             this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
             this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
             this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
+
+
+            //Subscription Layer
+            _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
+            SkipButton.text = _api.lang.getString("SKIP");
+            GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
+            PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
         }
     }
 }
