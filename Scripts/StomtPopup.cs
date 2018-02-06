@@ -51,7 +51,10 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public InputField _EmailInput;
-		[SerializeField]
+        [SerializeField]
+        [HideInInspector]
+        public Text _STOMTS;
+        [SerializeField]
 		[HideInInspector]
 		public Text _STOMTS_Number;
 		[SerializeField]
@@ -75,6 +78,9 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
+
+        //Input Layer
+
 
         //Subscription Layer
         [SerializeField]
