@@ -62,9 +62,6 @@ namespace Stomt
         public Text _YOURS_Number;
 		[SerializeField]
 		[HideInInspector]
-		public Text SentLayerMessage;
-		[SerializeField]
-		[HideInInspector]
 		public Text toggleItemEMail;
 		[SerializeField]
 		[HideInInspector]
@@ -82,6 +79,14 @@ namespace Stomt
         //Subscription Layer
         public Text SkipButton;
         public Text GetNotifiedText;
+
+        //Success Layer
+        public Text CreateButtonText;
+        public Text ThankYouText;
+        public Text ArrowText;
+        [SerializeField]
+        [HideInInspector]
+        public Text SentLayerMessage;
 
 
         [SerializeField]
@@ -621,7 +626,7 @@ namespace Stomt
 			// Submit
 			this.handleStomtSending();
 
-			SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetDisplayname + " on";
+			//SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetDisplayname + " on";
 		}
 
 		private void handleStomtSending()
@@ -1049,12 +1054,17 @@ namespace Stomt
             this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
             this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
 
-
             //Subscription Layer
             _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
             SkipButton.text = _api.lang.getString("SKIP");
             GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
             PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
+
+            //Success Layer
+            CreateButtonText.text = _api.lang.getString("CREATE_ANO_WISH");
+            ThankYouText.text = _api.lang.getString("THANK_YOU");
+            ArrowText.text = _api.lang.getString("FIND_YOUR_W");
+            SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
         }
     }
 }
