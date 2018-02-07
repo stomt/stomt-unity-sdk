@@ -19,9 +19,9 @@ namespace Stomt
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
 		string _appId = "";
-        [SerializeField]
-        [Tooltip("The language file: languages.json")]
-        public TextAsset languageFile;
+		[SerializeField]
+		[Tooltip("The language file: languages.json")]
+		public TextAsset languageFile;
 		#endregion
 
 		//The ID of the target page for your game on https://www.stomt.com/.
@@ -29,17 +29,17 @@ namespace Stomt
 
 		private string restServerURL = "https://rest.stomt.com";
 
-        [HideInInspector]
-        public string stomtURL = "https://www.stomt.com";
+		[HideInInspector]
+		public string stomtURL = "https://www.stomt.com";
 
-        [HideInInspector]
-        public StomtLang lang;
+		[HideInInspector]
+		public StomtLang lang;
 
-        public string defaultLanguage;
+		public string defaultLanguage;
 
-        public bool ForceDefaultLanguage;
+		public bool ForceDefaultLanguage;
 
-        public bool DisableDefaultLabels;
+		public bool DisableDefaultLabels;
 
 		public bool DebugDisableConfigFile = false;
 
@@ -59,27 +59,37 @@ namespace Stomt
 		/// <summary>
 		/// The targets amount of received stomts.
 		/// </summary>
-		public int amountStomtsReceived { get; set; }
+		public int amountStomtsReceived {
+			get; set;
+		}
 
 		/// <summary>
 		/// The users amount of created stomts.
 		/// </summary>
-		public int amountStomtsCreated { get; set; }
+		public int amountStomtsCreated {
+			get; set;
+		}
 
 		/// <summary>
 		/// The stomt username.
 		/// </summary>
-		public string UserDisplayname { get; set; }
+		public string UserDisplayname {
+			get; set;
+		}
 
 		/// <summary>
 		/// The stomt user ID.
 		/// </summary>
-		public string UserID { get; set; }
+		public string UserID {
+			get; set;
+		}
 
 		/// <summary>
 		/// Flag if client is offline.
 		/// </summary>
-		public bool NetworkError { get; set; }
+		public bool NetworkError {
+			get; set;
+		}
 
 		/// <summary>
 		/// The application ID for your game.
@@ -100,12 +110,16 @@ namespace Stomt
 		/// <summary>
 		/// The name of your target page.
 		/// </summary>
-		public string TargetDisplayname { get; set; }
+		public string TargetDisplayname {
+			get; set;
+		}
 
 		/// <summary>
 		/// The image url of your target page.
 		/// </summary>
-		public string TargetImageURL { get; set; }
+		public string TargetImageURL {
+			get; set;
+		}
 
 		/// <summary>
 		/// labels attached to the stomt.
@@ -115,54 +129,47 @@ namespace Stomt
 		/// <summary>
 		/// AdditionalData attached to the stomt.
 		/// </summary>
-		private List<List<string>> CustomKeyValuePairs;
+		private List<List<string> > CustomKeyValuePairs;
 
 		public StomtAPI()
 		{
-			CustomKeyValuePairs = new List<List<string>>();
+			CustomKeyValuePairs = new List<List<string> >();
 		}
 
 
 		void Awake()
 		{
 			// Debug/Testing on the test-server
-			if (this.AppId.Equals("Copy_your_AppID_here"))
-			{
+			if (this.AppId.Equals("Copy_your_AppID_here")) {
 				this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
 				this.restServerURL = "https://test.rest.stomt.com";
 				this.stomtURL = "https://test.stomt.com";
 
-			}
-			else
-			{
+			} else {
 				this.restServerURL = "https://rest.stomt.com";
 				this.stomtURL = "https://stomt.com";
 				this.DebugDisableConfigFile = false;
 			}
-			
+
 			NetworkError = false;
 
-            this.lang = new StomtLang(this, defaultLanguage);
+			this.lang = new StomtLang(this, defaultLanguage);
 
-            // TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
-            //ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
-            ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
+			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
+			//ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+			ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 		}
 
 		void Start()
 		{
-			if (DebugDisableConfigFile)
-			{
+			if (DebugDisableConfigFile) {
 				this.config.SetLoggedin(false);
 				this.config.SetSubscribed(false);
-			}
-			else
-			{
+			} else {
 				this.config.Load();
 			}
 
-			if (string.IsNullOrEmpty(_appId))
-			{
+			if (string.IsNullOrEmpty(_appId)) {
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
 
@@ -170,7 +177,7 @@ namespace Stomt
 			TargetDisplayname = "Loading";
 
 
-        }
+		}
 
 
 		// Track Handling
@@ -200,8 +207,7 @@ namespace Stomt
 		{
 			RequestTarget (_targetId, callbackSuccess, callbackError);
 
-			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
-			{
+			if (!string.IsNullOrEmpty(this.config.GetAccessToken())) {
 				RequestSession (callbackSuccess, callbackError);
 			}
 		}
@@ -253,9 +259,9 @@ namespace Stomt
 
 			switch (type)
 			{
-				case SubscriptionType.EMail: writerSubscription.WritePropertyName("email");
+			case SubscriptionType.EMail: writerSubscription.WritePropertyName("email");
 				break;
-				case SubscriptionType.Phone: writerSubscription.WritePropertyName("phone");
+			case SubscriptionType.Phone: writerSubscription.WritePropertyName("phone");
 				break;
 			}
 
@@ -408,19 +414,16 @@ namespace Stomt
 		{
 			bool isOk = true;
 			// If there are errors in the certificate chain, look at each error to determine the cause.
-			if (sslPolicyErrors != SslPolicyErrors.None)
-			{
+			if (sslPolicyErrors != SslPolicyErrors.None) {
 				for (int i = 0; i < chain.ChainStatus.Length; i++)
 				{
-					if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
-					{
+					if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
 						chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
 						chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
 						chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
 						chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
 						bool chainIsValid = chain.Build((X509Certificate2)certificate);
-						if (!chainIsValid)
-						{
+						if (!chainIsValid) {
 							isOk = false;
 						}
 					}
@@ -437,8 +440,7 @@ namespace Stomt
 			request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
 			request.Headers["appid"] = _appId;
 
-			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
-			{
+			if (!string.IsNullOrEmpty(this.config.GetAccessToken())) {
 				request.Headers ["accesstoken"] = this.config.GetAccessToken();
 			}
 
@@ -511,9 +513,7 @@ namespace Stomt
 				var statusCode = "";
 				if (errorResponse != null) {
 					statusCode = errorResponse.StatusCode.ToString();
-				}
-				else
-				{
+				} else {
 					this.NetworkError = false;
 				}
 
@@ -544,8 +544,7 @@ namespace Stomt
 
 			using (var responseStream = response.GetResponseStream())
 			{
-				if (responseStream == null)
-				{
+				if (responseStream == null) {
 					yield break;
 				}
 
@@ -558,14 +557,13 @@ namespace Stomt
 				}
 			}
 
-            //////////////////////////////////////////////////////////////////
-            // Analyze JSON data
-            //////////////////////////////////////////////////////////////////
+			//////////////////////////////////////////////////////////////////
+			// Analyze JSON data
+			//////////////////////////////////////////////////////////////////
 
 			LitJsonStomt.JsonData responseData = LitJsonStomt.JsonMapper.ToObject(responseDataText);
 
-			if (responseData.Keys.Contains("error"))
-			{
+			if (responseData.Keys.Contains("error")) {
 				Debug.LogError((string)responseData["error"]["msg"]);
 				Debug.Log ("ExecuteRequest error msg " + responseData["error"]["msg"]);
 				callbackError(response);
@@ -573,15 +571,13 @@ namespace Stomt
 			}
 
 			// Store access token
-			if (responseData.Keys.Contains("meta") && !responseData["meta"].IsArray)
-			{
-				if (responseData["meta"].Keys.Contains("accesstoken"))
-				{
+			if (responseData.Keys.Contains("meta") && !responseData["meta"].IsArray) {
+				if (responseData["meta"].Keys.Contains("accesstoken")) {
 					string accesstoken = (string)responseData["meta"]["accesstoken"];
 					this.config.SetAccessToken(accesstoken);
 				}
 			}
-			
+
 			//Debug.Log ("ExecuteRequest response " + uri);
 			if (callbackSuccess != null) {
 				callbackSuccess(responseData["data"]);
