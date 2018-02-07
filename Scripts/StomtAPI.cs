@@ -43,7 +43,16 @@ namespace Stomt
 
 		public bool DebugDisableConfigFile = false;
 
-		public StomtConfig config;
+		private StomtConfig _config = null;
+
+		public StomtConfig config {
+			get {
+				if (this._config == null) {
+					this._config = new StomtConfig();
+				}
+				return this._config;
+			}
+		}
 
 		public enum SubscriptionType { EMail, Phone };
 
@@ -142,8 +151,6 @@ namespace Stomt
 
 		void Start()
 		{
-			this.config = new StomtConfig();
-
 			if (DebugDisableConfigFile)
 			{
 				this.config.SetLoggedin(false);
