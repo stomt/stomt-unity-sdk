@@ -37,7 +37,9 @@ Example Games that use our integrations:
 <img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" /> 
 </p>
 
-4. Finished!  
+4. Finished!
+
+Scaling: You can scale the widget by using the StomtPopup's Rect Transform Scale property in the inspector.
 
 ## Form Triggers
 
