@@ -316,8 +316,7 @@ namespace Stomt
 
 			// Move Target (Fit with Toggle)
 			MoveTargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
-
-			MovePlaceholderBasedOnMessage();
+			this.MovePlaceholderBasedOnMessage();
 		}
 
 		private void MoveTargetBasedOnToggle(Rect toggleRect)
@@ -417,6 +416,7 @@ namespace Stomt
 
 		void Reset()
 		{
+			this.MovePlaceholderBasedOnMessage();
 			this.CustomPlaceholderText.SetActive(true);
 			this.StartedTyping = false;
 			_screenshotToggle.isOn = true;
@@ -487,7 +487,6 @@ namespace Stomt
 			}
 
 			OnMessageChanged();
-			MovePlaceholderBasedOnMessage();
 
 		}
 		public void OnMessageChanged()
@@ -540,6 +539,7 @@ namespace Stomt
 			{
 				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
 				{
+					this.MovePlaceholderBasedOnMessage();
 					this.CustomPlaceholderText.SetActive(true);
 				}
 				else
