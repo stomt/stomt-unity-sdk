@@ -8,7 +8,7 @@ namespace Stomt
 {
 	public class StomtLog
 	{
-		private StomtAPI _api;
+		//private StomtAPI _api;
 		private Thread fileReadThread;
 
 		private string logFileContent = null;
@@ -16,7 +16,7 @@ namespace Stomt
 
 		public StomtLog (StomtAPI api)
 		{
-			this._api = api;
+			//this._api = api;
 			this.fileReadThread = new Thread(LoadLogFileThread);
 			this.fileReadThread.Start();
 		}
@@ -93,7 +93,7 @@ namespace Stomt
 				if (File.Exists (logFilePath)) {
 					return logFilePath;
 				} else {
-					Debug.Log ("does not exist" + logFilePath);
+					Debug.Log ("Log file does not exist in this path: " + logFilePath);
 				}
 			}
 
