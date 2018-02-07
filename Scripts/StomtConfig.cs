@@ -6,164 +6,139 @@ using UnityEngine;
 
 public class StomtConfig
 {
-    public delegate void StomtConfigAction();
-    public static event StomtConfigAction OnStomtConfigUpdate;
+	public delegate void StomtConfigAction();
+	public static event StomtConfigAction OnStomtConfigUpdate;
+	private string StomtAccesstokenKey = "StomtAccesstoken";
+	private string StomtSubscribedKey = "StomtSubscribed";
+	private string StomtLoggedinKey = "StomtLoggedin";
+	private string Accesstoken;
+	private bool Subscribed;
+	private bool Loggedin;
+	public void Load()
+	{
+		this.Accesstoken = this.GetAccessToken();
+		this.Subscribed = this.GetSubscribed();
+		this.Loggedin = this.GetLoggedin();
 
-    private string StomtAccesstokenKey = "StomtAccesstoken";
-    private string StomtSubscribedKey = "StomtSubscribed";
-    private string StomtLoggedinKey = "StomtLoggedin";
+		if (OnStomtConfigUpdate != null) {
+			OnStomtConfigUpdate();
+		}
+	}
 
-    private string Accesstoken;
-    private bool Subscribed;
-    private bool Loggedin;
+	public void Delete()
+	{
+		PlayerPrefs.DeleteKey(this.StomtAccesstokenKey);
+		PlayerPrefs.DeleteKey(this.StomtLoggedinKey);
+		PlayerPrefs.DeleteKey(this.StomtSubscribedKey);
+		PlayerPrefs.Save();
 
-    public void Load()
-    {
-        this.Accesstoken = this.GetAccessToken();
-        this.Subscribed = this.GetSubscribed();
-        this.Loggedin = this.GetLoggedin();
+		if (OnStomtConfigUpdate != null) {
+			OnStomtConfigUpdate();
+		}
+	}
 
-        if (OnStomtConfigUpdate != null)
-            OnStomtConfigUpdate();
-    }
+	public void SetAccessToken(string accesstoken)
+	{
+		if (PlayerPrefs.HasKey(this.StomtAccesstokenKey)) {
+			if (PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(accesstoken)) {
+				return;
+			}
+		}
 
-    public void Delete()
-    {
-        PlayerPrefs.DeleteKey(this.StomtAccesstokenKey);
-        PlayerPrefs.DeleteKey(this.StomtLoggedinKey);
-        PlayerPrefs.DeleteKey(this.StomtSubscribedKey);
-        PlayerPrefs.Save();
+		if (accesstoken != null) {
+			this.Accesstoken = accesstoken;
+			PlayerPrefs.SetString(this.StomtAccesstokenKey, this.Accesstoken);
+			PlayerPrefs.Save();
 
-        if (OnStomtConfigUpdate != null)
-            OnStomtConfigUpdate();
-    }
+			if (OnStomtConfigUpdate != null) {
+				OnStomtConfigUpdate();
+			}
+		}
+	}
 
-    public void SetAccessToken(string accesstoken)
-    {
-        if (PlayerPrefs.HasKey(this.StomtAccesstokenKey))
-        {
-            if(PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(accesstoken))
-            {
-                return;
-            }
-        }
+	public void SetSubscribed(bool subscribed)
+	{
+		if (PlayerPrefs.HasKey(this.StomtSubscribedKey)) {
+			if (PlayerPrefs.GetString(this.StomtSubscribedKey).Equals(subscribed.ToString()) ) {
+				return;
+			}
+		}
 
-        if( accesstoken != null)
-        {
-            this.Accesstoken = accesstoken;
-            PlayerPrefs.SetString(this.StomtAccesstokenKey, this.Accesstoken);
-            PlayerPrefs.Save();
+		if (!string.IsNullOrEmpty(subscribed.ToString())) {
+			this.Subscribed = subscribed;
+			PlayerPrefs.SetString(this.StomtSubscribedKey, this.Subscribed.ToString());
+			PlayerPrefs.Save();
 
-            if (OnStomtConfigUpdate != null)
-                OnStomtConfigUpdate();
-        }
-    }
+			if (OnStomtConfigUpdate != null) {
+				OnStomtConfigUpdate();
+			}
+		}
+	}
 
-    public void SetSubscribed(bool subscribed)
-    {
-        if (PlayerPrefs.HasKey(this.StomtSubscribedKey))
-        {
-            if ( PlayerPrefs.GetString(this.StomtSubscribedKey).Equals(subscribed.ToString()) )
-            {
-                return;
-            }
-        }
+	public void SetLoggedin(bool loggedin)
+	{
+		if (PlayerPrefs.HasKey(this.StomtLoggedinKey)) {
+			if (PlayerPrefs.GetString(this.StomtLoggedinKey).Equals(loggedin.ToString())) {
+				return;
+			}
+		}
 
-        if (!string.IsNullOrEmpty(subscribed.ToString()))
-        {
-            this.Subscribed = subscribed;
-            PlayerPrefs.SetString(this.StomtSubscribedKey, this.Subscribed.ToString());
-            PlayerPrefs.Save();
+		if (!string.IsNullOrEmpty(loggedin.ToString())) {
+			this.Loggedin = loggedin;
+			PlayerPrefs.SetString(this.StomtLoggedinKey, this.Loggedin.ToString());
+			PlayerPrefs.Save();
 
-            if (OnStomtConfigUpdate != null)
-                OnStomtConfigUpdate();
-        }
-    }
+			if (OnStomtConfigUpdate != null) {
+				OnStomtConfigUpdate();
+			}
+		}
+	}
 
-    public void SetLoggedin(bool loggedin)
-    {
-        if (PlayerPrefs.HasKey(this.StomtLoggedinKey))
-        {
-            if (PlayerPrefs.GetString(this.StomtLoggedinKey).Equals(loggedin.ToString()))
-            {
-                return;
-            }
-        }
+	public string GetAccessToken()
+	{
+		if (PlayerPrefs.HasKey(this.StomtAccesstokenKey)) {
+			if (PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(this.Accesstoken)) {
+				if (!string.IsNullOrEmpty(this.Accesstoken)) {
+					return this.Accesstoken;
+				} else {
+					Debug.Log("Accesstoken was NullOrEmpty and Key was set");
+					return "";
+				}
+			} else {
+				return PlayerPrefs.GetString(this.StomtAccesstokenKey);
+			}
+		}
 
-        if (!string.IsNullOrEmpty(loggedin.ToString()))
-        {
-            this.Loggedin = loggedin;
-            PlayerPrefs.SetString(this.StomtLoggedinKey, this.Loggedin.ToString());
-            PlayerPrefs.Save();
+		if (!string.IsNullOrEmpty(this.Accesstoken)) {
+			return this.Accesstoken;
+		} else {
+			return "";
+		}
+	}
 
-            if (OnStomtConfigUpdate != null)
-                OnStomtConfigUpdate();
-        }
-    }
+	public bool GetSubscribed()
+	{
+		if (PlayerPrefs.HasKey(this.StomtSubscribedKey)) {
+			if (PlayerPrefs.GetString(this.StomtSubscribedKey).Equals(this.Subscribed.ToString())) {
+				return this.Subscribed;
+			} else {
+				return Convert.ToBoolean(PlayerPrefs.GetString(this.StomtSubscribedKey));
+			}
+		}
 
-    public string GetAccessToken()
-    {
-        if (PlayerPrefs.HasKey(this.StomtAccesstokenKey))
-        {
-            if (PlayerPrefs.GetString(this.StomtAccesstokenKey).Equals(this.Accesstoken))
-            {
-                if (!string.IsNullOrEmpty(this.Accesstoken))
-                {
-                    return this.Accesstoken;
-                }
-                else
-                {
-                    Debug.Log("Accesstoken was NullOrEmpty and Key was set");
-                    return "";
-                }
-            }
-            else
-            {
-                return PlayerPrefs.GetString(this.StomtAccesstokenKey);
-            }
-        }
+		return false;
+	}
 
-        if (!string.IsNullOrEmpty(this.Accesstoken))
-        {
-            return this.Accesstoken;
-        }
-        else
-        {
-            return "";
-        }
-    }
+	public bool GetLoggedin()
+	{
+		if (PlayerPrefs.HasKey(this.StomtLoggedinKey)) {
+			if (PlayerPrefs.GetString(this.StomtLoggedinKey).Equals(this.Loggedin.ToString())) {
+				return this.Loggedin;
+			} else {
+				return Convert.ToBoolean(PlayerPrefs.GetString(this.StomtLoggedinKey));
+			}
+		}
 
-    public bool GetSubscribed()
-    {
-        if (PlayerPrefs.HasKey(this.StomtSubscribedKey))
-        {
-            if (PlayerPrefs.GetString(this.StomtSubscribedKey).Equals(this.Subscribed.ToString()))
-            {
-                return this.Subscribed;
-            }
-            else
-            {
-                return Convert.ToBoolean(PlayerPrefs.GetString(this.StomtSubscribedKey));
-            }
-        }
-
-        return false;
-    }
-
-    public bool GetLoggedin()
-    {
-        if (PlayerPrefs.HasKey(this.StomtLoggedinKey))
-        {
-            if (PlayerPrefs.GetString(this.StomtLoggedinKey).Equals(this.Loggedin.ToString()))
-            {
-                return this.Loggedin;
-            }
-            else
-            {
-                return Convert.ToBoolean(PlayerPrefs.GetString(this.StomtLoggedinKey));
-            }
-        }
-
-        return false;
-    }
+		return false;
+	}
 }

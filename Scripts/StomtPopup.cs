@@ -51,18 +51,18 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public InputField _EmailInput;
-        [SerializeField]
-        [HideInInspector]
-        public Text _STOMTS;
-        [SerializeField]
+		[SerializeField]
+		[HideInInspector]
+		public Text _STOMTS;
+		[SerializeField]
 		[HideInInspector]
 		public Text _STOMTS_Number;
 		[SerializeField]
-        [HideInInspector]
-        public Text _YOURS;
-        [SerializeField]
-        [HideInInspector]
-        public Text _YOURS_Number;
+		[HideInInspector]
+		public Text _YOURS;
+		[SerializeField]
+		[HideInInspector]
+		public Text _YOURS_Number;
 		[SerializeField]
 		[HideInInspector]
 		public Text toggleItemEMail;
@@ -79,40 +79,40 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
 
-        //Subscription Layer
-        [SerializeField]
-        [HideInInspector]
-        public Text SkipButton;
-        [SerializeField]
-        [HideInInspector]
-        public Text GetNotifiedText;
+		// Subscription Layer
+		[SerializeField]
+		[HideInInspector]
+		public Text SkipButton;
+		[SerializeField]
+		[HideInInspector]
+		public Text GetNotifiedText;
 
-        //Success Layer
-        [SerializeField]
-        [HideInInspector]
-        public Text CreateButtonText;
-        [SerializeField]
-        [HideInInspector]
-        public Text ThankYouText;
-        [SerializeField]
-        [HideInInspector]
-        public Text ArrowText;
-        [SerializeField]
-        [HideInInspector]
-        public Text SentLayerMessage;
+		// Success Layer
+		[SerializeField]
+		[HideInInspector]
+		public Text CreateButtonText;
+		[SerializeField]
+		[HideInInspector]
+		public Text ThankYouText;
+		[SerializeField]
+		[HideInInspector]
+		public Text ArrowText;
+		[SerializeField]
+		[HideInInspector]
+		public Text SentLayerMessage;
 
-        //Error Layer
-        [SerializeField]
-        [HideInInspector]
-        public Text ReconnectText;
-        [SerializeField]
-        [HideInInspector]
-        public Text ErrorHeaderText;
-        [SerializeField]
-        [HideInInspector]
-        public Text ErrorMessageText;
+		// Error Layer
+		[SerializeField]
+		[HideInInspector]
+		public Text ReconnectText;
+		[SerializeField]
+		[HideInInspector]
+		public Text ErrorHeaderText;
+		[SerializeField]
+		[HideInInspector]
+		public Text ErrorMessageText;
 
-        [SerializeField]
+		[SerializeField]
 		[HideInInspector]
 		GameObject _ui;
 		[SerializeField]
@@ -136,65 +136,60 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		Toggle _screenshotToggle;
-        [SerializeField]
-        [HideInInspector]
-        public GameObject placeholderText;
-        [SerializeField]
-        [HideInInspector]
-        public GameObject messageText;
-        [SerializeField]
-        [HideInInspector]
-        public Image TargetIcon;
-        #endregion
-        StomtAPI _api;
+		[SerializeField]
+		[HideInInspector]
+		public GameObject placeholderText;
+		[SerializeField]
+		[HideInInspector]
+		public GameObject messageText;
+		[SerializeField]
+		[HideInInspector]
+		public Image TargetIcon;
+		#endregion
+		StomtAPI _api;
 		Texture2D _screenshot;
 		StomtLog _log;
-
 		public Texture2D ProfileImageTexture;
 		public bool LogFileUpload = true;
 		public bool ShowCloseButton = true;
-		/** Activates the would/because text **/
-		public bool WouldBecauseText = true;
+		public bool WouldBecauseText = true; // Activates the would/because text
 		public int TargetNameCharLimit = 11;
 		public int ErrorMessageCharLimit = 20;
 		public bool ShowWidgetOnStart = false;
-
 		private WWW ImageDownload;
 		private bool TargetImageApplied = false;
 		private bool StartedTyping;
 		private bool IsErrorState;
-
 		private int CharLimit = 120;
 		private bool useEmailOnSubscribe = true;
 		private bool onMobile = false;
 		private string wouldText = "would ";
 		private string becauseText = "because ";
-        private Vector3 targetLocalStartPostion;
-        private Vector3 placeholderLocalStartPosition;
+		private Vector3 targetLocalStartPostion;
+		private Vector3 placeholderLocalStartPosition;
 
-        public delegate void StomtAction();
+		public delegate void StomtAction();
 		public static event StomtAction OnStomtSend;
 		public static event StomtAction OnWidgetClosed;
 		public static event StomtAction OnWidgetOpen;
-
 		enum UILayer { Input, Subscription, Success, Error };
-
 		UILayer CurrentLayer;
 
 		void Awake()
 		{
 			_ui.SetActive(false);
 
-            // Set local start positions
-            targetLocalStartPostion = _targetObj.GetComponent<RectTransform>().localPosition;
-            placeholderLocalStartPosition = placeholderText.transform.localPosition;
-            placeholderLocalStartPosition.x -= 130; // offset
-        }
+			// Set local start positions
+			targetLocalStartPostion = _targetObj.GetComponent<RectTransform>().localPosition;
+			placeholderLocalStartPosition = placeholderText.transform.localPosition;
+			placeholderLocalStartPosition.x -= 130; // offset
+		}
 
 		void Start()
 		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) {
 				this.onMobile = true;
+			}
 
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
@@ -209,64 +204,47 @@ namespace Stomt
 				StartCoroutine(refreshTargetIcon());
 			}, null);
 
-			if(ShowWidgetOnStart)
-			{
+			if (ShowWidgetOnStart) {
 				this.ShowWidget();
 			}
 
-            ApplyLanguage();
-        }
+			ApplyLanguage();
+		}
 
 		// is called every frame
 		void Update()
 		{
-			if (_ui.activeSelf)
-			{
-				if (!_LayerNetworkError.activeSelf && _api.NetworkError)
-				{
+			if (_ui.activeSelf) {
+				if (!_LayerNetworkError.activeSelf && _api.NetworkError) {
 					ShowNetworkErrorLayer();
-				}
-				else if(_LayerNetworkError.activeSelf && !_api.NetworkError)
-				{
+				} else if (_LayerNetworkError.activeSelf && !_api.NetworkError) {
 					HideNetworkErrorLayer();
 				}
 			}
 		}
-			
 
-		/**
-		 *   Enables the Widget/Popup when hidden
-		 */
+		// Enables the Widget/Popup when hidden
 		public void ShowWidget()
 		{
-			if (!_ui.activeSelf)
-			{
+			if (!_ui.activeSelf) {
 				StartCoroutine(Show());
 			}
 		}
 
-
-		/**
-		 *  Disables the Widget/Popup when active
-		 */
+		// Disables the Widget/Popup when active
 		public void HideWidget()
 		{
-			if (_ui.activeSelf)
-			{
+			if (_ui.activeSelf) {
 				Hide();
 			}
 		}
 
 		void OnGUI()
 		{
-			if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())) && _toggleKey != KeyCode.None)
-			{
-				if (_ui.activeSelf)
-				{
+			if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())) && _toggleKey != KeyCode.None) {
+				if (_ui.activeSelf) {
 					Hide();
-				}
-				else
-				{
+				} else {
 					StartCoroutine(Show());
 				}
 			}
@@ -293,54 +271,47 @@ namespace Stomt
 				}
 				this._log = new StomtLog(this._api);
 			}
-			if(_api.NetworkError)
-			{
+			if (_api.NetworkError) {
 				ShowNetworkErrorLayer();
-			}
-			else
-			{
+			} else {
 				// Show UI
 				ResetUILayer();
 			}
-			
-			if(this.IsMessageLengthCorrect())
-			{
+
+			if (this.IsMessageLengthCorrect()) {
 				_postButton.GetComponent<Button>().interactable = true;
-			}
-			else
-			{
+			} else {
 				_postButton.GetComponent<Button>().interactable = false;
 			}
 
 			useEmailOnSubscribe = true;
 
 			// Call Event
-			if (OnWidgetOpen != null)
-			{
+			if (OnWidgetOpen != null) {
 				OnWidgetOpen();
 			}
 
 			Canvas.ForceUpdateCanvases();
 
-            /** Move Target (Fit with Toggle) */
-            MoveTargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
+			// Move Target (Fit with Toggle)
+			MoveTargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
 
-            MovePlaceholderBasedOnMessage();
-        }
+			MovePlaceholderBasedOnMessage();
+		}
 
-        private void MoveTargetBasedOnToggle(Rect toggleRect)
-        {
-            float width = toggleRect.width;
-            float height = toggleRect.height;
-            _targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
-        }
+		private void MoveTargetBasedOnToggle(Rect toggleRect)
+		{
+			float width = toggleRect.width;
+			float height = toggleRect.height;
+			_targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
+		}
 
-        private void MovePlaceholderBasedOnMessage()
-        {
-            CustomPlaceholderText.transform.localPosition = new Vector3( placeholderLocalStartPosition.x + CalculateLengthOfMessage(messageText.GetComponent<Text>()), CustomPlaceholderText.transform.localPosition.y, placeholderLocalStartPosition.z);
-        }
+		private void MovePlaceholderBasedOnMessage()
+		{
+			CustomPlaceholderText.transform.localPosition = new Vector3( placeholderLocalStartPosition.x + CalculateLengthOfMessage(messageText.GetComponent<Text>()), CustomPlaceholderText.transform.localPosition.y, placeholderLocalStartPosition.z);
+		}
 
-        private void SetStomtNumbers()
+		private void SetStomtNumbers()
 		{
 			_STOMTS_Number.text = _api.amountStomtsReceived.ToString ();
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
@@ -348,25 +319,19 @@ namespace Stomt
 
 		public void Reconnect()
 		{
-			if(CurrentLayer == UILayer.Success)
-			{
-				if(this._api.config.GetSubscribed())
-				{
+			if (CurrentLayer == UILayer.Success) {
+				if (this._api.config.GetSubscribed()) {
 					handleStomtSending();
-				}
-				else
-				{
+				} else {
 					SubmitSubscription();
 				}
 			}
 
-			if(CurrentLayer == UILayer.Subscription)
-			{
+			if (CurrentLayer == UILayer.Subscription) {
 				handleStomtSending();
 			}
 
-			if (CurrentLayer == UILayer.Input)
-			{
+			if (CurrentLayer == UILayer.Input) {
 				this.HideWidget();
 				this.ShowWidget();
 			}
@@ -376,18 +341,15 @@ namespace Stomt
 		{
 			_LayerNetworkError.SetActive(false);
 
-			if (CurrentLayer == UILayer.Input)
-			{
+			if (CurrentLayer == UILayer.Input) {
 				_LayerInput.SetActive(true);
 			}
 
-			if (CurrentLayer == UILayer.Subscription)
-			{
+			if (CurrentLayer == UILayer.Subscription) {
 				_LayerSubscription.SetActive(true);
 			}
 
-			if (CurrentLayer == UILayer.Success)
-			{
+			if (CurrentLayer == UILayer.Success) {
 				_LayerSuccessfulSent.SetActive(true);
 			}
 		}
@@ -396,18 +358,15 @@ namespace Stomt
 		{
 			_LayerNetworkError.SetActive(true);
 
-			if(CurrentLayer == UILayer.Input)
-			{
+			if (CurrentLayer == UILayer.Input) {
 				_LayerInput.SetActive(false);
 			}
-				
-			if(CurrentLayer == UILayer.Subscription)
-			{
+
+			if (CurrentLayer == UILayer.Subscription) {
 				_LayerSubscription.SetActive(false);
 			}
 
-			if (CurrentLayer == UILayer.Success)
-			{
+			if (CurrentLayer == UILayer.Success) {
 				_LayerSuccessfulSent.SetActive(false);
 			}
 		}
@@ -417,8 +376,7 @@ namespace Stomt
 			// Hide UI
 			_ui.SetActive(false);
 
-			if (OnWidgetClosed != null)
-			{
+			if (OnWidgetClosed != null) {
 				OnWidgetClosed();
 			}
 		}
@@ -429,12 +387,9 @@ namespace Stomt
 			this.StartedTyping = false;
 			_screenshotToggle.isOn = true;
 
-			if (_like.sortingOrder == 2)
-			{
+			if (_like.sortingOrder == 2) {
 				OnToggleButtonPressed();
-			}
-			else
-			{
+			} else {
 				OnMessageChanged();
 			}
 
@@ -443,15 +398,12 @@ namespace Stomt
 
 		public void OnToggleButtonPressed()
 		{
-			if(!StartedTyping)
-			{
+			if (!StartedTyping) {
 				this.StartedTyping = true;
 				this.RefreshStartText();
 				_message.ActivateInputField();
 				_message.Select();
-			}
-			else
-			{
+			} else {
 				_message.ActivateInputField();
 				_message.Select();
 
@@ -462,49 +414,42 @@ namespace Stomt
 			var likeAnimator = _like.GetComponent<Animator>();
 			var wishAnimator = _wish.GetComponent<Animator>();
 
-			if (likeAnimator.isInitialized && wishAnimator.isInitialized)
-			{
+			if (likeAnimator.isInitialized && wishAnimator.isInitialized) {
 				bool tmp = likeAnimator.GetBool("OnTop");
 				likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
 				wishAnimator.SetBool("OnTop", tmp);
 			}
-		
-			if (_like.sortingOrder == 2)
-			{
+
+			if (_like.sortingOrder == 2) {
 				// I wish
 				_like.sortingOrder = 1;
 				_wish.sortingOrder = 2;
 				_wouldBecauseText.text = "would";
 
-				if (!this.IsMessageLengthCorrect() && WouldBecauseText)
-				{
+				if (!this.IsMessageLengthCorrect() && WouldBecauseText) {
 					_message.text = this.wouldText;
 				}
-			}
-			else
-			{
+			} else {
 				// I like
 				_like.sortingOrder = 2;
 				_wish.sortingOrder = 1;
 				_wouldBecauseText.text = "because";
-			   
-				if(!this.IsMessageLengthCorrect() && WouldBecauseText)
-				{
+
+				if (!this.IsMessageLengthCorrect() && WouldBecauseText) {
 					_message.text = this.becauseText;
 				}
 			}
 
 			OnMessageChanged();
-            MovePlaceholderBasedOnMessage();
+			MovePlaceholderBasedOnMessage();
 
-        }
+		}
 		public void OnMessageChanged()
 		{
 			int limit = CharLimit;
 			int reverselength = limit - _message.text.Length;
 
-			if (reverselength <= 0)
-			{
+			if (reverselength <= 0) {
 				reverselength = 0;
 				_message.text = _message.text.Substring(0, limit);
 			}
@@ -512,46 +457,33 @@ namespace Stomt
 			_characterLimit.text = reverselength.ToString();
 
 
-			/** Change Text **/
-			if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf )
-			{
+			// Change Text
+			if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf) {
 				this.RefreshStartText();
 			}
 
-			if(IsMessageLengthCorrect())
-			{
+			if (IsMessageLengthCorrect()) {
 				_postButton.GetComponent<Button>().interactable = true;
-			}
-			else
-			{
+			} else {
 				_postButton.GetComponent<Button>().interactable = false;
 			}
 
-			if(StartedTyping && _message.text.Length < 6)
-			{
+			if (StartedTyping && _message.text.Length < 6) {
 				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
 			}
 
-			if(_characterLimit.GetComponent<Animator>().isInitialized)
-			{
-				if (_message.text.Length > 15)
-				{
+			if (_characterLimit.GetComponent<Animator>().isInitialized) {
+				if (_message.text.Length > 15) {
 					_characterLimit.GetComponent<Animator>().SetBool("Active", true);
-				}
-				else
-				{
+				} else {
 					_characterLimit.GetComponent<Animator>().SetBool("Active", false);
 				}
 			}
 
-			if(StartedTyping)
-			{
-				if(_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
-				{
+			if (StartedTyping) {
+				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText)) {
 					this.CustomPlaceholderText.SetActive(true);
-				}
-				else
-				{
+				} else {
 					this.CustomPlaceholderText.SetActive(false);
 				}
 			}
@@ -559,37 +491,28 @@ namespace Stomt
 
 		public void RefreshStartText()
 		{
-			if (!WouldBecauseText || onMobile)
+			if (!WouldBecauseText || onMobile) {
 				return;
+			}
 
-			if (this.StartedTyping)
-			{
-				if (_like.sortingOrder == 1)
-				{
+			if (this.StartedTyping) {
+				if (_like.sortingOrder == 1) {
 					// I wish
-					if (_message.text.Equals("because ") || !StartedTyping)
-					{
+					if (_message.text.Equals("because ") || !StartedTyping) {
 						_message.text = this.wouldText;
 					}
-				}
-				else
-				{
+				} else {
 					// I like
-					if (_message.text.Equals(this.wouldText) || !StartedTyping)
-					{
+					if (_message.text.Equals(this.wouldText) || !StartedTyping) {
 						_message.text = this.becauseText;
 					}
 				}
 
 				_message.GetComponent<InputField>().MoveTextEnd(true);
-			}
-			else
-			{
-				if (_like.sortingOrder == 1)
-				{
+			} else {
+				if (_like.sortingOrder == 1) {
 					// I wish
-					if (_message.text.Equals(this.becauseText) || !StartedTyping)
-					{
+					if (_message.text.Equals(this.becauseText) || !StartedTyping) {
 						_message.text = this.wouldText;
 					}
 				}
@@ -598,12 +521,9 @@ namespace Stomt
 
 		private bool IsMessageLengthCorrect()
 		{
-			if (_message.text.Length == 0 || _message.text.Length <= 9)
-			{
+			if (_message.text.Length == 0 || _message.text.Length <= 9) {
 				return false;
-			}
-			else
-			{
+			} else {
 				HideErrorMessage();
 				return true;
 			}
@@ -611,14 +531,12 @@ namespace Stomt
 
 		public void OnPostButtonPressed()
 		{
-			if (IsErrorState)
-			{
+			if (IsErrorState) {
 				this.HideErrorMessage();
 				return;
 			}
 
-			if (!IsMessageLengthCorrect())
-			{
+			if (!IsMessageLengthCorrect()) {
 				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
 				Debug.Log("_message to short!");
 				return;
@@ -626,14 +544,11 @@ namespace Stomt
 
 			// Switch UI Layer
 			_LayerInput.SetActive(false);
-			if (this._api.config.GetSubscribed())
-			{
+			if (this._api.config.GetSubscribed()) {
 				_LayerSuccessfulSent.SetActive(true);
 				CurrentLayer = UILayer.Success;
 				OnSwitchToSuccessLayer();
-			}
-			else
-			{
+			} else {
 				_LayerSubscription.SetActive(true);
 				CurrentLayer = UILayer.Subscription;
 				_EmailInput.ActivateInputField();
@@ -644,7 +559,7 @@ namespace Stomt
 			// Submit
 			this.handleStomtSending();
 
-			//SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetDisplayname + " on";
+			// SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetDisplayname + " on";
 		}
 
 		private void handleStomtSending()
@@ -669,11 +584,11 @@ namespace Stomt
 				SetStomtNumbers();
 			}, (response) => {
 				if (response == null) {
-					return;
+				        return;
 				}
 				if (response.StatusCode.ToString().Equals("409")) {
-					Debug.Log("Duplicate");
-					// TODO return to form
+				        Debug.Log("Duplicate");
+				        // TODO return to form
 //					ShowErrorMessage("You already posted this stomt.");
 //					_LayerInput.SetActive(true);
 //					_LayerSuccessfulSent.SetActive(false);
@@ -687,27 +602,20 @@ namespace Stomt
 				OnStomtSend();
 			}
 		}
-	
+
 		private void setTargetName()
 		{
-			if(string.IsNullOrEmpty(DisplayGameName))
-			{
-				if (_api.TargetDisplayname != null)
-				{
-					if (_api.TargetDisplayname.Length > TargetNameCharLimit)
-					{
+			if (string.IsNullOrEmpty(DisplayGameName)) {
+				if (_api.TargetDisplayname != null) {
+					if (_api.TargetDisplayname.Length > TargetNameCharLimit) {
 						_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
-					} else
-					{
+					} else {
 						_targetText.text = _api.TargetDisplayname;
 					}
-				} else
-				{
+				} else {
 					_targetText.text = _api.TargetID;
 				}
-			}
-			else
-			{
+			} else {
 				_targetText.text = DisplayGameName;
 			}
 
@@ -717,11 +625,9 @@ namespace Stomt
 		{
 			yield return 0;
 			// check wether download needed
-			if (ImageDownload == null && ProfileImageTexture == null)
-			{
+			if (ImageDownload == null && ProfileImageTexture == null) {
 				// Start download
-				if (this._api.TargetImageURL != null)
-				{
+				if (this._api.TargetImageURL != null) {
 					WWW www = new WWW(this._api.TargetImageURL);
 					while (!www.isDone)
 					{
@@ -731,27 +637,20 @@ namespace Stomt
 					ImageDownload = www;
 				}
 			}
-		
+
 			// check wether download finished
-			if (ImageDownload != null && !TargetImageApplied)
-			{
-				if (ProfileImageTexture != null) // already loaded, apply now
-				{
+			if (ImageDownload != null && !TargetImageApplied) {
+				if (ProfileImageTexture != null) { // already loaded, apply now
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
 					this.TargetImageApplied = true;
-				}
-				else if (ImageDownload.texture != null) // scale now and apply
-				{
+				} else if (ImageDownload.texture != null) {   // scale now and apply
 					ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
 
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG());
 					this.TargetImageApplied = true;
 				}
-			}
-			else
-			{
-				if (ProfileImageTexture != null && !TargetImageApplied) // already loaded, apply now
-				{
+			} else {
+				if (ProfileImageTexture != null && !TargetImageApplied) { // already loaded, apply now
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
 					TargetImageApplied = true;
 				}
@@ -768,10 +667,10 @@ namespace Stomt
 		{
 			this.RefreshStartText();
 
-			if(!IsErrorState)
-			{
-				if(_characterLimit.GetComponent<Animator>().isInitialized)
+			if (!IsErrorState) {
+				if (_characterLimit.GetComponent<Animator>().isInitialized) {
 					_screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
+				}
 			}
 
 			_message.ActivateInputField();
@@ -825,8 +724,7 @@ namespace Stomt
 		{
 			string url = this._api.stomtURL + "/" + _api.TargetID;
 
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
-			{
+			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken())) {
 				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
 			}
 
@@ -837,8 +735,7 @@ namespace Stomt
 		{
 			string url = this._api.stomtURL + "/" + _api.UserID;
 
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
-			{
+			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken())) {
 				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
 			}
 
@@ -850,31 +747,30 @@ namespace Stomt
 			_postButton.GetComponent<Button>().interactable = false;
 			IsErrorState = true;
 
-			if (message.Length > ErrorMessageCharLimit)
-			{
+			if (message.Length > ErrorMessageCharLimit) {
 				_ErrorMessageText.text = message.Substring(0, ErrorMessageCharLimit);
-			}
-			else
-			{
+			} else {
 				_ErrorMessageText.text = message;
 			}
 
 			_ErrorMessageObject.SetActive(true);
 
-			if((_screenshotToggle.GetComponent<Animator>().isInitialized))
+			if ((_screenshotToggle.GetComponent<Animator>().isInitialized)) {
 				_screenshotToggle.GetComponent<Animator>().SetBool("Show", false);
+			}
 
-			if ((_postButton.GetComponent<Animator>().isInitialized))
+			if ((_postButton.GetComponent<Animator>().isInitialized)) {
 				_postButton.GetComponent<Animator>().SetBool("Left", true);
+			}
 
-			if ((_ErrorMessageObject.GetComponent<Animator>().isInitialized))
+			if ((_ErrorMessageObject.GetComponent<Animator>().isInitialized)) {
 				_ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", true);
+			}
 		}
 
 		public void HideErrorMessage()
 		{
-			if(IsErrorState)
-			{
+			if (IsErrorState) {
 				IsErrorState = false;
 
 				_postButton.GetComponent<Button>().interactable = false;
@@ -887,14 +783,10 @@ namespace Stomt
 
 		public void SubmitSubscription()
 		{
-			if (!string.IsNullOrEmpty(_EmailInput.text))
-			{
-				if (useEmailOnSubscribe)
-				{
+			if (!string.IsNullOrEmpty(_EmailInput.text)) {
+				if (useEmailOnSubscribe) {
 					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
-				}
-				else
-				{
+				} else {
 					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
 				}
 			}
@@ -912,12 +804,9 @@ namespace Stomt
 
 		public void OnSubscriptionInputChanged()
 		{
-			if(_EmailInput.text.Length > 8 )
-			{
+			if (_EmailInput.text.Length > 8) {
 				_postButtonSubscription.GetComponent<Button>().interactable = true;
-			}
-			else
-			{
+			} else {
 				_postButtonSubscription.GetComponent<Button>().interactable = false;
 			}
 		}
@@ -943,32 +832,29 @@ namespace Stomt
 		public void OnSubscribeTogglePressed()
 		{
 			string finalInfoText = "";
-            string defaultText = _api.lang.getString("WHATS_YOUR");
+			string defaultText = _api.lang.getString("WHATS_YOUR");
 			string phoneTextEnding = _api.lang.getString("PHONE_END");
-            string emailTextEnding = _api.lang.getString("EMAIL_END");
+			string emailTextEnding = _api.lang.getString("EMAIL_END");
 
-            SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
+			SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
 			useEmailOnSubscribe = !useEmailOnSubscribe;
-			//Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
+			// Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
 
-			if (useEmailOnSubscribe)
-			{
+			if (useEmailOnSubscribe) {
 				toggleItemEMail.color = Color.black;
 				toggleItemSMS.color = Color.gray;
 
 				finalInfoText = defaultText + emailTextEnding;
 
-                _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
-            }
-			else
-			{
+				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
+			}           else {
 				toggleItemEMail.color = Color.gray;
 				toggleItemSMS.color = Color.black;
 
 				finalInfoText = defaultText + phoneTextEnding;
 
-                _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("PHONE_PLH");
-            }
+				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("PHONE_PLH");
+			}
 
 			_EmailInput.ActivateInputField();
 			_EmailInput.Select();
@@ -991,27 +877,21 @@ namespace Stomt
 		{
 			yield return new WaitForSeconds(delayTime);
 
-			if (animator.isInitialized)
-			{
+			if (animator.isInitialized) {
 				animator.SetBool("Show", true);
 			}
-				
-			if(TextToChange != null && NewText != null)
-			{
+
+			if (TextToChange != null && NewText != null) {
 				TextToChange.text = NewText;
 			}
 		}
 
 		public void OnMobileInput()
 		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-			{
-				if (!useEmailOnSubscribe)
-				{
+			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) {
+				if (!useEmailOnSubscribe) {
 					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
-				}
-				else
-				{
+				} else {
 					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, false, true);
 				}
 			}
@@ -1021,19 +901,13 @@ namespace Stomt
 		{
 			float CurrentMaxWidth = 0.0f;
 
-			if(_like.GetComponent<RectTransform>().rect.width > _wish.GetComponent<RectTransform>().rect.width)
-			{
+			if (_like.GetComponent<RectTransform>().rect.width > _wish.GetComponent<RectTransform>().rect.width) {
 				CurrentMaxWidth = _like.GetComponent<RectTransform>().rect.width;
-			}
-			else
-			{
+			} else {
 				CurrentMaxWidth = _wish.GetComponent<RectTransform>().rect.width;
 			}
 
-			//Debug.Log("CurrentMaxWidth: " + CurrentMaxWidth);
-
-			if(CurrentMaxWidth > ReferenceValue)
-			{
+			if (CurrentMaxWidth > ReferenceValue) {
 				return CurrentMaxWidth - ReferenceValue;
 			}
 
@@ -1041,53 +915,52 @@ namespace Stomt
 		}
 
 
-        int CalculateLengthOfMessage(Text textComponent)
-        {
-            int totalLength = 0;
+		int CalculateLengthOfMessage(Text textComponent)
+		{
+			int totalLength = 0;
+			Font font = textComponent.font;
+			CharacterInfo characterInfo = new CharacterInfo();
 
-            Font font = textComponent.font;
-            CharacterInfo characterInfo = new CharacterInfo();
+			char[] arr = textComponent.text.ToCharArray();
 
-            char[] arr = textComponent.text.ToCharArray();
+			foreach (char c in arr)
+			{
+				font.GetCharacterInfo(c, out characterInfo, textComponent.fontSize);
 
-            foreach (char c in arr)
-            {
-                font.GetCharacterInfo(c, out characterInfo, textComponent.fontSize); 
+				totalLength += characterInfo.advance;
+			}
 
-                totalLength += characterInfo.advance;
-            }
+			return totalLength;
+		}
 
-            return totalLength;
-        }
+		public void ApplyLanguage()
+		{
+			// Setup multi-language strings
 
-        public void ApplyLanguage()
-        {
-            // Setup multi-language strings
+			// Input Layer
+			this.wouldText = _api.lang.getString("WOULD") + " ";
+			this.becauseText = _api.lang.getString("BECAUSE") + " ";
+			this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
+			this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
+			this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
+			this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
 
-            // Input Layer
-            this.wouldText = _api.lang.getString("WOULD") + " ";
-            this.becauseText = _api.lang.getString("BECAUSE") + " ";
-            this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
-            this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
-            this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
-            this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
+			// Subscription Layer
+			_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
+			SkipButton.text = _api.lang.getString("SKIP");
+			GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
+			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
 
-            //Subscription Layer
-            _EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
-            SkipButton.text = _api.lang.getString("SKIP");
-            GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
-            PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
+			// Success Layer
+			CreateButtonText.text = _api.lang.getString("CREATE_ANO_WISH");
+			ThankYouText.text = _api.lang.getString("THANK_YOU");
+			ArrowText.text = _api.lang.getString("FIND_YOUR_W");
+			SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
 
-            //Success Layer
-            CreateButtonText.text = _api.lang.getString("CREATE_ANO_WISH");
-            ThankYouText.text = _api.lang.getString("THANK_YOU");
-            ArrowText.text = _api.lang.getString("FIND_YOUR_W");
-            SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
-
-            //Error Layer
-            ReconnectText.text = _api.lang.getString("RECONNECT");
-            ErrorHeaderText.text = _api.lang.getString("NOT_CONNECT");
-            ErrorMessageText.text = _api.lang.getString("NO_INTERNET");
-        }
-    }
+			// Error Layer
+			ReconnectText.text = _api.lang.getString("RECONNECT");
+			ErrorHeaderText.text = _api.lang.getString("NOT_CONNECT");
+			ErrorMessageText.text = _api.lang.getString("NO_INTERNET");
+		}
+	}
 }

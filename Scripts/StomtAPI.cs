@@ -24,9 +24,8 @@ namespace Stomt
 		public TextAsset languageFile;
 		#endregion
 
-		//The ID of the target page for your game on https://www.stomt.com/.
+		// The ID of the target page for your game on https://www.stomt.com/.
 		string _targetId = "";
-
 		private string restServerURL = "https://rest.stomt.com";
 
 		[HideInInspector]
@@ -34,17 +33,11 @@ namespace Stomt
 
 		[HideInInspector]
 		public StomtLang lang;
-
 		public string defaultLanguage;
-
 		public bool ForceDefaultLanguage;
-
 		public bool DisableDefaultLabels;
-
 		public bool DebugDisableConfigFile = false;
-
 		private StomtConfig _config = null;
-
 		public StomtConfig config {
 			get {
 				if (this._config == null) {
@@ -156,7 +149,7 @@ namespace Stomt
 			this.lang = new StomtLang(this, defaultLanguage);
 
 			// TODO: Workaround to accept the stomt SSL certificate. This should be replaced with a proper solution.
-			//ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
+			// ServicePointManager.ServerCertificateValidationCallback += delegate { return true; };
 			ServicePointManager.ServerCertificateValidationCallback = RemoteCertificateValidationCallback;
 		}
 
@@ -173,7 +166,7 @@ namespace Stomt
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
 
-			//TargetDisplayname = _targetId;
+			// TargetDisplayname = _targetId;
 			TargetDisplayname = "Loading";
 
 
@@ -449,7 +442,6 @@ namespace Stomt
 
 		private void GetGETResponse(string uri, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			//Debug.Log ("GetGETResponse " + uri);
 			HttpWebRequest request = WebRequest ("GET", uri);
 
 			this.StartCoroutine(ExecuteRequest(request, uri, null, callbackSuccess, callbackError));
@@ -457,8 +449,6 @@ namespace Stomt
 
 		private void GetPOSTResponse(string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			//Debug.Log ("GetPOSTResponse " + uri);
-			//Debug.Log("body " + data);
 			HttpWebRequest request = WebRequest ("POST", uri);
 
 			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError));
@@ -578,7 +568,6 @@ namespace Stomt
 				}
 			}
 
-			//Debug.Log ("ExecuteRequest response " + uri);
 			if (callbackSuccess != null) {
 				callbackSuccess(responseData["data"]);
 			}

@@ -10,25 +10,42 @@ namespace Stomt
 	public class StomtCreation
 	{
 		private StomtAPI _api;
+		public Texture2D screenshot {
+			get; set;
+		}
+		public string logs {
+			get; set;
+		}
 
-		public Texture2D screenshot { get; set; }
-		public string logs { get; set; }
-
-		public string target_id  { get; set; }
-		public bool positive  { get; set; }
-		public string text  { get; set; }
-		public string lang  { get; set; }
-		public bool anonym  { get; set; }
-		public string img_name  { get; set; }
-		public string file_uid  { get; set; }
+		public string target_id  {
+			get; set;
+		}
+		public bool positive  {
+			get; set;
+		}
+		public string text  {
+			get; set;
+		}
+		public string lang  {
+			get; set;
+		}
+		public bool anonym  {
+			get; set;
+		}
+		public string img_name  {
+			get; set;
+		}
+		public string file_uid  {
+			get; set;
+		}
 		public string[] labels;
-		public List<List<string>> CustomKeyValuePairs;
+		public List<List<string> > CustomKeyValuePairs;
 		public bool DisableDefaultLabels;
 
 		public StomtCreation(StomtAPI api)
 		{
 			this._api = api;
-			CustomKeyValuePairs = new List<List<string>>();
+			CustomKeyValuePairs = new List<List<string> >();
 		}
 
 		public override string ToString()
@@ -53,8 +70,7 @@ namespace Stomt
 			writerStomt.WritePropertyName("labels");
 			writerStomt.WriteArrayStart();
 
-			if (labels.Length > 0)
-			{
+			if (labels.Length > 0) {
 				foreach (string label in labels)
 				{
 					writerStomt.Write(label);
@@ -62,8 +78,7 @@ namespace Stomt
 			}
 
 			// Add default labels
-			if(!DisableDefaultLabels)
-			{
+			if (!DisableDefaultLabels) {
 				writerStomt.Write(Application.platform.ToString());
 				writerStomt.Write(Screen.currentResolution.ToString());
 			}
@@ -71,29 +86,25 @@ namespace Stomt
 			writerStomt.WriteArrayEnd();
 
 			// Add CustomKeyValuePairs
-			if (CustomKeyValuePairs.Count > 0)
-			{
+			if (CustomKeyValuePairs.Count > 0) {
 				foreach (List<string> PairList in CustomKeyValuePairs)
 				{
-					if(PairList.Count > 1)
-					{
+					if (PairList.Count > 1) {
 						writerStomt.WritePropertyName(PairList[0]);
 						writerStomt.Write(PairList[1]);
-					}  
+					}
 				}
 			}
 
 			writerStomt.WriteObjectEnd();
-			
 
-			if (!string.IsNullOrEmpty(this.img_name))
-			{
+
+			if (!string.IsNullOrEmpty(this.img_name)) {
 				writerStomt.WritePropertyName("img_name");
 				writerStomt.Write(this.img_name);
 			}
 
-			if(!string.IsNullOrEmpty(this.file_uid))
-			{
+			if (!string.IsNullOrEmpty(this.file_uid)) {
 				writerStomt.WritePropertyName("files");
 				writerStomt.WriteObjectStart();
 				writerStomt.WritePropertyName("stomt");
@@ -105,7 +116,6 @@ namespace Stomt
 			}
 
 			writerStomt.WriteObjectEnd();
-			//Debug.Log(jsonStomt.ToString());
 			return jsonStomt.ToString();
 		}
 
