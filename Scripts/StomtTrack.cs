@@ -5,7 +5,6 @@ using LitJsonStomt;
 
 namespace Stomt
 {
-
 	/// <summary>
 	/// A single stomt-track.
 	/// </summary>
@@ -80,7 +79,8 @@ namespace Stomt
 			writerTrack.WritePropertyName("event_action");
 			writerTrack.Write(this.event_action);
 
-			if (!String.IsNullOrEmpty(this.event_label)) {
+			if (!String.IsNullOrEmpty(this.event_label))
+			{
 				writerTrack.WritePropertyName("event_label");
 				writerTrack.Write(this.event_label);
 			}

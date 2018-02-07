@@ -40,7 +40,8 @@ namespace Stomt
 		private StomtConfig _config = null;
 		public StomtConfig config {
 			get {
-				if (this._config == null) {
+				if (this._config == null)
+				{
 					this._config = new StomtConfig();
 				}
 				return this._config;
@@ -133,12 +134,15 @@ namespace Stomt
 		void Awake()
 		{
 			// Debug/Testing on the test-server
-			if (this.AppId.Equals("Copy_your_AppID_here")) {
+			if (this.AppId.Equals("Copy_your_AppID_here"))
+			{
 				this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
 				this.restServerURL = "https://test.rest.stomt.com";
 				this.stomtURL = "https://test.stomt.com";
 
-			} else {
+			}
+			else
+			{
 				this.restServerURL = "https://rest.stomt.com";
 				this.stomtURL = "https://stomt.com";
 				this.DebugDisableConfigFile = false;
@@ -155,14 +159,18 @@ namespace Stomt
 
 		void Start()
 		{
-			if (DebugDisableConfigFile) {
+			if (DebugDisableConfigFile)
+			{
 				this.config.SetLoggedin(false);
 				this.config.SetSubscribed(false);
-			} else {
+			}
+			else
+			{
 				this.config.Load();
 			}
 
-			if (string.IsNullOrEmpty(_appId)) {
+			if (string.IsNullOrEmpty(_appId))
+			{
 				throw new ArgumentException("The stomt application ID variable cannot be empty.");
 			}
 
@@ -200,7 +208,8 @@ namespace Stomt
 		{
 			RequestTarget (_targetId, callbackSuccess, callbackError);
 
-			if (!string.IsNullOrEmpty(this.config.GetAccessToken())) {
+			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
+			{
 				RequestSession (callbackSuccess, callbackError);
 			}
 		}
@@ -214,17 +223,21 @@ namespace Stomt
 				TargetImageURL = (string)response["images"]["profile"]["url"];
 				amountStomtsReceived = (int)response["stats"]["amountStomtsReceived"];
 
-				if (callbackSuccess != null) {
+				if (callbackSuccess != null)
+				{
 					callbackSuccess(response);
 				}
 			}, (response) => {
-				if (response == null) {
+				if (response == null)
+				{
 					return;
 				}
-				if (response.StatusCode.ToString().Equals("419")) {
+				if (response.StatusCode.ToString().Equals("419"))
+				{
 					RequestTarget(target, callbackSuccess, callbackError);
 				}
-				if (callbackError != null) {
+				if (callbackError != null)
+				{
 					callbackError(response);
 				}
 			});
@@ -238,7 +251,8 @@ namespace Stomt
 				UserDisplayname = (string)response["user"]["displayname"];
 				UserID = (string)response["user"]["id"];
 
-				if (callbackSuccess != null) {
+				if (callbackSuccess != null)
+				{
 					callbackSuccess(response);
 				}
 			}, callbackError);
@@ -252,10 +266,13 @@ namespace Stomt
 
 			switch (type)
 			{
-			case SubscriptionType.EMail: writerSubscription.WritePropertyName("email");
-				break;
-			case SubscriptionType.Phone: writerSubscription.WritePropertyName("phone");
-				break;
+				case SubscriptionType.EMail:
+					writerSubscription.WritePropertyName("email");
+					break;
+
+				case SubscriptionType.Phone:
+					writerSubscription.WritePropertyName("phone");
+					break;
 			}
 
 			writerSubscription.Write(addressOrNumber);
@@ -271,7 +288,8 @@ namespace Stomt
 				track.event_label = type.ToString();
 				track.save ();
 
-				if (callbackSuccess != null) {
+				if (callbackSuccess != null)
+				{
 					callbackSuccess(response);
 				}
 			}, callbackError);
@@ -296,13 +314,14 @@ namespace Stomt
 		public void SendStomt(StomtCreation stomtCreation, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			// Upload file if pressent (and call function again)
-			if (stomtCreation.screenshot != null) {
+			if (stomtCreation.screenshot != null)
+			{
 				SendImage(stomtCreation.screenshot, (response) => {
 					var img_name = (string)response["images"]["stomt"]["name"];
 					stomtCreation.img_name = img_name;
 					stomtCreation.screenshot = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
-				},  (response) => {
+				}, (response) => {
 					// upload even when scrennshot upload failed
 					stomtCreation.screenshot = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
@@ -311,13 +330,14 @@ namespace Stomt
 			}
 
 			// Upload image if pressent (and call function again)
-			if (stomtCreation.logs != null) {
+			if (stomtCreation.logs != null)
+			{
 				SendFile(stomtCreation.logs, (response) => {
 					var file_uid = (string)response["files"]["stomt"]["file_uid"];
 					stomtCreation.file_uid = file_uid;
 					stomtCreation.logs = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
-				},  (response) => {
+				}, (response) => {
 					// upload even when logs upload failed
 					stomtCreation.logs = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
@@ -339,7 +359,8 @@ namespace Stomt
 				track.stomt_id = stomt_id;
 				track.save ();
 
-				if (callbackSuccess != null) {
+				if (callbackSuccess != null)
+				{
 					callbackSuccess(response);
 				}
 			}, callbackError);
@@ -407,16 +428,19 @@ namespace Stomt
 		{
 			bool isOk = true;
 			// If there are errors in the certificate chain, look at each error to determine the cause.
-			if (sslPolicyErrors != SslPolicyErrors.None) {
+			if (sslPolicyErrors != SslPolicyErrors.None)
+			{
 				for (int i = 0; i < chain.ChainStatus.Length; i++)
 				{
-					if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown) {
+					if (chain.ChainStatus[i].Status != X509ChainStatusFlags.RevocationStatusUnknown)
+					{
 						chain.ChainPolicy.RevocationFlag = X509RevocationFlag.EntireChain;
 						chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
 						chain.ChainPolicy.UrlRetrievalTimeout = new TimeSpan(0, 1, 0);
 						chain.ChainPolicy.VerificationFlags = X509VerificationFlags.AllFlags;
 						bool chainIsValid = chain.Build((X509Certificate2)certificate);
-						if (!chainIsValid) {
+						if (!chainIsValid)
+						{
 							isOk = false;
 						}
 					}
@@ -433,7 +457,8 @@ namespace Stomt
 			request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
 			request.Headers["appid"] = _appId;
 
-			if (!string.IsNullOrEmpty(this.config.GetAccessToken())) {
+			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
+			{
 				request.Headers ["accesstoken"] = this.config.GetAccessToken();
 			}
 
@@ -459,7 +484,8 @@ namespace Stomt
 			//////////////////////////////////////////////////////////////////
 			// Add data
 			//////////////////////////////////////////////////////////////////
-			if (data != null) {
+			if (data != null)
+			{
 				var bytes = Encoding.UTF8.GetBytes(data);
 				request.ContentLength = bytes.Length;
 
@@ -501,9 +527,12 @@ namespace Stomt
 			{
 				var errorResponse = (HttpWebResponse)ex.Response;
 				var statusCode = "";
-				if (errorResponse != null) {
+				if (errorResponse != null)
+				{
 					statusCode = errorResponse.StatusCode.ToString();
-				} else {
+				}
+				else
+				{
 					this.NetworkError = false;
 				}
 
@@ -512,16 +541,19 @@ namespace Stomt
 				Debug.Log("Request: " + data);
 
 				// Handle invalid Session
-				if (statusCode.Equals ("419")) {
+				if (statusCode.Equals ("419"))
+				{
 					this.config.SetAccessToken("");
 				}
 
 				// Handle Offline
-				if (errorResponse == null) {
+				if (errorResponse == null)
+				{
 					this.NetworkError = true;
 				}
 
-				if (callbackError != null) {
+				if (callbackError != null)
+				{
 					callbackError (errorResponse);
 				}
 
@@ -534,7 +566,8 @@ namespace Stomt
 
 			using (var responseStream = response.GetResponseStream())
 			{
-				if (responseStream == null) {
+				if (responseStream == null)
+				{
 					yield break;
 				}
 
@@ -553,7 +586,8 @@ namespace Stomt
 
 			LitJsonStomt.JsonData responseData = LitJsonStomt.JsonMapper.ToObject(responseDataText);
 
-			if (responseData.Keys.Contains("error")) {
+			if (responseData.Keys.Contains("error"))
+			{
 				Debug.LogError((string)responseData["error"]["msg"]);
 				Debug.Log ("ExecuteRequest error msg " + responseData["error"]["msg"]);
 				callbackError(response);
@@ -561,14 +595,17 @@ namespace Stomt
 			}
 
 			// Store access token
-			if (responseData.Keys.Contains("meta") && !responseData["meta"].IsArray) {
-				if (responseData["meta"].Keys.Contains("accesstoken")) {
+			if (responseData.Keys.Contains("meta") && !responseData["meta"].IsArray)
+			{
+				if (responseData["meta"].Keys.Contains("accesstoken"))
+				{
 					string accesstoken = (string)responseData["meta"]["accesstoken"];
 					this.config.SetAccessToken(accesstoken);
 				}
 			}
 
-			if (callbackSuccess != null) {
+			if (callbackSuccess != null)
+			{
 				callbackSuccess(responseData["data"]);
 			}
 		}

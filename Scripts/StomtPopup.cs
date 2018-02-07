@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using System.ComponentModel;
 using System.Collections.Generic;
 
-
 namespace Stomt
 {
 	[RequireComponent(typeof(StomtAPI))]
@@ -187,7 +186,8 @@ namespace Stomt
 
 		void Start()
 		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) {
+			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+			{
 				this.onMobile = true;
 			}
 
@@ -204,7 +204,8 @@ namespace Stomt
 				StartCoroutine(refreshTargetIcon());
 			}, null);
 
-			if (ShowWidgetOnStart) {
+			if (ShowWidgetOnStart)
+			{
 				this.ShowWidget();
 			}
 
@@ -214,10 +215,15 @@ namespace Stomt
 		// is called every frame
 		void Update()
 		{
-			if (_ui.activeSelf) {
-				if (!_LayerNetworkError.activeSelf && _api.NetworkError) {
+			if (_ui.activeSelf)
+			{
+				if (!_LayerNetworkError.activeSelf && _api.NetworkError)
+				{
 					ShowNetworkErrorLayer();
-				} else if (_LayerNetworkError.activeSelf && !_api.NetworkError) {
+				}
+				else
+				if (_LayerNetworkError.activeSelf && !_api.NetworkError)
+				{
 					HideNetworkErrorLayer();
 				}
 			}
@@ -226,7 +232,8 @@ namespace Stomt
 		// Enables the Widget/Popup when hidden
 		public void ShowWidget()
 		{
-			if (!_ui.activeSelf) {
+			if (!_ui.activeSelf)
+			{
 				StartCoroutine(Show());
 			}
 		}
@@ -234,17 +241,22 @@ namespace Stomt
 		// Disables the Widget/Popup when active
 		public void HideWidget()
 		{
-			if (_ui.activeSelf) {
+			if (_ui.activeSelf)
+			{
 				Hide();
 			}
 		}
 
 		void OnGUI()
 		{
-			if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())) && _toggleKey != KeyCode.None) {
-				if (_ui.activeSelf) {
+			if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())) && _toggleKey != KeyCode.None)
+			{
+				if (_ui.activeSelf)
+				{
 					Hide();
-				} else {
+				}
+				else
+				{
 					StartCoroutine(Show());
 				}
 			}
@@ -265,29 +277,38 @@ namespace Stomt
 			_screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
 
 			// Get Logs
-			if (this.LogFileUpload) {
-				if (this._log != null) {
+			if (this.LogFileUpload)
+			{
+				if (this._log != null)
+				{
 					this._log.stopThread();
 				}
 				this._log = new StomtLog(this._api);
 			}
-			if (_api.NetworkError) {
+			if (_api.NetworkError)
+			{
 				ShowNetworkErrorLayer();
-			} else {
+			}
+			else
+			{
 				// Show UI
 				ResetUILayer();
 			}
 
-			if (this.IsMessageLengthCorrect()) {
+			if (this.IsMessageLengthCorrect())
+			{
 				_postButton.GetComponent<Button>().interactable = true;
-			} else {
+			}
+			else
+			{
 				_postButton.GetComponent<Button>().interactable = false;
 			}
 
 			useEmailOnSubscribe = true;
 
 			// Call Event
-			if (OnWidgetOpen != null) {
+			if (OnWidgetOpen != null)
+			{
 				OnWidgetOpen();
 			}
 
@@ -319,19 +340,25 @@ namespace Stomt
 
 		public void Reconnect()
 		{
-			if (CurrentLayer == UILayer.Success) {
-				if (this._api.config.GetSubscribed()) {
+			if (CurrentLayer == UILayer.Success)
+			{
+				if (this._api.config.GetSubscribed())
+				{
 					handleStomtSending();
-				} else {
+				}
+				else
+				{
 					SubmitSubscription();
 				}
 			}
 
-			if (CurrentLayer == UILayer.Subscription) {
+			if (CurrentLayer == UILayer.Subscription)
+			{
 				handleStomtSending();
 			}
 
-			if (CurrentLayer == UILayer.Input) {
+			if (CurrentLayer == UILayer.Input)
+			{
 				this.HideWidget();
 				this.ShowWidget();
 			}
@@ -341,15 +368,18 @@ namespace Stomt
 		{
 			_LayerNetworkError.SetActive(false);
 
-			if (CurrentLayer == UILayer.Input) {
+			if (CurrentLayer == UILayer.Input)
+			{
 				_LayerInput.SetActive(true);
 			}
 
-			if (CurrentLayer == UILayer.Subscription) {
+			if (CurrentLayer == UILayer.Subscription)
+			{
 				_LayerSubscription.SetActive(true);
 			}
 
-			if (CurrentLayer == UILayer.Success) {
+			if (CurrentLayer == UILayer.Success)
+			{
 				_LayerSuccessfulSent.SetActive(true);
 			}
 		}
@@ -358,15 +388,18 @@ namespace Stomt
 		{
 			_LayerNetworkError.SetActive(true);
 
-			if (CurrentLayer == UILayer.Input) {
+			if (CurrentLayer == UILayer.Input)
+			{
 				_LayerInput.SetActive(false);
 			}
 
-			if (CurrentLayer == UILayer.Subscription) {
+			if (CurrentLayer == UILayer.Subscription)
+			{
 				_LayerSubscription.SetActive(false);
 			}
 
-			if (CurrentLayer == UILayer.Success) {
+			if (CurrentLayer == UILayer.Success)
+			{
 				_LayerSuccessfulSent.SetActive(false);
 			}
 		}
@@ -376,7 +409,8 @@ namespace Stomt
 			// Hide UI
 			_ui.SetActive(false);
 
-			if (OnWidgetClosed != null) {
+			if (OnWidgetClosed != null)
+			{
 				OnWidgetClosed();
 			}
 		}
@@ -387,9 +421,12 @@ namespace Stomt
 			this.StartedTyping = false;
 			_screenshotToggle.isOn = true;
 
-			if (_like.sortingOrder == 2) {
+			if (_like.sortingOrder == 2)
+			{
 				OnToggleButtonPressed();
-			} else {
+			}
+			else
+			{
 				OnMessageChanged();
 			}
 
@@ -398,12 +435,15 @@ namespace Stomt
 
 		public void OnToggleButtonPressed()
 		{
-			if (!StartedTyping) {
+			if (!StartedTyping)
+			{
 				this.StartedTyping = true;
 				this.RefreshStartText();
 				_message.ActivateInputField();
 				_message.Select();
-			} else {
+			}
+			else
+			{
 				_message.ActivateInputField();
 				_message.Select();
 
@@ -414,28 +454,34 @@ namespace Stomt
 			var likeAnimator = _like.GetComponent<Animator>();
 			var wishAnimator = _wish.GetComponent<Animator>();
 
-			if (likeAnimator.isInitialized && wishAnimator.isInitialized) {
+			if (likeAnimator.isInitialized && wishAnimator.isInitialized)
+			{
 				bool tmp = likeAnimator.GetBool("OnTop");
 				likeAnimator.SetBool("OnTop", wishAnimator.GetBool("OnTop"));
 				wishAnimator.SetBool("OnTop", tmp);
 			}
 
-			if (_like.sortingOrder == 2) {
+			if (_like.sortingOrder == 2)
+			{
 				// I wish
 				_like.sortingOrder = 1;
 				_wish.sortingOrder = 2;
 				_wouldBecauseText.text = "would";
 
-				if (!this.IsMessageLengthCorrect() && WouldBecauseText) {
+				if (!this.IsMessageLengthCorrect() && WouldBecauseText)
+				{
 					_message.text = this.wouldText;
 				}
-			} else {
+			}
+			else
+			{
 				// I like
 				_like.sortingOrder = 2;
 				_wish.sortingOrder = 1;
 				_wouldBecauseText.text = "because";
 
-				if (!this.IsMessageLengthCorrect() && WouldBecauseText) {
+				if (!this.IsMessageLengthCorrect() && WouldBecauseText)
+				{
 					_message.text = this.becauseText;
 				}
 			}
@@ -449,7 +495,8 @@ namespace Stomt
 			int limit = CharLimit;
 			int reverselength = limit - _message.text.Length;
 
-			if (reverselength <= 0) {
+			if (reverselength <= 0)
+			{
 				reverselength = 0;
 				_message.text = _message.text.Substring(0, limit);
 			}
@@ -458,32 +505,45 @@ namespace Stomt
 
 
 			// Change Text
-			if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf) {
+			if ( (!placeholderText.GetComponent<Text>().IsActive()) && _ui.activeSelf)
+			{
 				this.RefreshStartText();
 			}
 
-			if (IsMessageLengthCorrect()) {
+			if (IsMessageLengthCorrect())
+			{
 				_postButton.GetComponent<Button>().interactable = true;
-			} else {
+			}
+			else
+			{
 				_postButton.GetComponent<Button>().interactable = false;
 			}
 
-			if (StartedTyping && _message.text.Length < 6) {
+			if (StartedTyping && _message.text.Length < 6)
+			{
 				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
 			}
 
-			if (_characterLimit.GetComponent<Animator>().isInitialized) {
-				if (_message.text.Length > 15) {
+			if (_characterLimit.GetComponent<Animator>().isInitialized)
+			{
+				if (_message.text.Length > 15)
+				{
 					_characterLimit.GetComponent<Animator>().SetBool("Active", true);
-				} else {
+				}
+				else
+				{
 					_characterLimit.GetComponent<Animator>().SetBool("Active", false);
 				}
 			}
 
-			if (StartedTyping) {
-				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText)) {
+			if (StartedTyping)
+			{
+				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
+				{
 					this.CustomPlaceholderText.SetActive(true);
-				} else {
+				}
+				else
+				{
 					this.CustomPlaceholderText.SetActive(false);
 				}
 			}
@@ -491,28 +551,39 @@ namespace Stomt
 
 		public void RefreshStartText()
 		{
-			if (!WouldBecauseText || onMobile) {
+			if (!WouldBecauseText || onMobile)
+			{
 				return;
 			}
 
-			if (this.StartedTyping) {
-				if (_like.sortingOrder == 1) {
+			if (this.StartedTyping)
+			{
+				if (_like.sortingOrder == 1)
+				{
 					// I wish
-					if (_message.text.Equals("because ") || !StartedTyping) {
+					if (_message.text.Equals("because ") || !StartedTyping)
+					{
 						_message.text = this.wouldText;
 					}
-				} else {
+				}
+				else
+				{
 					// I like
-					if (_message.text.Equals(this.wouldText) || !StartedTyping) {
+					if (_message.text.Equals(this.wouldText) || !StartedTyping)
+					{
 						_message.text = this.becauseText;
 					}
 				}
 
 				_message.GetComponent<InputField>().MoveTextEnd(true);
-			} else {
-				if (_like.sortingOrder == 1) {
+			}
+			else
+			{
+				if (_like.sortingOrder == 1)
+				{
 					// I wish
-					if (_message.text.Equals(this.becauseText) || !StartedTyping) {
+					if (_message.text.Equals(this.becauseText) || !StartedTyping)
+					{
 						_message.text = this.wouldText;
 					}
 				}
@@ -521,9 +592,12 @@ namespace Stomt
 
 		private bool IsMessageLengthCorrect()
 		{
-			if (_message.text.Length == 0 || _message.text.Length <= 9) {
+			if (_message.text.Length == 0 || _message.text.Length <= 9)
+			{
 				return false;
-			} else {
+			}
+			else
+			{
 				HideErrorMessage();
 				return true;
 			}
@@ -531,12 +605,14 @@ namespace Stomt
 
 		public void OnPostButtonPressed()
 		{
-			if (IsErrorState) {
+			if (IsErrorState)
+			{
 				this.HideErrorMessage();
 				return;
 			}
 
-			if (!IsMessageLengthCorrect()) {
+			if (!IsMessageLengthCorrect())
+			{
 				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
 				Debug.Log("_message to short!");
 				return;
@@ -544,11 +620,14 @@ namespace Stomt
 
 			// Switch UI Layer
 			_LayerInput.SetActive(false);
-			if (this._api.config.GetSubscribed()) {
+			if (this._api.config.GetSubscribed())
+			{
 				_LayerSuccessfulSent.SetActive(true);
 				CurrentLayer = UILayer.Success;
 				OnSwitchToSuccessLayer();
-			} else {
+			}
+			else
+			{
 				_LayerSubscription.SetActive(true);
 				CurrentLayer = UILayer.Subscription;
 				_EmailInput.ActivateInputField();
@@ -571,22 +650,26 @@ namespace Stomt
 			stomtCreation.positive = _like.sortingOrder == 2;
 
 			// attach screenshot
-			if (this._screenshotToggle.isOn) {
+			if (this._screenshotToggle.isOn)
+			{
 				stomtCreation.attachScreenshot (this._screenshot);
 			}
 
 			// attach logs
-			if (this.LogFileUpload) {
+			if (this.LogFileUpload)
+			{
 				stomtCreation.attachLogs(this._log);
 			}
 
 			stomtCreation.save((response) => {
 				SetStomtNumbers();
 			}, (response) => {
-				if (response == null) {
+				if (response == null)
+				{
 				        return;
 				}
-				if (response.StatusCode.ToString().Equals("409")) {
+				if (response.StatusCode.ToString().Equals("409"))
+				{
 				        Debug.Log("Duplicate");
 				        // TODO return to form
 //					ShowErrorMessage("You already posted this stomt.");
@@ -598,24 +681,34 @@ namespace Stomt
 
 			_message.text = "";
 
-			if (OnStomtSend != null) {
+			if (OnStomtSend != null)
+			{
 				OnStomtSend();
 			}
 		}
 
 		private void setTargetName()
 		{
-			if (string.IsNullOrEmpty(DisplayGameName)) {
-				if (_api.TargetDisplayname != null) {
-					if (_api.TargetDisplayname.Length > TargetNameCharLimit) {
+			if (string.IsNullOrEmpty(DisplayGameName))
+			{
+				if (_api.TargetDisplayname != null)
+				{
+					if (_api.TargetDisplayname.Length > TargetNameCharLimit)
+					{
 						_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
-					} else {
+					}
+					else
+					{
 						_targetText.text = _api.TargetDisplayname;
 					}
-				} else {
+				}
+				else
+				{
 					_targetText.text = _api.TargetID;
 				}
-			} else {
+			}
+			else
+			{
 				_targetText.text = DisplayGameName;
 			}
 
@@ -625,9 +718,11 @@ namespace Stomt
 		{
 			yield return 0;
 			// check wether download needed
-			if (ImageDownload == null && ProfileImageTexture == null) {
+			if (ImageDownload == null && ProfileImageTexture == null)
+			{
 				// Start download
-				if (this._api.TargetImageURL != null) {
+				if (this._api.TargetImageURL != null)
+				{
 					WWW www = new WWW(this._api.TargetImageURL);
 					while (!www.isDone)
 					{
@@ -639,18 +734,26 @@ namespace Stomt
 			}
 
 			// check wether download finished
-			if (ImageDownload != null && !TargetImageApplied) {
-				if (ProfileImageTexture != null) { // already loaded, apply now
+			if (ImageDownload != null && !TargetImageApplied)
+			{
+				if (ProfileImageTexture != null)   // already loaded, apply now
+				{
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
 					this.TargetImageApplied = true;
-				} else if (ImageDownload.texture != null) {   // scale now and apply
+				}
+				else
+				if (ImageDownload.texture != null)            // scale now and apply
+				{
 					ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
 
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG());
 					this.TargetImageApplied = true;
 				}
-			} else {
-				if (ProfileImageTexture != null && !TargetImageApplied) { // already loaded, apply now
+			}
+			else
+			{
+				if (ProfileImageTexture != null && !TargetImageApplied)   // already loaded, apply now
+				{
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
 					TargetImageApplied = true;
 				}
@@ -667,8 +770,10 @@ namespace Stomt
 		{
 			this.RefreshStartText();
 
-			if (!IsErrorState) {
-				if (_characterLimit.GetComponent<Animator>().isInitialized) {
+			if (!IsErrorState)
+			{
+				if (_characterLimit.GetComponent<Animator>().isInitialized)
+				{
 					_screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
 				}
 			}
@@ -724,7 +829,8 @@ namespace Stomt
 		{
 			string url = this._api.stomtURL + "/" + _api.TargetID;
 
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken())) {
+			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
+			{
 				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
 			}
 
@@ -735,7 +841,8 @@ namespace Stomt
 		{
 			string url = this._api.stomtURL + "/" + _api.UserID;
 
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken())) {
+			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
+			{
 				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
 			}
 
@@ -747,30 +854,37 @@ namespace Stomt
 			_postButton.GetComponent<Button>().interactable = false;
 			IsErrorState = true;
 
-			if (message.Length > ErrorMessageCharLimit) {
+			if (message.Length > ErrorMessageCharLimit)
+			{
 				_ErrorMessageText.text = message.Substring(0, ErrorMessageCharLimit);
-			} else {
+			}
+			else
+			{
 				_ErrorMessageText.text = message;
 			}
 
 			_ErrorMessageObject.SetActive(true);
 
-			if ((_screenshotToggle.GetComponent<Animator>().isInitialized)) {
+			if ((_screenshotToggle.GetComponent<Animator>().isInitialized))
+			{
 				_screenshotToggle.GetComponent<Animator>().SetBool("Show", false);
 			}
 
-			if ((_postButton.GetComponent<Animator>().isInitialized)) {
+			if ((_postButton.GetComponent<Animator>().isInitialized))
+			{
 				_postButton.GetComponent<Animator>().SetBool("Left", true);
 			}
 
-			if ((_ErrorMessageObject.GetComponent<Animator>().isInitialized)) {
+			if ((_ErrorMessageObject.GetComponent<Animator>().isInitialized))
+			{
 				_ErrorMessageObject.GetComponent<Animator>().SetBool("Appear", true);
 			}
 		}
 
 		public void HideErrorMessage()
 		{
-			if (IsErrorState) {
+			if (IsErrorState)
+			{
 				IsErrorState = false;
 
 				_postButton.GetComponent<Button>().interactable = false;
@@ -783,10 +897,14 @@ namespace Stomt
 
 		public void SubmitSubscription()
 		{
-			if (!string.IsNullOrEmpty(_EmailInput.text)) {
-				if (useEmailOnSubscribe) {
+			if (!string.IsNullOrEmpty(_EmailInput.text))
+			{
+				if (useEmailOnSubscribe)
+				{
 					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
-				} else {
+				}
+				else
+				{
 					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
 				}
 			}
@@ -804,9 +922,12 @@ namespace Stomt
 
 		public void OnSubscriptionInputChanged()
 		{
-			if (_EmailInput.text.Length > 8) {
+			if (_EmailInput.text.Length > 8)
+			{
 				_postButtonSubscription.GetComponent<Button>().interactable = true;
-			} else {
+			}
+			else
+			{
 				_postButtonSubscription.GetComponent<Button>().interactable = false;
 			}
 		}
@@ -840,14 +961,17 @@ namespace Stomt
 			useEmailOnSubscribe = !useEmailOnSubscribe;
 			// Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
 
-			if (useEmailOnSubscribe) {
+			if (useEmailOnSubscribe)
+			{
 				toggleItemEMail.color = Color.black;
 				toggleItemSMS.color = Color.gray;
 
 				finalInfoText = defaultText + emailTextEnding;
 
 				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
-			}           else {
+			}
+			else
+			{
 				toggleItemEMail.color = Color.gray;
 				toggleItemSMS.color = Color.black;
 
@@ -877,21 +1001,27 @@ namespace Stomt
 		{
 			yield return new WaitForSeconds(delayTime);
 
-			if (animator.isInitialized) {
+			if (animator.isInitialized)
+			{
 				animator.SetBool("Show", true);
 			}
 
-			if (TextToChange != null && NewText != null) {
+			if (TextToChange != null && NewText != null)
+			{
 				TextToChange.text = NewText;
 			}
 		}
 
 		public void OnMobileInput()
 		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer) {
-				if (!useEmailOnSubscribe) {
+			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+			{
+				if (!useEmailOnSubscribe)
+				{
 					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
-				} else {
+				}
+				else
+				{
 					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, false, true);
 				}
 			}
@@ -901,13 +1031,17 @@ namespace Stomt
 		{
 			float CurrentMaxWidth = 0.0f;
 
-			if (_like.GetComponent<RectTransform>().rect.width > _wish.GetComponent<RectTransform>().rect.width) {
+			if (_like.GetComponent<RectTransform>().rect.width > _wish.GetComponent<RectTransform>().rect.width)
+			{
 				CurrentMaxWidth = _like.GetComponent<RectTransform>().rect.width;
-			} else {
+			}
+			else
+			{
 				CurrentMaxWidth = _wish.GetComponent<RectTransform>().rect.width;
 			}
 
-			if (CurrentMaxWidth > ReferenceValue) {
+			if (CurrentMaxWidth > ReferenceValue)
+			{
 				return CurrentMaxWidth - ReferenceValue;
 			}
 

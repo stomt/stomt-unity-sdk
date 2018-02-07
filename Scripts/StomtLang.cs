@@ -15,18 +15,24 @@ namespace Stomt
 			this.Currentlanguage = language;
 			this.ForceDefaultLanguage = api.ForceDefaultLanguage;
 
-			if (api.languageFile != null) {
+			if (api.languageFile != null)
+			{
 				languages = LitJsonStomt.JsonMapper.ToObject(api.languageFile.ToString());
-			} else {
+			}
+			else
+			{
 				Debug.Log("languageFile not found! Please set the language file in StomtAPI Inspector.");
 			}
 
-			if (!this.ForceDefaultLanguage) {
-				if (Application.systemLanguage == SystemLanguage.English) {
+			if (!this.ForceDefaultLanguage)
+			{
+				if (Application.systemLanguage == SystemLanguage.English)
+				{
 					this.Currentlanguage = "en";
 				}
 
-				if (Application.systemLanguage == SystemLanguage.German) {
+				if (Application.systemLanguage == SystemLanguage.German)
+				{
 					this.Currentlanguage = "de";
 				}
 			}
@@ -39,12 +45,14 @@ namespace Stomt
 
 		public string getString(string stringDefinition)
 		{
-			if (!this.languages["data"].Keys.Contains(Currentlanguage)) {
+			if (!this.languages["data"].Keys.Contains(Currentlanguage))
+			{
 				Debug.LogWarning(string.Format("Language {0} not supported (does not exist in language file)", Currentlanguage));
 				this.Currentlanguage = "en";
 			}
 
-			if (!this.languages["data"][Currentlanguage].Keys.Contains(stringDefinition)) {
+			if (!this.languages["data"][Currentlanguage].Keys.Contains(stringDefinition))
+			{
 				Debug.LogWarning(string.Format("StringDefinition {0} not found in {1}", stringDefinition, Currentlanguage));
 				return "";
 			}

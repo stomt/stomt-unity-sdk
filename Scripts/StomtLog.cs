@@ -29,7 +29,8 @@ namespace Stomt
 		}
 
 		public void stopThread() {
-			if (this.fileReadThread != null && !this.fileReadThread.IsAlive) {
+			if (this.fileReadThread != null && !this.fileReadThread.IsAlive)
+			{
 				this.fileReadThread.Abort ();
 			}
 		}
@@ -50,11 +51,13 @@ namespace Stomt
 			// Windows Paths
 			//////////////////////////////////////////////////////////////////
 
-			if (Application.platform == RuntimePlatform.WindowsEditor) {
+			if (Application.platform == RuntimePlatform.WindowsEditor)
+			{
 				logFilePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Unity\\Editor\\Editor.log";
 			}
 
-			if (Application.platform == RuntimePlatform.WindowsPlayer) {
+			if (Application.platform == RuntimePlatform.WindowsPlayer)
+			{
 				logFilePath = "_EXECNAME_Data_\\output_log.txt";
 			}
 
@@ -62,11 +65,13 @@ namespace Stomt
 			// OSX Paths
 			//////////////////////////////////////////////////////////////////
 
-			if (Application.platform == RuntimePlatform.OSXEditor) {
+			if (Application.platform == RuntimePlatform.OSXEditor)
+			{
 				logFilePath = "~/Library/Logs/Unity/Editor.log";
 			}
 
-			if (Application.platform == RuntimePlatform.OSXPlayer) {
+			if (Application.platform == RuntimePlatform.OSXPlayer)
+			{
 				logFilePath = "~/Library/Logs/Unity/Player.log";
 			}
 
@@ -74,18 +79,24 @@ namespace Stomt
 			// Linux Paths
 			//////////////////////////////////////////////////////////////////
 
-			if (Application.platform == RuntimePlatform.LinuxEditor) {
+			if (Application.platform == RuntimePlatform.LinuxEditor)
+			{
 				logFilePath = "~/.config/unity3d/CompanyName/ProductName/Editor.log";
 			}
 
-			if (Application.platform == RuntimePlatform.LinuxPlayer) {
+			if (Application.platform == RuntimePlatform.LinuxPlayer)
+			{
 				logFilePath = "~/.config/unity3d/CompanyName/ProductName/Player.log";
 			}
 
-			if (!string.IsNullOrEmpty(logFilePath)) {
-				if (File.Exists (logFilePath)) {
+			if (!string.IsNullOrEmpty(logFilePath))
+			{
+				if (File.Exists (logFilePath))
+				{
 					return logFilePath;
-				} else {
+				}
+				else
+				{
 					Debug.Log ("Log file does not exist in this path: " + logFilePath);
 				}
 			}
@@ -95,13 +106,15 @@ namespace Stomt
 
 		private string ReadFile(string FilePath)
 		{
-			if (string.IsNullOrEmpty(FilePath)) {
+			if (string.IsNullOrEmpty(FilePath))
+			{
 				return null;
 			}
 
 			var fileInfo = new System.IO.FileInfo(FilePath);
 
-			if (fileInfo.Length > 30000000) {
+			if (fileInfo.Length > 30000000)
+			{
 				Debug.LogWarning("Log file too big. Size: " + fileInfo.Length + "Bytes. Path: " + FilePath);
 				return null;
 			}
