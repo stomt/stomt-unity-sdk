@@ -216,8 +216,6 @@ namespace Stomt
 			{
 				this.ShowWidget();
 			}
-
-			ApplyLanguage();
 		}
 
 		// is called every frame
@@ -267,6 +265,7 @@ namespace Stomt
 			yield return new WaitForEndOfFrame();
 
 			// update UI elements
+			ApplyLanguage();
 			ApplyProfileImageTextureIfAvailable();
 			setTargetName();
 			RequestTargetAndUser();

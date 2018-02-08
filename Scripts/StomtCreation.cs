@@ -62,6 +62,8 @@ namespace Stomt
 			writerStomt.Write(this.target_id);
 			writerStomt.WritePropertyName("text");
 			writerStomt.Write(this.text);
+			writerStomt.WritePropertyName("lang");
+			writerStomt.Write(this.lang);
 
 			// Add labels
 			writerStomt.WritePropertyName("extradata");

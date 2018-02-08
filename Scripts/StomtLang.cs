@@ -20,18 +20,11 @@ namespace Stomt
 			// Select Language
 			if (this.ForceDefaultLanguage)
 			{
-				this.Currentlanguage = language;
+				this.setLanguage(language);
 			}
 			else
 			{
-				this.Currentlanguage = this.getLanguageCode(Application.systemLanguage);
-			}
-
-			// Check Language
-			if (!this.languages["data"].Keys.Contains(this.Currentlanguage))
-			{
-				Debug.Log(string.Format("Language {0} not supported (does not exist in language file) falling back to english.", this.Currentlanguage));
-				this.Currentlanguage = "en";
+				this.setLanguage(this.getLanguageCode(Application.systemLanguage));
 			}
 		}
 
@@ -47,9 +40,16 @@ namespace Stomt
 			}
 		}
 
-		public void setLanguage(string language)
+		public void setLanguage(string languageCode)
 		{
-			this.Currentlanguage = language;
+			this.Currentlanguage = languageCode;
+
+			// Check Language
+			if (!this.languages["data"].Keys.Contains(this.Currentlanguage))
+			{
+				Debug.Log(string.Format("Language {0} not supported (does not exist in language file) falling back to english.", this.Currentlanguage));
+				this.Currentlanguage = "en";
+			}
 		}
 
 		public string getLanguage()

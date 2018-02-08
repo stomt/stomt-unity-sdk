@@ -178,6 +178,11 @@ namespace Stomt
 			TargetDisplayname = "Loading";
 		}
 
+		public void SetUserLanguage(string languageCode)
+		{
+			this.lang.setLanguage(languageCode);
+		}
+
 
 		// Track Handling
 		public StomtTrack initStomtTrack()
