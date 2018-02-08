@@ -377,12 +377,15 @@ namespace Stomt
 			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("STOMT_WISH_BUBBLE");
 			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("STOMT_LIKE_BUBBLE");
 			this.CustomPlaceholderText.GetComponent<Text>().text = this._api.lang.getString("STOMT_PLACEHOLDER");
+			// FIXME: add translation for STOMT_SCREENSHOT
 
 			// Header
 			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("HEADER_TARGET_STOMTS");
 			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("HEADER_YOUR_STOMTS");
 
 			// Subscription Layer
+			// FIXME: add translation for SUBSCRIBE_TOGGLE_EMAIL
+			// FIXME: add translation for SUBSCRIBE_TOGGLE_PHONE
 			this.GetNotifiedText.text = this._api.lang.getString("SUBSCRIBE_GET_NOTIFIED");
 			this.PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, this.SubscribtionInfoText, this._api.lang.getString("SUBSCRIBE_EMAIL_QUESTION"));
 			this._EmailInput.placeholder.GetComponent<Text>().text = this._api.lang.getString("SUBSCRIBE_EMAIL_PLACEHOLDER");
