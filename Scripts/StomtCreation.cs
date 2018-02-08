@@ -58,7 +58,10 @@ namespace Stomt
 			{
 				foreach (string label in labels)
 				{
-					writerStomt.Write(label);
+					if (label != "AddLabelHere" && label != "add-label-here")
+					{
+						writerStomt.Write(label);
+					}
 				}
 			}
 
