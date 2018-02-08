@@ -676,8 +676,6 @@ namespace Stomt
 
 		private void MoveTargetBasedOnToggle(Rect toggleRect)
 		{
-			float width = toggleRect.width;
-			float height = toggleRect.height;
 			_targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
 		}
 
