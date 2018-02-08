@@ -301,7 +301,7 @@ namespace Stomt
 			stomtCreation.DisableDefaultLabels = DisableDefaultLabels;
 
 			stomtCreation.target_id = this.TargetID;
-			stomtCreation.lang = "en";
+			stomtCreation.lang = this.lang.getLanguage();
 			stomtCreation.anonym = false;
 			stomtCreation.labels = Labels;
 			stomtCreation.CustomKeyValuePairs = this.CustomKeyValuePairs;
