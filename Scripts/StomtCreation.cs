@@ -10,34 +10,16 @@ namespace Stomt
 	public class StomtCreation
 	{
 		private StomtAPI _api;
-		public Texture2D screenshot {
-			get; set;
-		}
-		public string logs {
-			get; set;
-		}
 
-		public string target_id {
-			get; set;
-		}
-		public bool positive {
-			get; set;
-		}
-		public string text {
-			get; set;
-		}
-		public string lang {
-			get; set;
-		}
-		public bool anonym {
-			get; set;
-		}
-		public string img_name {
-			get; set;
-		}
-		public string file_uid {
-			get; set;
-		}
+		public Texture2D screenshot { get; set; }
+		public string logs { get; set; }
+		public string target_id { get; set; }
+		public bool positive { get; set; }
+		public string text { get; set; }
+		public string lang { get; set; }
+		public bool anonym { get; set; }
+		public string img_name { get; set; }
+		public string file_uid { get; set; }
 		public string[] labels;
 		public List<List<string> > CustomKeyValuePairs;
 		public bool DisableDefaultLabels;

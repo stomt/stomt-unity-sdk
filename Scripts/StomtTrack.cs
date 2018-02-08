@@ -11,36 +11,17 @@ namespace Stomt
 	public class StomtTrack
 	{
 		private StomtAPI _api;
-		public string device_platform {
-			get; set;
-		}
-		public string device_id {
-			get; set;
-		}
-		public string sdk_type {
-			get; set;
-		}
-		public string sdk_version {
-			get; set;
-		}
-		public string sdk_integration {
-			get; set;
-		}
-		public string target_id {
-			get; set;
-		}
-		public string stomt_id {
-			get; set;
-		}
-		public string event_category {
-			get; set;
-		}
-		public string event_action {
-			get; set;
-		}
-		public string event_label {
-			get; set;
-		}
+
+		public string device_platform { get; set; }
+		public string device_id { get; set; }
+		public string sdk_type { get; set; }
+		public string sdk_version { get; set; }
+		public string sdk_integration { get; set; }
+		public string target_id { get; set; }
+		public string stomt_id { get; set; }
+		public string event_category { get; set; }
+		public string event_action { get; set; }
+		public string event_label { get; set; }
 
 		public StomtTrack(StomtAPI api) {
 			this._api = api;
