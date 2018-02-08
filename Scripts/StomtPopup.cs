@@ -146,13 +146,19 @@ namespace Stomt
 		public KeyCode _toggleKey = KeyCode.F1;
 		public string DisplayGameName;
 		public Texture2D ProfileImageTexture;
-		public bool LogFileUpload = true;
-		public bool ShowCloseButton = true;
-		public bool WouldBecauseText = true; // Activates the would/because text
-		public int TargetNameCharLimit = 11;
+		public int TargetNameCharLimit = 20;
 		public int ErrorMessageCharLimit = 20;
+		public bool LogFileUpload = true;
 		public bool PrefetchTarget = false;
+		public bool ShowCloseButton = true;
+		public bool ShowDefaultText = true; // Activates the would/because text
 		public bool ShowWidgetOnStart = false;
+
+		// callbacks
+		public delegate void StomtAction();
+		public static event StomtAction OnStomtSend;
+		public static event StomtAction OnWidgetClosed;
+		public static event StomtAction OnWidgetOpen;
 
 		// internal
 		private StomtAPI _api;
@@ -160,22 +166,21 @@ namespace Stomt
 		private StomtLog _log;
 		private WWW ImageDownload;
 		private bool TargetImageApplied = false;
-		private bool StartedTyping;
-		private bool IsErrorState;
+		private bool StartedTyping = false;
+		private bool IsErrorState = false;
 		private int CharLimit = 120;
 		private bool useEmailOnSubscribe = true;
 		private bool onMobile = false;
-		private string wouldText = "would ";
-		private string becauseText = "because ";
+		private string wouldText;
+		private string becauseText;
 		private Vector3 targetLocalStartPostion;
 		private Vector3 placeholderLocalStartPosition;
-
-		public delegate void StomtAction();
-		public static event StomtAction OnStomtSend;
-		public static event StomtAction OnWidgetClosed;
-		public static event StomtAction OnWidgetOpen;
 		enum UILayer { Input, Subscription, Success, Error };
-		UILayer CurrentLayer;
+		private UILayer CurrentLayer;
+
+		//////////////////////////////////////////////////////////////////
+		// General (used for all layers)
+		//////////////////////////////////////////////////////////////////
 
 		// Called once at initialization
 		void Awake()
@@ -231,6 +236,22 @@ namespace Stomt
 			}
 		}
 
+		// OnGUI is called for rendering and handling GUI events.
+		void OnGUI()
+		{
+			if (this._toggleKey != KeyCode.None && Event.current.Equals(Event.KeyboardEvent(this._toggleKey.ToString())))
+			{
+				if (_ui.activeSelf)
+				{
+					this.HideWidget();
+				}
+				else
+				{
+					this.ShowWidget();
+				}
+			}
+		}
+
 		// Enables the Widget/Popup when hidden
 		public void ShowWidget()
 		{
@@ -240,36 +261,13 @@ namespace Stomt
 			}
 		}
 
-		// Disables the Widget/Popup when active
-		public void HideWidget()
-		{
-			if (_ui.activeSelf)
-			{
-				Hide();
-			}
-		}
-
-		void OnGUI()
-		{
-			if (Event.current.Equals(Event.KeyboardEvent(_toggleKey.ToString())) && _toggleKey != KeyCode.None)
-			{
-				if (_ui.activeSelf)
-				{
-					Hide();
-				}
-				else
-				{
-					StartCoroutine(Show());
-				}
-			}
-		}
-
-		IEnumerator Show()
+		// Actually shows the widget
+		private IEnumerator Show()
 		{
 			yield return new WaitForEndOfFrame();
 
 			// update UI elements
-			applyProfileImageTextureIfAvailable();
+			ApplyProfileImageTextureIfAvailable();
 			setTargetName();
 			RequestTargetAndUser();
 
@@ -327,6 +325,105 @@ namespace Stomt
 			this.MovePlaceholderBasedOnMessage();
 		}
 
+		// FIXME: Make this private and use special function on success layer create new stomt
+		public void ResetUILayer()
+		{
+			ResetInputForm();
+
+			_ui.SetActive(true);
+			_closeButton.SetActive(ShowCloseButton);
+
+			this._LayerInput.SetActive(true);
+			this._LayerSuccessfulSent.SetActive(false);
+
+			// Reset Subscription Layer
+			this._LayerSubscription.SetActive(false);
+			_EmailInput.text = "";
+
+			// Handle Animations
+			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
+			_like.GetComponent<Animator>().SetBool("OnTop", false);
+			_wish.GetComponent<Animator>().SetBool("OnTop", true);
+
+			CurrentLayer = UILayer.Input;
+		}
+			
+		// Disables the Widget/Popup when active
+		public void HideWidget()
+		{
+			if (_ui.activeSelf)
+			{
+				Hide();
+			}
+		}
+
+		// Actually hides the widget
+		private void Hide()
+		{
+			// Hide UI
+			_ui.SetActive(false);
+
+			if (OnWidgetClosed != null)
+			{
+				OnWidgetClosed();
+			}
+		}
+
+		// Translate Content
+		private void ApplyLanguage()
+		{
+			// Setup multi-language strings
+
+			// Input Layer
+			this.wouldText = _api.lang.getString("WOULD") + " ";
+			this.becauseText = _api.lang.getString("BECAUSE") + " ";
+			this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
+			this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
+			this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
+			this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
+
+			// Subscription Layer
+			_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
+			SkipButton.text = _api.lang.getString("SKIP");
+			GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
+			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
+
+			// Success Layer
+			CreateButtonText.text = _api.lang.getString("CREATE_ANO_WISH");
+			ThankYouText.text = _api.lang.getString("THANK_YOU");
+			ArrowText.text = _api.lang.getString("FIND_YOUR_W");
+			SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
+
+			// Error Layer
+			ReconnectText.text = _api.lang.getString("RECONNECT");
+			ErrorHeaderText.text = _api.lang.getString("NOT_CONNECT");
+			ErrorMessageText.text = _api.lang.getString("NO_INTERNET");
+		}
+
+		// HEADER
+
+		public void OpenTargetURL()
+		{
+			string url = this._api.stomtURL + "/" + _api.TargetID;
+			this.OpenStomtUrl(url);
+		}
+
+		public void OpenUserProfileURL()
+		{
+			string url = this._api.stomtURL + "/" + _api.UserID;
+			this.OpenStomtUrl(url);
+		}
+
+		private void OpenStomtUrl(string url)
+		{
+			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
+			{
+				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
+			}
+
+			Application.OpenURL(url);
+		}
+
 		private void RequestTargetAndUser(bool force = false)
 		{
 			// only request them once
@@ -341,21 +438,9 @@ namespace Stomt
 				setTargetName();
 				if (!TargetImageApplied)
 				{
-					StartCoroutine(refreshTargetIcon());
+					StartCoroutine(RefreshTargetIcon());
 				}
 			}, null);
-		}
-
-		private void MoveTargetBasedOnToggle(Rect toggleRect)
-		{
-			float width = toggleRect.width;
-			float height = toggleRect.height;
-			_targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
-		}
-
-		private void MovePlaceholderBasedOnMessage()
-		{
-			CustomPlaceholderText.transform.localPosition = new Vector3( placeholderLocalStartPosition.x + CalculateLengthOfMessage(messageText.GetComponent<Text>()), CustomPlaceholderText.transform.localPosition.y, placeholderLocalStartPosition.z);
 		}
 
 		private void SetStomtNumbers()
@@ -364,104 +449,37 @@ namespace Stomt
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
 		}
 
-		public void Reconnect()
+		private void setTargetName()
 		{
-			if (CurrentLayer == UILayer.Success)
+			if (string.IsNullOrEmpty(DisplayGameName))
 			{
-				if (this._api.config.GetSubscribed())
+				if (_api.TargetDisplayname != null)
 				{
-					handleStomtSending();
+					if (_api.TargetDisplayname.Length > TargetNameCharLimit)
+					{
+						_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
+					}
+					else
+					{
+						_targetText.text = _api.TargetDisplayname;
+					}
 				}
 				else
 				{
-					SubmitSubscription();
+					_targetText.text = _api.TargetID;
 				}
-			}
-
-			if (CurrentLayer == UILayer.Subscription)
-			{
-				handleStomtSending();
-			}
-
-			if (CurrentLayer == UILayer.Input)
-			{
-				this.HideWidget();
-				this.ShowWidget();
-			}
-
-			this.RequestTargetAndUser();
-		}
-
-		void HideNetworkErrorLayer()
-		{
-			_LayerNetworkError.SetActive(false);
-
-			if (CurrentLayer == UILayer.Input)
-			{
-				_LayerInput.SetActive(true);
-			}
-
-			if (CurrentLayer == UILayer.Subscription)
-			{
-				_LayerSubscription.SetActive(true);
-			}
-
-			if (CurrentLayer == UILayer.Success)
-			{
-				_LayerSuccessfulSent.SetActive(true);
-			}
-		}
-
-		void ShowNetworkErrorLayer()
-		{
-			_LayerNetworkError.SetActive(true);
-
-			if (CurrentLayer == UILayer.Input)
-			{
-				_LayerInput.SetActive(false);
-			}
-
-			if (CurrentLayer == UILayer.Subscription)
-			{
-				_LayerSubscription.SetActive(false);
-			}
-
-			if (CurrentLayer == UILayer.Success)
-			{
-				_LayerSuccessfulSent.SetActive(false);
-			}
-		}
-
-		public void Hide()
-		{
-			// Hide UI
-			_ui.SetActive(false);
-
-			if (OnWidgetClosed != null)
-			{
-				OnWidgetClosed();
-			}
-		}
-
-		void Reset()
-		{
-			this.MovePlaceholderBasedOnMessage();
-			this.CustomPlaceholderText.SetActive(true);
-			this.StartedTyping = false;
-			_screenshotToggle.isOn = true;
-
-			if (_like.sortingOrder == 2)
-			{
-				OnToggleButtonPressed();
 			}
 			else
 			{
-				OnMessageChanged();
+				_targetText.text = DisplayGameName;
 			}
 
-			RefreshStartText();
-			MovePlaceholderBasedOnMessage();
 		}
+
+
+		//////////////////////////////////////////////////////////////////
+		// Input Layer
+		//////////////////////////////////////////////////////////////////
 
 		public void OnToggleButtonPressed()
 		{
@@ -498,7 +516,7 @@ namespace Stomt
 				_wish.sortingOrder = 2;
 				_wouldBecauseText.text = "would";
 
-				if (!this.IsMessageLengthCorrect() && WouldBecauseText)
+				if (!this.IsMessageLengthCorrect() && ShowDefaultText)
 				{
 					_message.text = this.wouldText;
 				}
@@ -510,15 +528,15 @@ namespace Stomt
 				_wish.sortingOrder = 1;
 				_wouldBecauseText.text = "because";
 
-				if (!this.IsMessageLengthCorrect() && WouldBecauseText)
+				if (!this.IsMessageLengthCorrect() && ShowDefaultText)
 				{
 					_message.text = this.becauseText;
 				}
 			}
 
 			OnMessageChanged();
-
 		}
+
 		public void OnMessageChanged()
 		{
 			int limit = CharLimit;
@@ -579,9 +597,195 @@ namespace Stomt
 			}
 		}
 
-		public void RefreshStartText()
+		public void OnPointerEnterMessage()
 		{
-			if (!WouldBecauseText || onMobile)
+			this.RefreshStartText();
+
+			if (!IsErrorState)
+			{
+				if (_characterLimit.GetComponent<Animator>().isInitialized)
+				{
+					_screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
+				}
+			}
+
+			_message.ActivateInputField();
+			_message.Select();
+
+			this.StartedTyping = true;
+			StartCoroutine(MoveMessageCaretToEnd());
+		}
+
+		public void OnPointerEnterToggle()
+		{
+			var likeAnimator = _like.GetComponent<Animator>();
+			var wishAnimator = _wish.GetComponent<Animator>();
+
+			wishAnimator.SetBool("Hover", true);
+			likeAnimator.SetBool("Hover", true);
+		}
+
+		public void OnPointerExitToggle()
+		{
+			var likeAnimator = _like.GetComponent<Animator>();
+			var wishAnimator = _wish.GetComponent<Animator>();
+
+			wishAnimator.SetBool("Hover", false);
+			likeAnimator.SetBool("Hover", false);
+		}
+
+		public void OnPostButtonPressed()
+		{
+			if (IsErrorState)
+			{
+				this.HideErrorMessage();
+				return;
+			}
+
+			if (!IsMessageLengthCorrect())
+			{
+				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
+				Debug.Log("_message to short!");
+				return;
+			}
+
+			// Switch UI Layer
+			_LayerInput.SetActive(false);
+			if (this._api.config.GetSubscribed())
+			{
+				_LayerSuccessfulSent.SetActive(true);
+				CurrentLayer = UILayer.Success;
+				OnSwitchToSuccessLayer();
+			}
+			else
+			{
+				_LayerSubscription.SetActive(true);
+				CurrentLayer = UILayer.Subscription;
+				_EmailInput.ActivateInputField();
+				_EmailInput.Select();
+				SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", true);
+			}
+
+			// Submit
+			this.handleStomtSending();
+		}
+			
+		// internal
+
+		private void MoveTargetBasedOnToggle(Rect toggleRect)
+		{
+			float width = toggleRect.width;
+			float height = toggleRect.height;
+			_targetObj.GetComponent<RectTransform>().localPosition = new Vector3(targetLocalStartPostion.x + CalculateTargetXOffset(320), targetLocalStartPostion.y, 0);
+		}
+
+		private float CalculateTargetXOffset(float ReferenceValue)
+		{
+			float CurrentMaxWidth = 0.0f;
+
+			if (_like.GetComponent<RectTransform>().rect.width > _wish.GetComponent<RectTransform>().rect.width)
+			{
+				CurrentMaxWidth = _like.GetComponent<RectTransform>().rect.width;
+			}
+			else
+			{
+				CurrentMaxWidth = _wish.GetComponent<RectTransform>().rect.width;
+			}
+
+			if (CurrentMaxWidth > ReferenceValue)
+			{
+				return CurrentMaxWidth - ReferenceValue;
+			}
+
+			return 0.0f;
+		}
+
+		private void MovePlaceholderBasedOnMessage()
+		{
+			CustomPlaceholderText.transform.localPosition = new Vector3( placeholderLocalStartPosition.x + CalculateLengthOfMessage(messageText.GetComponent<Text>()), CustomPlaceholderText.transform.localPosition.y, placeholderLocalStartPosition.z);
+		}
+			
+		private int CalculateLengthOfMessage(Text textComponent)
+		{
+			int totalLength = 0;
+			Font font = textComponent.font;
+			CharacterInfo characterInfo = new CharacterInfo();
+
+			char[] arr = textComponent.text.ToCharArray();
+
+			foreach (char c in arr)
+			{
+				font.GetCharacterInfo(c, out characterInfo, textComponent.fontSize);
+
+				totalLength += characterInfo.advance;
+			}
+
+			return totalLength;
+		}
+			
+		private IEnumerator RefreshTargetIcon()
+		{
+			yield return 0;
+			// check wether download needed
+			if (ImageDownload == null && ProfileImageTexture == null)
+			{
+				// Start download
+				if (this._api.TargetImageURL != null)
+				{
+					WWW www = new WWW(this._api.TargetImageURL);
+					while (!www.isDone)
+					{
+						// wait until the download is done
+					}
+
+					ImageDownload = www;
+				}
+			}
+
+			// check wether download finished
+			if (ImageDownload != null && !TargetImageApplied && ProfileImageTexture == null)
+			{
+				if (ImageDownload.texture != null) // scale now and apply
+				{
+					if (ImageDownload.texture.width != 128 || ImageDownload.texture.height != 128)
+					{
+						ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
+					}
+
+					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG());
+					this.TargetImageApplied = true;
+				}
+			}
+			else
+			{
+				// already loaded, apply now
+				ApplyProfileImageTextureIfAvailable();
+			}
+		}
+
+		private void ApplyProfileImageTextureIfAvailable()
+		{
+			if (!TargetImageApplied && ProfileImageTexture != null) 
+			{
+				if (ProfileImageTexture.width != 128 || ProfileImageTexture.height != 128)
+				{
+					ProfileImageTexture = TextureScaler.scaled(ProfileImageTexture, 128, 128, FilterMode.Trilinear);
+				}
+
+				TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
+				TargetImageApplied = true;
+			}
+		}
+			
+		private IEnumerator MoveMessageCaretToEnd()
+		{
+			yield return 0; // Skip the first frame
+			_message.MoveTextEnd(false);
+		}
+			
+		private void RefreshStartText()
+		{
+			if (!ShowDefaultText || onMobile)
 			{
 				return;
 			}
@@ -622,7 +826,7 @@ namespace Stomt
 
 		private bool IsMessageLengthCorrect()
 		{
-			if (_message.text.Length == 0 || _message.text.Length <= 9)
+			if (_message.text.Length <= 9)
 			{
 				return false;
 			}
@@ -632,45 +836,7 @@ namespace Stomt
 				return true;
 			}
 		}
-
-		public void OnPostButtonPressed()
-		{
-			if (IsErrorState)
-			{
-				this.HideErrorMessage();
-				return;
-			}
-
-			if (!IsMessageLengthCorrect())
-			{
-				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
-				Debug.Log("_message to short!");
-				return;
-			}
-
-			// Switch UI Layer
-			_LayerInput.SetActive(false);
-			if (this._api.config.GetSubscribed())
-			{
-				_LayerSuccessfulSent.SetActive(true);
-				CurrentLayer = UILayer.Success;
-				OnSwitchToSuccessLayer();
-			}
-			else
-			{
-				_LayerSubscription.SetActive(true);
-				CurrentLayer = UILayer.Subscription;
-				_EmailInput.ActivateInputField();
-				_EmailInput.Select();
-				SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", true);
-			}
-
-			// Submit
-			this.handleStomtSending();
-
-			// SentLayerMessage.text = "Amazing, find more wishes to " + _api.TargetDisplayname + " on";
-		}
-
+			
 		private void handleStomtSending()
 		{
 			// send StomtCreation
@@ -682,7 +848,7 @@ namespace Stomt
 			// attach screenshot
 			if (this._screenshotToggle.isOn)
 			{
-				stomtCreation.attachScreenshot (this._screenshot);
+				stomtCreation.attachScreenshot(this._screenshot);
 			}
 
 			// attach logs
@@ -696,202 +862,30 @@ namespace Stomt
 			}, (response) => {
 				if (response == null)
 				{
-				        return;
+					return;
 				}
+
 				if (response.StatusCode.ToString().Equals("409"))
 				{
-				        Debug.Log("Duplicate");
-				        // TODO return to form
-//					ShowErrorMessage("You already posted this stomt.");
-//					_LayerInput.SetActive(true);
-//					_LayerSuccessfulSent.SetActive(false);
-//					_LayerSubscription.SetActive(false);
+					Debug.Log("Duplicate");
+					// TODO return to form
+					//					ShowErrorMessage("You already posted this stomt.");
+					//					_LayerInput.SetActive(true);
+					//					_LayerSuccessfulSent.SetActive(false);
+					//					_LayerSubscription.SetActive(false);
 				}
 			});
 
-			_message.text = "";
+			ResetInputForm();
 
+			// Tigger Callback
 			if (OnStomtSend != null)
 			{
 				OnStomtSend();
 			}
 		}
-
-		private void setTargetName()
-		{
-			if (string.IsNullOrEmpty(DisplayGameName))
-			{
-				if (_api.TargetDisplayname != null)
-				{
-					if (_api.TargetDisplayname.Length > TargetNameCharLimit)
-					{
-						_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
-					}
-					else
-					{
-						_targetText.text = _api.TargetDisplayname;
-					}
-				}
-				else
-				{
-					_targetText.text = _api.TargetID;
-				}
-			}
-			else
-			{
-				_targetText.text = DisplayGameName;
-			}
-
-		}
-
-		private IEnumerator refreshTargetIcon()
-		{
-			yield return 0;
-			// check wether download needed
-			if (ImageDownload == null && ProfileImageTexture == null)
-			{
-				// Start download
-				if (this._api.TargetImageURL != null)
-				{
-					WWW www = new WWW(this._api.TargetImageURL);
-					while (!www.isDone)
-					{
-						// wait until the download is done
-					}
-
-					ImageDownload = www;
-				}
-			}
-
-			// check wether download finished
-			if (ImageDownload != null && !TargetImageApplied)
-			{
-				if (ProfileImageTexture != null) // already loaded, apply now
-				{
-					applyProfileImageTextureIfAvailable();
-				}
-				else if (ImageDownload.texture != null) // scale now and apply
-				{
-					if (ImageDownload.texture.width != 128 || ImageDownload.texture.height != 128)
-					{
-						ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
-					}
-
-					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG());
-					this.TargetImageApplied = true;
-				}
-			}
-			else
-			{
-				// already loaded, apply now
-				applyProfileImageTextureIfAvailable();
-			}
-		}
-
-		void applyProfileImageTextureIfAvailable()
-		{
-			if (!TargetImageApplied && ProfileImageTexture != null) 
-			{
-				if (ProfileImageTexture.width != 128 || ProfileImageTexture.height != 128)
-				{
-					ProfileImageTexture = TextureScaler.scaled(ProfileImageTexture, 128, 128, FilterMode.Trilinear);
-				}
-
-				TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
-				TargetImageApplied = true;
-			}
-		}
-
-		IEnumerator MoveMessageCaretToEnd()
-		{
-			yield return 0; // Skip the first frame
-			_message.MoveTextEnd(false);
-		}
-
-		public void OnPointerEnterMessage()
-		{
-			this.RefreshStartText();
-
-			if (!IsErrorState)
-			{
-				if (_characterLimit.GetComponent<Animator>().isInitialized)
-				{
-					_screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
-				}
-			}
-
-			_message.ActivateInputField();
-			_message.Select();
-
-			this.StartedTyping = true;
-			StartCoroutine(MoveMessageCaretToEnd());
-		}
-
-		public void OnPointerEnterToggle()
-		{
-			var likeAnimator = _like.GetComponent<Animator>();
-			var wishAnimator = _wish.GetComponent<Animator>();
-
-			wishAnimator.SetBool("Hover", true);
-			likeAnimator.SetBool("Hover", true);
-		}
-
-		public void OnPointerExitToggle()
-		{
-			var likeAnimator = _like.GetComponent<Animator>();
-			var wishAnimator = _wish.GetComponent<Animator>();
-
-			wishAnimator.SetBool("Hover", false);
-			likeAnimator.SetBool("Hover", false);
-		}
-
-		public void ResetUILayer()
-		{
-			Reset();
-
-			_ui.SetActive(true);
-			_closeButton.SetActive(ShowCloseButton);
-
-			this._LayerInput.SetActive(true);
-			this._LayerSuccessfulSent.SetActive(false);
-
-			// Reset Subscription Layer
-			this._LayerSubscription.SetActive(false);
-			_EmailInput.text = "";
-
-			// Handle Animations
-			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
-			_like.GetComponent<Animator>().SetBool("OnTop", false);
-			_wish.GetComponent<Animator>().SetBool("OnTop", true);
-
-			CurrentLayer = UILayer.Input;
-		}
-
-		public void OpenTargetURL()
-		{
-			string url = this._api.stomtURL + "/" + _api.TargetID;
-
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
-			{
-				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
-			}
-
-			Application.OpenURL(url);
-		}
-
-		public void OpenUserProfileURL()
-		{
-			string url = this._api.stomtURL + "/" + _api.UserID;
-
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
-			{
-				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
-			}
-
-			Application.OpenURL(url);
-		}
-
-		public void ShowErrorMessage(string message)
+			
+		private void ShowErrorMessage(string message)
 		{
 			_postButton.GetComponent<Button>().interactable = false;
 			IsErrorState = true;
@@ -923,7 +917,7 @@ namespace Stomt
 			}
 		}
 
-		public void HideErrorMessage()
+		private void HideErrorMessage()
 		{
 			if (IsErrorState)
 			{
@@ -936,60 +930,32 @@ namespace Stomt
 				_screenshotToggle.GetComponent<Animator>().SetBool("Show", true);
 			}
 		}
-
-		public void SubmitSubscription()
+			
+		private void ResetInputForm()
 		{
-			if (!string.IsNullOrEmpty(_EmailInput.text))
+			_message.text = "";
+			this.MovePlaceholderBasedOnMessage();
+			this.CustomPlaceholderText.SetActive(true);
+			this.StartedTyping = false;
+			_screenshotToggle.isOn = true;
+
+			if (_like.sortingOrder == 2)
 			{
-				if (useEmailOnSubscribe)
-				{
-					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
-				}
-				else
-				{
-					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
-				}
-			}
-		}
-
-		public void SubmitSubscriptionLayer()
-		{
-			SubmitSubscription();
-
-			this._LayerSuccessfulSent.SetActive(true);
-			this._LayerSubscription.SetActive(false);
-			OnSwitchToSuccessLayer();
-
-		}
-
-		public void OnSubscriptionInputChanged()
-		{
-			if (_EmailInput.text.Length > 8)
-			{
-				_postButtonSubscription.GetComponent<Button>().interactable = true;
+				OnToggleButtonPressed();
 			}
 			else
 			{
-				_postButtonSubscription.GetComponent<Button>().interactable = false;
+				OnMessageChanged();
 			}
+
+			RefreshStartText();
+			MovePlaceholderBasedOnMessage();
 		}
 
-		public void OnSubscriptionPointerEnter()
-		{
-			_EmailInput.text = "";
-		}
 
-		public void SubmitSuccessLayer()
-		{
-			this.HideWidget();
-		}
-
-		public void OnSwitchToSuccessLayer()
-		{
-			PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
-			CurrentLayer = UILayer.Success;
-		}
-
+		//////////////////////////////////////////////////////////////////
+		// Subscription Layer
+		//////////////////////////////////////////////////////////////////
 
 		// Email Toggle
 		public void OnSubscribeTogglePressed()
@@ -1001,7 +967,6 @@ namespace Stomt
 
 			SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
 			useEmailOnSubscribe = !useEmailOnSubscribe;
-			// Debug.Log("useEmailOnSubscribe " + useEmailOnSubscribe.ToString());
 
 			if (useEmailOnSubscribe)
 			{
@@ -1029,29 +994,10 @@ namespace Stomt
 			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
 		}
 
-		void PlayShowAnimation(Animator animator, float delayTime)
+		// FIXME: What is this for?
+		public void OnSubscriptionPointerEnter()
 		{
-			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, null, null));
-		}
-
-		void PlayShowAnimation(Animator animator, float delayTime, Text TextToChange, string NewText)
-		{
-			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText));
-		}
-
-		IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText)
-		{
-			yield return new WaitForSeconds(delayTime);
-
-			if (animator.isInitialized)
-			{
-				animator.SetBool("Show", true);
-			}
-
-			if (TextToChange != null && NewText != null)
-			{
-				TextToChange.text = NewText;
-			}
+			_EmailInput.text = "";
 		}
 
 		public void OnMobileInput()
@@ -1069,74 +1015,158 @@ namespace Stomt
 			}
 		}
 
-		private float CalculateTargetXOffset(float ReferenceValue)
+		public void OnSubscriptionInputChanged()
 		{
-			float CurrentMaxWidth = 0.0f;
-
-			if (_like.GetComponent<RectTransform>().rect.width > _wish.GetComponent<RectTransform>().rect.width)
+			if (_EmailInput.text.Length > 8)
 			{
-				CurrentMaxWidth = _like.GetComponent<RectTransform>().rect.width;
+				_postButtonSubscription.GetComponent<Button>().interactable = true;
 			}
 			else
 			{
-				CurrentMaxWidth = _wish.GetComponent<RectTransform>().rect.width;
+				_postButtonSubscription.GetComponent<Button>().interactable = false;
 			}
+		}
 
-			if (CurrentMaxWidth > ReferenceValue)
+		public void SubmitSubscriptionLayer()
+		{
+			SubmitSubscription();
+			SkipSubscriptionLayer();
+		}
+
+		public void SkipSubscriptionLayer()
+		{
+			this._LayerSuccessfulSent.SetActive(true);
+			this._LayerSubscription.SetActive(false);
+			OnSwitchToSuccessLayer();
+		}
+
+		private void SubmitSubscription()
+		{
+			if (!string.IsNullOrEmpty(_EmailInput.text))
 			{
-				return CurrentMaxWidth - ReferenceValue;
+				if (useEmailOnSubscribe)
+				{
+					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
+				}
+				else
+				{
+					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
+				}
 			}
-
-			return 0.0f;
 		}
 
 
-		int CalculateLengthOfMessage(Text textComponent)
+		//////////////////////////////////////////////////////////////////
+		// Successful Sent Layer
+		//////////////////////////////////////////////////////////////////
+
+		public void OnSwitchToSuccessLayer()
 		{
-			int totalLength = 0;
-			Font font = textComponent.font;
-			CharacterInfo characterInfo = new CharacterInfo();
-
-			char[] arr = textComponent.text.ToCharArray();
-
-			foreach (char c in arr)
-			{
-				font.GetCharacterInfo(c, out characterInfo, textComponent.fontSize);
-
-				totalLength += characterInfo.advance;
-			}
-
-			return totalLength;
+			PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
+			CurrentLayer = UILayer.Success;
 		}
 
-		public void ApplyLanguage()
+		public void SubmitSuccessLayer()
 		{
-			// Setup multi-language strings
+			this.HideWidget();
+		}
 
-			// Input Layer
-			this.wouldText = _api.lang.getString("WOULD") + " ";
-			this.becauseText = _api.lang.getString("BECAUSE") + " ";
-			this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
-			this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
-			this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
-			this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
 
-			// Subscription Layer
-			_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
-			SkipButton.text = _api.lang.getString("SKIP");
-			GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
-			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
+		//////////////////////////////////////////////////////////////////
+		// Network Error Layer
+		//////////////////////////////////////////////////////////////////
 
-			// Success Layer
-			CreateButtonText.text = _api.lang.getString("CREATE_ANO_WISH");
-			ThankYouText.text = _api.lang.getString("THANK_YOU");
-			ArrowText.text = _api.lang.getString("FIND_YOUR_W");
-			SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
+		public void Reconnect()
+		{
+			switch (CurrentLayer)
+			{
+				case UILayer.Input:
+					this.HideWidget();
+					this.ShowWidget();
+					break;
 
-			// Error Layer
-			ReconnectText.text = _api.lang.getString("RECONNECT");
-			ErrorHeaderText.text = _api.lang.getString("NOT_CONNECT");
-			ErrorMessageText.text = _api.lang.getString("NO_INTERNET");
+				case UILayer.Subscription:
+					handleStomtSending();
+					break;
+
+				case UILayer.Success:
+					if (this._api.config.GetSubscribed())
+					{
+						handleStomtSending();
+					}
+					else
+					{
+						SubmitSubscription();
+					}
+					break;
+			}
+
+			this.RequestTargetAndUser();
+		}
+
+		private void ShowNetworkErrorLayer()
+		{
+			_LayerNetworkError.SetActive(true);
+
+			switch (CurrentLayer)
+			{
+				case UILayer.Input:
+					_LayerInput.SetActive(false);
+					break;
+
+				case UILayer.Subscription:
+					_LayerSubscription.SetActive(false);
+					break;
+
+				case UILayer.Success:
+					_LayerSuccessfulSent.SetActive(false);
+					break;
+			}
+		}
+
+		private void HideNetworkErrorLayer()
+		{
+			_LayerNetworkError.SetActive(false);
+
+			switch (CurrentLayer)
+			{
+				case UILayer.Input:
+					_LayerInput.SetActive(true);
+					break;
+
+				case UILayer.Subscription:
+					_LayerSubscription.SetActive(true);
+					break;
+
+				case UILayer.Success:
+					_LayerSuccessfulSent.SetActive(true);
+					break;
+			}
+		}
+
+
+		//////////////////////////////////////////////////////////////////
+		// Helpers
+		//////////////////////////////////////////////////////////////////
+
+		private void PlayShowAnimation(Animator animator, float delayTime, Text TextToChange = null, string NewText = null)
+		{
+			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText));
+		}
+
+		private IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText)
+		{
+			yield return new WaitForSeconds(delayTime);
+
+			if (animator.isInitialized)
+			{
+				animator.SetBool("Show", true);
+			}
+
+			if (TextToChange != null && NewText != null)
+			{
+				TextToChange.text = NewText;
+			}
 		}
 	}
 }
