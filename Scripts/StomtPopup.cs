@@ -221,8 +221,7 @@ namespace Stomt
 				{
 					ShowNetworkErrorLayer();
 				}
-				else
-				if (_LayerNetworkError.activeSelf && !_api.NetworkError)
+				else if (_LayerNetworkError.activeSelf && !_api.NetworkError)
 				{
 					HideNetworkErrorLayer();
 				}
@@ -285,6 +284,7 @@ namespace Stomt
 				}
 				this._log = new StomtLog(this._api);
 			}
+
 			if (_api.NetworkError)
 			{
 				ShowNetworkErrorLayer();
@@ -430,7 +430,8 @@ namespace Stomt
 				OnMessageChanged();
 			}
 
-			RefreshStartText ();
+			RefreshStartText();
+			MovePlaceholderBasedOnMessage();
 		}
 
 		public void OnToggleButtonPressed()
@@ -741,8 +742,7 @@ namespace Stomt
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
 					this.TargetImageApplied = true;
 				}
-				else
-				if (ImageDownload.texture != null)            // scale now and apply
+				else if (ImageDownload.texture != null)            // scale now and apply
 				{
 					ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
 

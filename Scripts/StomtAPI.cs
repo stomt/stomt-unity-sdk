@@ -139,7 +139,6 @@ namespace Stomt
 				this._appId = "r7BZ0Lz4phqYB0Rl7xPGcHLLR";
 				this.restServerURL = "https://test.rest.stomt.com";
 				this.stomtURL = "https://test.stomt.com";
-
 			}
 			else
 			{
@@ -176,8 +175,6 @@ namespace Stomt
 
 			// TargetDisplayname = _targetId;
 			TargetDisplayname = "Loading";
-
-
 		}
 
 
