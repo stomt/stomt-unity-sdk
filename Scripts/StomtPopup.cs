@@ -368,35 +368,36 @@ namespace Stomt
 			}
 		}
 
-		// Translate Content
+		// Setup multi-language strings
 		private void ApplyLanguage()
 		{
-			// Setup multi-language strings
-
 			// Input Layer
-			this.wouldText = _api.lang.getString("WOULD") + " ";
-			this.becauseText = _api.lang.getString("BECAUSE") + " ";
-			this._like.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_LIKE");
-			this._wish.GetComponentsInChildren<Text>()[0].text = _api.lang.getString("I_WISH");
-			this.CustomPlaceholderText.GetComponent<Text>().text = _api.lang.getString("JUST_FINISH");
-			this._YOURS.GetComponent<Text>().text = _api.lang.getString("YOURS");
+			this.wouldText = this._api.lang.getString("STOMT_DEFAULT_TEXT_WISH") + " ";
+			this.becauseText = this._api.lang.getString("STOMT_DEFAULT_TEXT_LIKE") + " ";
+			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("STOMT_WISH_BUBBLE");
+			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("STOMT_LIKE_BUBBLE");
+			this.CustomPlaceholderText.GetComponent<Text>().text = this._api.lang.getString("STOMT_PLACEHOLDER");
+
+			// Header
+			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("HEADER_TARGET_STOMTS");
+			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("HEADER_YOUR_STOMTS");
 
 			// Subscription Layer
-			_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
-			SkipButton.text = _api.lang.getString("SKIP");
-			GetNotifiedText.text = _api.lang.getString("GET_NOTIFIED");
-			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("WHATS_YOUR") + _api.lang.getString("EMAIL_END"));
+			this.GetNotifiedText.text = this._api.lang.getString("SUBSCRIBE_GET_NOTIFIED");
+			this.PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, this.SubscribtionInfoText, this._api.lang.getString("SUBSCRIBE_EMAIL_QUESTION"));
+			this._EmailInput.placeholder.GetComponent<Text>().text = this._api.lang.getString("SUBSCRIBE_EMAIL_PLACEHOLDER");
+			this.SkipButton.text = this._api.lang.getString("SUBSCRIBE_SKIP");
 
 			// Success Layer
-			CreateButtonText.text = _api.lang.getString("CREATE_ANO_WISH");
-			ThankYouText.text = _api.lang.getString("THANK_YOU");
-			ArrowText.text = _api.lang.getString("FIND_YOUR_W");
-			SentLayerMessage.text = _api.lang.getString("FIND_M_WISHES");
+			this.ThankYouText.text = this._api.lang.getString("SUCCESS_THANK_YOU");
+			this.ArrowText.text = this._api.lang.getString("SUCCESS_FIND_YOUR_STOMTS");
+			this.SentLayerMessage.text = this._api.lang.getString("SUCCESS_FIND_ALL_STOMTS");
+			this.CreateButtonText.text = this._api.lang.getString("SUCCESS_CREATE_NEW_WISH");
 
 			// Error Layer
-			ReconnectText.text = _api.lang.getString("RECONNECT");
-			ErrorHeaderText.text = _api.lang.getString("NOT_CONNECT");
-			ErrorMessageText.text = _api.lang.getString("NO_INTERNET");
+			this.ReconnectText.text = this._api.lang.getString("NETWORK_RECONNECT");
+			this.ErrorHeaderText.text = this._api.lang.getString("NETWORK_NOT_CONNECTED");
+			this.ErrorMessageText.text = this._api.lang.getString("NETWORK_NO_INTERNET");
 		}
 
 		// HEADER
@@ -567,7 +568,7 @@ namespace Stomt
 
 			if (StartedTyping && _message.text.Length < 6)
 			{
-				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
+				this.ShowErrorMessage(_api.lang.getString("STOMT_ERROR_MORE_TEXT"));
 			}
 
 			if (_characterLimit.GetComponent<Animator>().isInitialized)
@@ -643,8 +644,7 @@ namespace Stomt
 
 			if (!IsMessageLengthCorrect())
 			{
-				this.ShowErrorMessage(_api.lang.getString("WRITE_MORE"));
-				Debug.Log("_message to short!");
+				this.ShowErrorMessage(_api.lang.getString("STOMT_ERROR_MORE_TEXT"));
 				return;
 			}
 
@@ -959,11 +959,6 @@ namespace Stomt
 		// Email Toggle
 		public void OnSubscribeTogglePressed()
 		{
-			string finalInfoText = "";
-			string defaultText = _api.lang.getString("WHATS_YOUR");
-			string phoneTextEnding = _api.lang.getString("PHONE_END");
-			string emailTextEnding = _api.lang.getString("EMAIL_END");
-
 			SubscribtionInfoText.GetComponent<Animator>().SetBool("Show", false);
 			useEmailOnSubscribe = !useEmailOnSubscribe;
 
@@ -972,25 +967,20 @@ namespace Stomt
 				toggleItemEMail.color = Color.black;
 				toggleItemSMS.color = Color.gray;
 
-				finalInfoText = defaultText + emailTextEnding;
-
-				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("EMAIL_PLH");
+				PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_EMAIL_QUESTION"));
+				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("SUBSCRIBE_EMAIL_PLACEHOLDER");
 			}
 			else
 			{
 				toggleItemEMail.color = Color.gray;
 				toggleItemSMS.color = Color.black;
 
-				finalInfoText = defaultText + phoneTextEnding;
-
-				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("PHONE_PLH");
+				PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_PHONE_QUESTION"));
+				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("SUBSCRIBE_PHONE_PLACEHOLDER");
 			}
 
 			_EmailInput.ActivateInputField();
 			_EmailInput.Select();
-
-
-			PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, finalInfoText);
 		}
 
 		// FIXME: What is this for?
