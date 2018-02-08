@@ -11,10 +11,6 @@ namespace Stomt
 	{
 		#region Inspector Variables
 		[SerializeField]
-		KeyCode _toggleKey = KeyCode.F1;
-		public string DisplayGameName;
-
-		[SerializeField]
 		[HideInInspector]
 		public GameObject _typeObj;
 		[SerializeField]
@@ -145,9 +141,10 @@ namespace Stomt
 		[HideInInspector]
 		public Image TargetIcon;
 		#endregion
-		StomtAPI _api;
-		Texture2D _screenshot;
-		StomtLog _log;
+
+		// editable in GUI
+		public KeyCode _toggleKey = KeyCode.F1;
+		public string DisplayGameName;
 		public Texture2D ProfileImageTexture;
 		public bool LogFileUpload = true;
 		public bool ShowCloseButton = true;
@@ -156,6 +153,11 @@ namespace Stomt
 		public int ErrorMessageCharLimit = 20;
 		public bool PrefetchTarget = false;
 		public bool ShowWidgetOnStart = false;
+
+		// internal
+		private StomtAPI _api;
+		private Texture2D _screenshot;
+		private StomtLog _log;
 		private WWW ImageDownload;
 		private bool TargetImageApplied = false;
 		private bool StartedTyping;
@@ -175,6 +177,7 @@ namespace Stomt
 		enum UILayer { Input, Subscription, Success, Error };
 		UILayer CurrentLayer;
 
+		// Called once at initialization
 		void Awake()
 		{
 			_ui.SetActive(false);
@@ -185,6 +188,7 @@ namespace Stomt
 			placeholderLocalStartPosition.x -= 130; // offset
 		}
 
+		// Called once when script is enabled
 		void Start()
 		{
 			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
@@ -209,22 +213,6 @@ namespace Stomt
 			}
 
 			ApplyLanguage();
-		}
-
-		void RequestTargetAndUser(bool force = false)
-		{
-			// only request them once
-			if (!force && !string.IsNullOrEmpty(_api.TargetID) && !string.IsNullOrEmpty(_api.TargetDisplayname))
-			{
-				return;
-			}
-
-			_api.RequestTargetAndUser((response) => {
-				SetStomtNumbers();
-				_TargetURL.text = "stomt.com/" + _api.TargetID;
-				setTargetName();
-				StartCoroutine(refreshTargetIcon());
-			}, null);
 		}
 
 		// is called every frame
@@ -280,6 +268,9 @@ namespace Stomt
 		{
 			yield return new WaitForEndOfFrame();
 
+			// update UI elements
+			applyProfileImageTextureIfAvailable();
+			setTargetName();
 			RequestTargetAndUser();
 
 			_api.NetworkError = false;
@@ -334,6 +325,25 @@ namespace Stomt
 			// Move Target (Fit with Toggle)
 			MoveTargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
 			this.MovePlaceholderBasedOnMessage();
+		}
+
+		private void RequestTargetAndUser(bool force = false)
+		{
+			// only request them once
+			if (!force && !string.IsNullOrEmpty(_api.TargetID) && !string.IsNullOrEmpty(_api.TargetDisplayname))
+			{
+				return;
+			}
+
+			_api.RequestTargetAndUser((response) => {
+				SetStomtNumbers();
+				_TargetURL.text = "stomt.com/" + _api.TargetID;
+				setTargetName();
+				if (!TargetImageApplied)
+				{
+					StartCoroutine(refreshTargetIcon());
+				}
+			}, null);
 		}
 
 		private void MoveTargetBasedOnToggle(Rect toggleRect)
@@ -756,14 +766,16 @@ namespace Stomt
 			// check wether download finished
 			if (ImageDownload != null && !TargetImageApplied)
 			{
-				if (ProfileImageTexture != null)   // already loaded, apply now
+				if (ProfileImageTexture != null) // already loaded, apply now
 				{
-					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
-					this.TargetImageApplied = true;
+					applyProfileImageTextureIfAvailable();
 				}
-				else if (ImageDownload.texture != null)            // scale now and apply
+				else if (ImageDownload.texture != null) // scale now and apply
 				{
-					ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
+					if (ImageDownload.texture.width != 128 || ImageDownload.texture.height != 128)
+					{
+						ProfileImageTexture = TextureScaler.scaled(ImageDownload.texture, 128, 128, FilterMode.Trilinear);
+					}
 
 					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG());
 					this.TargetImageApplied = true;
@@ -771,11 +783,22 @@ namespace Stomt
 			}
 			else
 			{
-				if (ProfileImageTexture != null && !TargetImageApplied)   // already loaded, apply now
+				// already loaded, apply now
+				applyProfileImageTextureIfAvailable();
+			}
+		}
+
+		void applyProfileImageTextureIfAvailable()
+		{
+			if (!TargetImageApplied && ProfileImageTexture != null) 
+			{
+				if (ProfileImageTexture.width != 128 || ProfileImageTexture.height != 128)
 				{
-					TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
-					TargetImageApplied = true;
+					ProfileImageTexture = TextureScaler.scaled(ProfileImageTexture, 128, 128, FilterMode.Trilinear);
 				}
+
+				TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
+				TargetImageApplied = true;
 			}
 		}
 

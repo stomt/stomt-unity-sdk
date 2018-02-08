@@ -125,12 +125,13 @@ namespace Stomt
 		/// </summary>
 		private List<List<string> > CustomKeyValuePairs;
 
+		// Called once at initialization
 		public StomtAPI()
 		{
 			CustomKeyValuePairs = new List<List<string> >();
 		}
 
-
+		// Called once when script is enabled
 		void Awake()
 		{
 			// Debug/Testing on the test-server
