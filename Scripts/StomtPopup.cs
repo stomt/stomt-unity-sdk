@@ -154,6 +154,7 @@ namespace Stomt
 		public bool WouldBecauseText = true; // Activates the would/because text
 		public int TargetNameCharLimit = 11;
 		public int ErrorMessageCharLimit = 20;
+		public bool PrefetchTarget = false;
 		public bool ShowWidgetOnStart = false;
 		private WWW ImageDownload;
 		private bool TargetImageApplied = false;
@@ -197,12 +198,10 @@ namespace Stomt
 			CurrentLayer = UILayer.Input;
 			StartedTyping = false;
 
-			_api.RequestTargetAndUser((response) => {
-				SetStomtNumbers();
-				_TargetURL.text = "stomt.com/" + _api.TargetID;
-				setTargetName ();
-				StartCoroutine(refreshTargetIcon());
-			}, null);
+			if (PrefetchTarget)
+			{
+				RequestTargetAndUser();
+			}
 
 			if (ShowWidgetOnStart)
 			{
@@ -210,6 +209,22 @@ namespace Stomt
 			}
 
 			ApplyLanguage();
+		}
+
+		void RequestTargetAndUser(bool force = false)
+		{
+			// only request them once
+			if (!force && !string.IsNullOrEmpty(_api.TargetID) && !string.IsNullOrEmpty(_api.TargetDisplayname))
+			{
+				return;
+			}
+
+			_api.RequestTargetAndUser((response) => {
+				SetStomtNumbers();
+				_TargetURL.text = "stomt.com/" + _api.TargetID;
+				setTargetName();
+				StartCoroutine(refreshTargetIcon());
+			}, null);
 		}
 
 		// is called every frame
@@ -264,6 +279,8 @@ namespace Stomt
 		IEnumerator Show()
 		{
 			yield return new WaitForEndOfFrame();
+
+			RequestTargetAndUser();
 
 			_api.NetworkError = false;
 
@@ -361,6 +378,8 @@ namespace Stomt
 				this.HideWidget();
 				this.ShowWidget();
 			}
+
+			this.RequestTargetAndUser();
 		}
 
 		void HideNetworkErrorLayer()
