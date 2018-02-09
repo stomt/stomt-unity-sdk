@@ -31,7 +31,6 @@ Example Games that use our integrations:
 3. Enter all necessary data into the ```StomtAPI``` component on the prefab.   
 
 * Enter the `App Id` you obtained in the second step
-* Optional: Enter `Labels` that will be attached to every stomt. [(See also Section "In-Game Labeling")](https://github.com/stomt/stomt-unity-sdk#in-game-labeling)
 
 <p align="center">
 <img alt="Configure STOMT Unity plugin" src="http://schukies.io/images/stomt/StomtUnitySettings.PNG" /> 
@@ -40,6 +39,34 @@ Example Games that use our integrations:
 4. Finished!
 
 Scaling: You can scale the widget by using the StomtPopup's Rect Transform Scale property in the inspector.
+
+## Optional Configuration
+
+#### Stomt API (Script)
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **App Id** _(required)_ | String | The [App Id](https://www.stomt.com/integrate) of your game on STOMT |
+| **Language File** | File | A JSON-File containing the translations ([Learn more](#translations)). |
+| **Default Language** | String | Show the UI in this language if the users language is not available. |
+| **Force Default Language** | Bool | Show every user the UI in the Default Language. |
+| **Send Default Labels** | Bool | Automatically attach platform and resolution to stomts. |
+| **Debug Mode** | Bool | Only used in development to access all layers. |
+| **Labels** | List | Enter Labels that will be attached to every stomt ([See also Section "In-Game Labeling"](https://github.com/stomt/stomt-unity-sdk#in-game-labeling)). |
+
+#### Stomt Popup (Script)
+
+| Property | Type | Description |
+| :--- | :--- | :--- |
+| **Toggle Key** | Key | Keyboard Key to toggle the creation form. |
+| **Display Game Name** | String | Force to show this name instead of loading it from the server. |
+| **Profile Image Texture** | Texture | Force to use this image instead of loading it from the server. |
+| **Upload Log File** | Bool | Upload the log file with every stomt. |
+| **Prefetch Target** | Bool | Load the target (name, image, stats) from the server when initializing StomtApi. |
+| **Show Close Button** | Bool | Show the close button in the top right of the widget. |
+| **Show Default Text** | Bool | Enter "would" / "because" (or the translation) in the textarea, so users understand that they have to finish the sentence. |
+| **Show Widget On Start** | Bool | Automatically show the widget on startup. |
+
 
 ## Form Triggers
 
