@@ -603,7 +603,11 @@ namespace Stomt
 				if (responseData["meta"].Keys.Contains("accesstoken"))
 				{
 					string accesstoken = (string)responseData["meta"]["accesstoken"];
-					this.config.SetAccessToken(accesstoken);
+					string oldAccessToken = this.config.GetAccessToken();
+					if (!oldAccessToken.Equals(accesstoken)) {
+						this.config.SetAccessToken(accesstoken);
+						this.RequestSession(null, null); // set/update user
+					}
 				}
 			}
 
