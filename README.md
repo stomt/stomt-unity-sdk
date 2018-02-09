@@ -72,7 +72,7 @@ If you want different labels for every stomt then you have to clear the label ar
 </p>
 
 **Flexible via Script:**
-```
+```C#
 using UnityEngine;
 using System.Collections;
 using Stomt;
@@ -93,11 +93,13 @@ public class StomtLabelExample : MonoBehaviour
 }
 
 ```
+
+
 ## Append Additional Data
 
 If you need more data but you do not want to flood the labels, you can add additional data to a stomt by adding custom key value pairs.
 
-```
+```C#
 using UnityEngine;
 using System.Collections;
 using Stomt;
@@ -121,7 +123,7 @@ The STOMT Widget supports a variety of callback events.
 
 This shows how you can access them.
 
-```
+```C#
 using UnityEngine;
 using System.Collections;
 using Stomt;
@@ -143,6 +145,36 @@ public class StomtEventCallbackExample : MonoBehaviour
     }
 } 
 ```
+
+
+## Translations
+
+The UI of the SDK supports multiple languages. At the moment we provide support for English and German (but you can add [more languages](#extend-the-translations)). We automatically search for translations for the users [`Application.SystemLanguage`](https://docs.unity3d.com/ScriptReference/Application-systemLanguage.html). If you use another way to let the user configure his language you can pass this language to the STOMT SDK as well. Please pass the [ISO 639-1 Code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) of the language to `StomtAPI.SetUserLanguage`.
+
+```C#
+using UnityEngine;
+using System.Collections;
+using Stomt;
+
+public class StomtLanguageExample : MonoBehaviour
+{
+	private StomtAPI StomtAPI;
+
+	// Use this for initialization
+	void Start()
+	{
+		StomtAPI = GameObject.Find("StomtPopup").GetComponent<StomtAPI>();
+
+		StomtAPI.SetUserLanguage("ru");
+	}
+}
+```
+
+### Extend the Translations
+
+To extend the translation simply add your languages in the `Language/languages.json` file. Use the [ISO 639-1 Code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) of the language as new key and copy the translations object from one of the other languages as value. Then replace the strings with your translated ones. You should review the translations in the UI to ensure that everything fits in the available space.
+
+If you have added a languages, please [share them](https://github.com/stomt/stomt-unity-sdk/issues) with us. 
 
 
 ## Common Issues

@@ -5,7 +5,6 @@ using LitJsonStomt;
 
 namespace Stomt
 {
-
 	/// <summary>
 	/// A single stomt-track.
 	/// </summary>
@@ -81,4 +80,3 @@ namespace Stomt
 		}
 	}
 }
-
