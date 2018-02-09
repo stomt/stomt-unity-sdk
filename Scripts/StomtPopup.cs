@@ -146,8 +146,6 @@ namespace Stomt
 		public KeyCode _toggleKey = KeyCode.F1;
 		public string DisplayGameName;
 		public Texture2D ProfileImageTexture;
-		public int TargetNameCharLimit = 20;
-		public int ErrorMessageCharLimit = 20;
 		public bool LogFileUpload = true;
 		public bool PrefetchTarget = false;
 		public bool ShowCloseButton = true;
@@ -165,6 +163,8 @@ namespace Stomt
 		private Texture2D _screenshot;
 		private StomtLog _log;
 		private WWW ImageDownload;
+		private int TargetNameCharLimit = 20;
+		private int ErrorMessageCharLimit = 35;
 		private bool TargetImageApplied = false;
 		private bool StartedTyping = false;
 		private bool IsErrorState = false;
