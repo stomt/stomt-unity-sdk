@@ -15,6 +15,9 @@ namespace Stomt
 	/// </summary>
 	public class StomtAPI : MonoBehaviour
 	{
+		[HideInInspector]
+		private string Version = "2.1.0";
+
 		#region Inspector Variables
 		[SerializeField]
 		[Tooltip("The application ID for your game. Create one on https://www.stomt.com/dev/my-apps/.")]
@@ -35,8 +38,8 @@ namespace Stomt
 		public StomtLang lang;
 		public string defaultLanguage;
 		public bool ForceDefaultLanguage;
-		public bool DisableDefaultLabels;
-		public bool DebugDisableConfigFile = false;
+		public bool SendDefaultLabels = true;
+		public bool DebugMode = false;
 		private StomtConfig _config = null;
 		public StomtConfig config {
 			get {
@@ -145,7 +148,7 @@ namespace Stomt
 			{
 				this.restServerURL = "https://rest.stomt.com";
 				this.stomtURL = "https://stomt.com";
-				this.DebugDisableConfigFile = false;
+				this.DebugMode = false;
 			}
 
 			NetworkError = false;
@@ -159,7 +162,7 @@ namespace Stomt
 
 		void Start()
 		{
-			if (DebugDisableConfigFile)
+			if (DebugMode)
 			{
 				this.config.SetLoggedin(false);
 				this.config.SetSubscribed(false);
@@ -192,7 +195,7 @@ namespace Stomt
 			stomtTrack.device_platform = Application.platform.ToString();
 			stomtTrack.device_id = SystemInfo.deviceUniqueIdentifier;
 			stomtTrack.sdk_type = "Unity" + Application.unityVersion;
-			stomtTrack.sdk_version = "Beta - 2.0";
+			stomtTrack.sdk_version = this.Version;
 			stomtTrack.sdk_integration = Application.productName;
 			stomtTrack.target_id = this.TargetID;
 
@@ -303,7 +306,7 @@ namespace Stomt
 		{
 			StomtCreation stomtCreation = new StomtCreation(this);
 
-			stomtCreation.DisableDefaultLabels = DisableDefaultLabels;
+			stomtCreation.DisableDefaultLabels = !SendDefaultLabels;
 
 			stomtCreation.target_id = this.TargetID;
 			stomtCreation.lang = this.lang.getLanguage();

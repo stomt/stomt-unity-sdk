@@ -146,7 +146,7 @@ namespace Stomt
 		public KeyCode _toggleKey = KeyCode.F1;
 		public string DisplayGameName;
 		public Texture2D ProfileImageTexture;
-		public bool LogFileUpload = true;
+		public bool UploadLogFile = true;
 		public bool PrefetchTarget = false;
 		public bool ShowCloseButton = true;
 		public bool ShowDefaultText = true; // Activates the would/because text
@@ -281,7 +281,7 @@ namespace Stomt
 			_screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
 
 			// Get Logs
-			if (this.LogFileUpload)
+			if (this.UploadLogFile)
 			{
 				if (this._log != null)
 				{
@@ -856,7 +856,7 @@ namespace Stomt
 			}
 
 			// attach logs
-			if (this.LogFileUpload)
+			if (this.UploadLogFile)
 			{
 				stomtCreation.attachLogs(this._log);
 			}
