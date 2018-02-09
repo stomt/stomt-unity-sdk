@@ -776,11 +776,6 @@ namespace Stomt
 		{
 			if (!TargetImageApplied && ProfileImageTexture != null) 
 			{
-				if (ProfileImageTexture.width != 128 || ProfileImageTexture.height != 128)
-				{
-					ProfileImageTexture = TextureScaler.scaled(ProfileImageTexture, 128, 128, FilterMode.Trilinear);
-				}
-
 				TargetIcon.sprite.texture.LoadImage(ProfileImageTexture.EncodeToPNG(), false);
 				TargetImageApplied = true;
 			}
