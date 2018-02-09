@@ -413,7 +413,16 @@ namespace Stomt
 
 		public void OpenUserProfileURL()
 		{
-			string url = this._api.stomtURL + "/" + _api.UserID;
+			string url = this._api.stomtURL + "/";
+
+			if (!string.IsNullOrEmpty(_api.UserID)) {
+				url = url + _api.UserID; // link to user profile
+			}
+			else
+			{
+				url = url + _api.TargetID; // fallback to target
+			}
+
 			this.OpenStomtUrl(url);
 		}
 
