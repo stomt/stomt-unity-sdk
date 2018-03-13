@@ -1047,14 +1047,52 @@ namespace Stomt
 					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
 				}
 			}
+
+            SubmitLogin();
 		}
 
+        //////////////////////////////////////////////////////////////////
+        // Login Sent Layer
+        //////////////////////////////////////////////////////////////////
 
-		//////////////////////////////////////////////////////////////////
-		// Successful Sent Layer
-		//////////////////////////////////////////////////////////////////
+        private void SubmitLogin()
+        {
+            string userName = "******";
+            string password = "******";
+            if (!string.IsNullOrEmpty(_EmailInput.text))
+            {
+                if (useEmailOnSubscribe)
+                {
+                    this._api.SendLoginRequest(userName, password, (response) =>
+                    {
 
-		public void OnSwitchToSuccessLayer()
+                       Debug.Log("worked");
+
+                    }, (response) =>
+                    {
+                        if(!response.StatusCode.Equals(200))
+                        {
+                            Debug.Log("Login fail");
+                        }
+                    });
+
+
+
+                    this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
+                }
+                else
+                {
+                    this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
+                }
+            }
+        }
+
+
+        //////////////////////////////////////////////////////////////////
+        // Successful Sent Layer
+        //////////////////////////////////////////////////////////////////
+
+        public void OnSwitchToSuccessLayer()
 		{
 			PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
 			CurrentLayer = UILayer.Success;

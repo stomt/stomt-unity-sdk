@@ -27,7 +27,7 @@ namespace Stomt
 		public StomtCreation(StomtAPI api)
 		{
 			this._api = api;
-			CustomKeyValuePairs = new List<List<string> >();
+			CustomKeyValuePairs = new List<List<string>>();
 		}
 
 		public override string ToString()

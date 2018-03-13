@@ -301,8 +301,45 @@ namespace Stomt
 			}, callbackError);
 		}
 
-		// Stomt Handling
-		public StomtCreation initStomtCreation()
+        public void SendLoginRequest(string userName, string password, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+        {
+            var jsonSubscription = new StringBuilder();
+            var writerSubscription = new LitJsonStomt.JsonWriter(jsonSubscription);
+
+            writerSubscription.WriteObjectStart();
+
+            writerSubscription.WritePropertyName("login_method");
+            writerSubscription.Write("normal");
+
+            writerSubscription.WritePropertyName("emailusername");
+            writerSubscription.Write(userName);
+
+            writerSubscription.WritePropertyName("password");
+            writerSubscription.Write(password);
+
+            writerSubscription.WriteObjectEnd();
+
+            var url = string.Format("{0}/authentication/session", restServerURL);
+
+            GetPOSTResponse(url, jsonSubscription.ToString(), (response) => 
+            {
+                this.config.SetSubscribed(true);
+
+                var track = initStomtTrack();
+                track.event_category = "auth";
+                track.event_action = "login";
+                track.event_label = "normal";
+                track.save();
+                
+                if (callbackSuccess != null)
+                {
+                    callbackSuccess(response);
+                }
+            }, callbackError);
+        }
+
+        // Stomt Handling
+        public StomtCreation initStomtCreation()
 		{
 			StomtCreation stomtCreation = new StomtCreation(this);
 
