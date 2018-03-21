@@ -37,7 +37,9 @@ namespace Stomt
 		public GameObject _LayerInput;
 		[HideInInspector]
 		public GameObject _LayerSubscription;
-		[HideInInspector]
+        [HideInInspector]
+        public GameObject _LayerLogin;
+        [HideInInspector]
 		public Text _TargetURL;
 		[HideInInspector]
 		public GameObject _ErrorMessageObject;
@@ -74,8 +76,16 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
 
-		// Subscription Layer
-		[SerializeField]
+        // Login Layer
+        [SerializeField]
+        [HideInInspector]
+        public InputField LoginUser;
+        [SerializeField]
+        [HideInInspector]
+        public InputField LoginPassword;
+
+        // Subscription Layer
+        [SerializeField]
 		[HideInInspector]
 		public Text SkipButton;
 		[SerializeField]
@@ -338,6 +348,10 @@ namespace Stomt
 			// Reset Subscription Layer
 			this._LayerSubscription.SetActive(false);
 			_EmailInput.text = "";
+
+            // Reset Login Layer
+
+            this._LayerLogin.SetActive(false);
 
 			// Handle Animations
 			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
@@ -1052,38 +1066,44 @@ namespace Stomt
 		}
 
         //////////////////////////////////////////////////////////////////
-        // Login Sent Layer
+        // Login Layer
         //////////////////////////////////////////////////////////////////
 
-        private void SubmitLogin()
+        public void OpenSignupURL()
         {
-            string userName = "******";
-            string password = "******";
-            if (!string.IsNullOrEmpty(_EmailInput.text))
+            this.OpenStomtUrl("https://www.stomt.com/signup");
+        }
+
+        public void OpenForgotPasswordURL()
+        {
+            this.OpenStomtUrl("https://www.stomt.com/password/request");
+        }
+
+        public void OpenLoginLayer()
+        {
+            this._LayerInput.SetActive(false);
+            this._LayerLogin.SetActive(true);
+        }
+
+        public void SubmitLogin()
+        {
+            string userName = LoginUser.text;
+            string password = LoginPassword.text;
+
+            if (!string.IsNullOrEmpty(LoginUser.text) && !string.IsNullOrEmpty(LoginPassword.text))
             {
-                if (useEmailOnSubscribe)
+                this._api.SendLoginRequest(userName, password, (response) =>
                 {
-                    this._api.SendLoginRequest(userName, password, (response) =>
-                    {
 
-                       Debug.Log("worked");
+                    Debug.Log("worked");
 
-                    }, (response) =>
-                    {
-                        if(!response.StatusCode.Equals(200))
-                        {
-                            Debug.Log("Login fail");
-                        }
-                    });
-
-
-
-                    this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
-                }
-                else
+                }, (response) =>
                 {
-                    this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
-                }
+                    if(!response.StatusCode.Equals(200))
+                    {
+                        Debug.Log("Login fail");
+                    }
+                });
             }
         }
 
