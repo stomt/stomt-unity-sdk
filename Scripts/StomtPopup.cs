@@ -40,6 +40,8 @@ namespace Stomt
         [HideInInspector]
         public GameObject _LayerLogin;
         [HideInInspector]
+        public GameObject _LayerLoginMessage;
+        [HideInInspector]
 		public Text _TargetURL;
 		[HideInInspector]
 		public GameObject _ErrorMessageObject;
@@ -83,6 +85,15 @@ namespace Stomt
         [SerializeField]
         [HideInInspector]
         public InputField LoginPassword;
+        [SerializeField]
+        [HideInInspector]
+        public Text LoginMessage;
+        [SerializeField]
+        [HideInInspector]
+        public Text PasswordPlaceholder;
+        [SerializeField]
+        [HideInInspector]
+        public Text LoginButtonText;
 
         // Subscription Layer
         [SerializeField]
@@ -185,7 +196,7 @@ namespace Stomt
 		private string becauseText;
 		private Vector3 targetLocalStartPostion;
 		private Vector3 placeholderLocalStartPosition;
-		enum UILayer { Input, Subscription, Success, Error };
+		enum UILayer { Input, Subscription, Success, Error, Login, LoginMessage };
 		private UILayer CurrentLayer;
 
 		//////////////////////////////////////////////////////////////////
@@ -307,7 +318,7 @@ namespace Stomt
 			else
 			{
 				// Show UI
-				ResetUILayer();
+				ResetUILayers();
 			}
 
 			if (this.IsMessageLengthCorrect())
@@ -335,7 +346,7 @@ namespace Stomt
 		}
 
 		// FIXME: Make this private and use special function on success layer create new stomt
-		public void ResetUILayer()
+		public void ResetUILayers()
 		{
 			ResetInputForm();
 
@@ -352,6 +363,10 @@ namespace Stomt
             // Reset Login Layer
 
             this._LayerLogin.SetActive(false);
+
+            // Reset Login Message Layer
+
+            this._LayerLoginMessage.SetActive(false);
 
 			// Handle Animations
 			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
@@ -396,6 +411,15 @@ namespace Stomt
 			// Header
 			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("HEADER_TARGET_STOMTS");
 			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("HEADER_YOUR_STOMTS");
+            
+            if(this._api.config.GetLoggedin())
+            {
+                this.LoginButtonText.text = this._api.lang.getString("LOGIN_LOGOUT");
+            }
+            else
+            {
+                this.LoginButtonText.text = this._api.lang.getString("LOGIN");
+            }
 
 			// Subscription Layer
 			// FIXME: add translation for SUBSCRIBE_TOGGLE_EMAIL
@@ -415,7 +439,12 @@ namespace Stomt
 			this.ReconnectText.text = this._api.lang.getString("NETWORK_RECONNECT");
 			this.ErrorHeaderText.text = this._api.lang.getString("NETWORK_NOT_CONNECTED");
 			this.ErrorMessageText.text = this._api.lang.getString("NETWORK_NO_INTERNET");
-		}
+
+            //Login Layer
+
+            this.PasswordPlaceholder.text = this._api.lang.getString("LOGIN_PASSWORD");
+            
+        }
 
 		// HEADER
 
@@ -506,6 +535,18 @@ namespace Stomt
 		//////////////////////////////////////////////////////////////////
 		// Input Layer
 		//////////////////////////////////////////////////////////////////
+
+        public void OpenInputLayer()
+        {
+            this._LayerInput.SetActive(true);
+
+            // Handle Animations
+            //_characterLimit.GetComponent<Animator>().SetBool("Active", false);
+            _like.GetComponent<Animator>().SetBool("OnTop", false);
+            _wish.GetComponent<Animator>().SetBool("OnTop", true);
+
+            CurrentLayer = UILayer.Input;
+        }
 
 		public void OnToggleButtonPressed()
 		{
@@ -1083,6 +1124,8 @@ namespace Stomt
         {
             this._LayerInput.SetActive(false);
             this._LayerLogin.SetActive(true);
+
+            this.CurrentLayer = UILayer.Login;
         }
 
         public void SubmitLogin()
@@ -1092,18 +1135,85 @@ namespace Stomt
 
             if (!string.IsNullOrEmpty(LoginUser.text) && !string.IsNullOrEmpty(LoginPassword.text))
             {
+                this._api.disableContentLog = true;
                 this._api.SendLoginRequest(userName, password, (response) =>
                 {
+                    LoginMessage.text = this._api.lang.getString("LOGIN_SUCCESS");
 
-                    Debug.Log("worked");
+                    this.LoginButtonText.text = this._api.lang.getString("LOGIN_LOGOUT");
+
+                    password = "";
+                    LoginPassword.text = "";
+
+                    this._api.disableContentLog = false;
+
+                    this._LayerLogin.SetActive(false);
+                    OpenLoginMessageLayer();
 
                 }, (response) =>
                 {
-                    if(!response.StatusCode.Equals(200))
+                    Debug.Log("Stomt Login failed: " + response.StatusCode);
+
+                    if (response.StatusCode.Equals(System.Net.HttpStatusCode.NotFound))
                     {
-                        Debug.Log("Login fail");
+                        LoginMessage.text = this._api.lang.getString("LOGIN_ACCOUNT_WRONG");
+                        this.LoginUser.text = "";
+
                     }
+                    else if(response.StatusCode.Equals(System.Net.HttpStatusCode.Forbidden))
+                    {
+                        LoginMessage.text = this._api.lang.getString("LOGIN_PASSWORD_WRONG");
+                    }
+                    else
+                    {
+                        LoginMessage.text = this._api.lang.getString("LOGIN_WENT_WRONG");
+
+                        Debug.Log("Status Code: " + response.StatusCode);
+                    }
+
+                    LoginPassword.text = "";
+                    password = "";
+
+                    this._api.disableContentLog = false;
+
+                    this._LayerLogin.SetActive(false);
+                    OpenLoginMessageLayer();
                 });
+            }
+        }
+
+        public void OpenLoginMessageLayer()
+        {
+            _LayerLoginMessage.SetActive(true);
+
+            this.CurrentLayer = UILayer.LoginMessage;
+        }
+
+        public void SubmitLoginMessageLayer()
+        {
+            _LayerLoginMessage.SetActive(false);
+            this.OpenInputLayer();
+        }
+
+        public void LeaveLoginLayer()
+        {
+            this._LayerLogin.SetActive(false);
+            this.OpenInputLayer();
+        }
+
+        public void OnLoginButtonPressed()
+        {
+            if( this._api.config.GetLoggedin() )
+            {
+                this.LoginButtonText.text = this._api.lang.getString("LOGIN");
+
+                // Logout User
+                this._api.config.SetAccessToken("");
+                this._api.config.SetLoggedin(false);
+            }
+            else
+            {
+                this.OpenLoginLayer();
             }
         }
 

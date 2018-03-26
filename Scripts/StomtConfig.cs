@@ -122,7 +122,7 @@ namespace Stomt
 					}
 					else
 					{
-						Debug.Log("Accesstoken was NullOrEmpty and Key was set");
+						//Debug.Log("Accesstoken was NullOrEmpty and Key was set");
 						return "";
 					}
 				}
