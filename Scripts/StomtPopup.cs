@@ -538,6 +538,8 @@ namespace Stomt
 
         public void OpenInputLayer()
         {
+            DisableCurrentLayer();
+
             this._LayerInput.SetActive(true);
 
             // Handle Animations
@@ -1122,7 +1124,8 @@ namespace Stomt
 
         public void OpenLoginLayer()
         {
-            this._LayerInput.SetActive(false);
+            DisableCurrentLayer();
+
             this._LayerLogin.SetActive(true);
 
             this.CurrentLayer = UILayer.Login;
@@ -1237,6 +1240,36 @@ namespace Stomt
 		//////////////////////////////////////////////////////////////////
 		// Network Error Layer
 		//////////////////////////////////////////////////////////////////
+
+        public void DisableCurrentLayer()
+        {
+            switch (CurrentLayer)
+            {
+                case UILayer.Input:
+                    this._LayerInput.SetActive(false);
+                    break;
+
+                case UILayer.Subscription:
+                    this._LayerSubscription.SetActive(false);
+                    break;
+
+                case UILayer.Login:
+                    this._LayerLogin.SetActive(false);
+                    break;
+
+                case UILayer.Error:
+                    this._LayerNetworkError.SetActive(false);
+                    break;
+
+                case UILayer.LoginMessage:
+                    this._LayerLoginMessage.SetActive(false);
+                    break;
+
+                case UILayer.Success:
+                    this._LayerSuccessfulSent.SetActive(false);
+                    break;
+            }
+        }
 
 		public void Reconnect()
 		{
