@@ -34,7 +34,10 @@ namespace Stomt
 		[HideInInspector]
 		public string stomtURL = "https://www.stomt.com";
 
-		[HideInInspector]
+        [HideInInspector]
+        public bool disableContentLog = false;
+
+        [HideInInspector]
 		public StomtLang lang;
 		public string defaultLanguage;
 		public bool ForceDefaultLanguage;
@@ -324,6 +327,7 @@ namespace Stomt
             GetPOSTResponse(url, jsonSubscription.ToString(), (response) => 
             {
                 this.config.SetSubscribed(true);
+                this.config.SetLoggedin(true);
 
                 var track = initStomtTrack();
                 track.event_category = "auth";
@@ -581,7 +585,15 @@ namespace Stomt
 
 				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
-				Debug.Log("Request: " + data);
+
+                if(disableContentLog)
+                {
+                    Debug.Log("Request: " + "****** Content logging was disabled ******");
+                }
+                else
+                {
+                    Debug.Log("Request: " + data);
+                }
 
 				// Handle invalid Session
 				if (statusCode.Equals ("419"))
