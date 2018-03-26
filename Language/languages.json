@@ -9,6 +9,7 @@
 			"STOMT_DEFAULT_TEXT_LIKE": "weil",
 			"STOMT_PLACEHOLDER": "...bitte beende diesen Satz",
 			"STOMT_ERROR_MORE_TEXT": "Bitte schreibe etwas mehr.",
+			"STOMT_ERROR_LESS_TEXT": "Nutze nur {0} Zeichen.",										 
 			"STOMT_SCREENSHOT": "Screenshot",
 			
 			"HEADER_TARGET_STOMTS": "STOMTS",
@@ -21,6 +22,7 @@
 			"SUBSCRIBE_PHONE_QUESTION": "Wie lautet deine Telefonnummer?",
 			"SUBSCRIBE_PHONE_PLACEHOLDER" : "+49 152 03959902",
 			"SUBSCRIBE_EMAIL_PLACEHOLDER" : "deine@email.com",
+			"SUBSCRIBE_DEFAULT_PLACEHOLDER" : "Wir senden dir keine Spam Nachrichten",																 
 			"SUBSCRIBE_SKIP": "Überspringen",
 
 			"SUCCESS_THANK_YOU": "DANKE!",
@@ -30,7 +32,15 @@
 			
 			"NETWORK_NOT_CONNECTED": "Verbindung zu STOMT unterbrochen",
 			"NETWORK_NO_INTERNET": "Keine Internetverbindung",
-			"NETWORK_RECONNECT": "Wiederverbinden"
+			"NETWORK_RECONNECT": "Wiederverbinden",
+			
+			"LOGIN_ACCOUNT_WRONG": "Account Name stimmt nicht.",
+			"LOGIN_PASSWORD_WRONG": "Passwort stimmt nicht.",
+			"LOGIN_PASSWORD": "Passwort",
+			"LOGIN": "Login",
+			"LOGIN_LOGOUT": "Ausloggen",
+			"LOGIN_SUCCESS": "Du bist eingeloggt!",
+			"LOGIN_WENT_WRONG": "Ups, da lief was schief."
 		},	
 		"en": 
 		{
@@ -40,6 +50,7 @@
 			"STOMT_DEFAULT_TEXT_LIKE": "because",
 			"STOMT_PLACEHOLDER": "...please finish the sentence",
 			"STOMT_ERROR_MORE_TEXT": "Please write a bit more.",
+			"STOMT_ERROR_LESS_TEXT": "Use only {0} characters.",													   
 			"STOMT_SCREENSHOT": "Screenshot",
 			
 			"HEADER_TARGET_STOMTS": "STOMTS",
@@ -52,6 +63,7 @@
 			"SUBSCRIBE_PHONE_QUESTION": "What's your phone number?",
 			"SUBSCRIBE_PHONE_PLACEHOLDER" : "+1-541-754-3010",
 			"SUBSCRIBE_EMAIL_PLACEHOLDER" : "your@gmail.com",			
+			"SUBSCRIBE_DEFAULT_PLACEHOLDER" : "We won’t share your contact nor spam you.",																						  
 			"SUBSCRIBE_SKIP": "Skip",
 
 			"SUCCESS_THANK_YOU": "THANK YOU!",
@@ -61,7 +73,15 @@
 			
 			"NETWORK_NOT_CONNECTED": "Could not connect to STOMT",
 			"NETWORK_NO_INTERNET": "No internet connection",
-			"NETWORK_RECONNECT": "Reconnect"
+			"NETWORK_RECONNECT": "Reconnect",
+			
+			"LOGIN_ACCOUNT_WRONG": "Account was incorrect.",
+			"LOGIN_PASSWORD_WRONG": "Password was incorrect.",
+			"LOGIN_PASSWORD": "Password",
+			"LOGIN": "Login",
+			"LOGIN_LOGOUT": "Logout",
+			"LOGIN_SUCCESS": "You're now logged in!",
+			"LOGIN_WENT_WRONG": "Ups something went wrong."
 		}
 	}
 }
