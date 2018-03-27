@@ -1381,7 +1381,10 @@ namespace Stomt
                 textColor = new Color(0.5625F, 0.07F, 0.95F, 1.0F);
             }
 
-            TextToChange.color = textColor;
+            if(TextToChange != null)
+            {
+                TextToChange.color = textColor;
+            }
 
             if (animator.isInitialized)
 			{
