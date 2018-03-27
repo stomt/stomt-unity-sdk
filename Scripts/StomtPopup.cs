@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.ComponentModel;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Stomt
 {
@@ -288,7 +289,7 @@ namespace Stomt
 			// update UI elements
 			ApplyLanguage();
 			ApplyProfileImageTextureIfAvailable();
-			setTargetName();
+			SetTargetName();
 			RequestTargetAndUser();
 
 			_api.NetworkError = false;
@@ -441,14 +442,15 @@ namespace Stomt
 			this.ErrorMessageText.text = this._api.lang.getString("NETWORK_NO_INTERNET");
 
             //Login Layer
-
             this.PasswordPlaceholder.text = this._api.lang.getString("LOGIN_PASSWORD");
             
         }
 
-		// HEADER
+        //////////////////////////////////////////////////////////////////
+        // HEADER
+        //////////////////////////////////////////////////////////////////
 
-		public void OpenTargetURL()
+        public void OpenTargetURL()
 		{
 			string url = this._api.stomtURL + "/" + _api.TargetID;
 			this.OpenStomtUrl(url);
@@ -490,7 +492,7 @@ namespace Stomt
 			_api.RequestTargetAndUser((response) => {
 				SetStomtNumbers();
 				_TargetURL.text = "stomt.com/" + _api.TargetID;
-				setTargetName();
+				SetTargetName();
 				if (!TargetImageApplied)
 				{
 					StartCoroutine(RefreshTargetIcon());
@@ -504,7 +506,7 @@ namespace Stomt
 			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
 		}
 
-		private void setTargetName()
+		private void SetTargetName()
 		{
 			if (string.IsNullOrEmpty(DisplayGameName))
 			{
@@ -1068,14 +1070,25 @@ namespace Stomt
 
 		public void OnSubscriptionInputChanged()
 		{
-			if (_EmailInput.text.Length > 8)
+            Regex regex = new Regex(@"@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,15})$");
+            Match match = regex.Match(_EmailInput.text);
+
+            if ( match.Success )
 			{
-				_postButtonSubscription.GetComponent<Button>().interactable = true;
-			}
-			else
+                if ( !SubscribtionInfoText.text.Equals(_api.lang.getString("SUBSCRIBE_VALID_EMAIL")) )
+                {
+                    _postButtonSubscription.GetComponent<Button>().interactable = true;
+                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(0.0F, 0.9F, 0.265F, 1.0F), SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_VALID_EMAIL"));
+                }
+            }
+            else if(_EmailInput.text.Length > 3)
 			{
-				_postButtonSubscription.GetComponent<Button>().interactable = false;
-			}
+                if (!SubscribtionInfoText.text.Equals(_api.lang.getString("SUBSCRIBE_NO_VALID_EMAIL")))
+                {
+                    _postButtonSubscription.GetComponent<Button>().interactable = false;
+                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(1.0F, 0.089F, 0.089F, 1.0F), SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_NO_VALID_EMAIL"));
+                }
+            }
 		}
 
 		public void SubmitSubscriptionLayer()
@@ -1293,7 +1306,7 @@ namespace Stomt
 					{
 						SubmitSubscription();
 					}
-					break;
+				    break;
 			}
 
 			this.RequestTargetAndUser();
@@ -1346,14 +1359,31 @@ namespace Stomt
 
 		private void PlayShowAnimation(Animator animator, float delayTime, Text TextToChange = null, string NewText = null)
 		{
-			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText));
-		}
+			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText, new Color(0.5625F, 0.07F, 0.95F, 1.0F)));
+        }
 
-		private IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText)
+        private void PlayShowAnimation(Animator animator, float delayTime, Color textColor, Text TextToChange = null, string NewText = null)
+        {
+            StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText, textColor));
+        }
+
+        private IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText, Color textColor)
 		{
-			yield return new WaitForSeconds(delayTime);
+            if (animator.isInitialized)
+            {
+                animator.SetBool("Show", false);
+            }
 
-			if (animator.isInitialized)
+            yield return new WaitForSeconds(delayTime);
+
+            if (textColor == null)
+            {
+                textColor = new Color(0.5625F, 0.07F, 0.95F, 1.0F);
+            }
+
+            TextToChange.color = textColor;
+
+            if (animator.isInitialized)
 			{
 				animator.SetBool("Show", true);
 			}
