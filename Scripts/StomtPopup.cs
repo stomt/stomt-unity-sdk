@@ -402,47 +402,47 @@ namespace Stomt
 		private void ApplyLanguage()
 		{
 			// Input Layer
-			this.wouldText = this._api.lang.getString("STOMT_DEFAULT_TEXT_WISH") + " ";
-			this.becauseText = this._api.lang.getString("STOMT_DEFAULT_TEXT_LIKE") + " ";
-			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("STOMT_WISH_BUBBLE");
-			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("STOMT_LIKE_BUBBLE");
-			this.CustomPlaceholderText.GetComponent<Text>().text = this._api.lang.getString("STOMT_PLACEHOLDER");
-			// FIXME: add translation for STOMT_SCREENSHOT
+			this.wouldText = this._api.lang.getString("SDK_STOMT_DEFAULT_TEXT_WISH") + " ";
+			this.becauseText = this._api.lang.getString("SDK_STOMT_DEFAULT_TEXT_LIKE") + " ";
+			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_WISH_BUBBLE");
+			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_LIKE_BUBBLE");
+			this.CustomPlaceholderText.GetComponent<Text>().text = this._api.lang.getString("SDK_STOMT_PLACEHOLDER");
+			// FIXME: add translation for SDK_STOMT_SCREENSHOT
 
 			// Header
-			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("HEADER_TARGET_STOMTS");
-			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("HEADER_YOUR_STOMTS");
+			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_TARGET_STOMTS");
+			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_YOUR_STOMTS");
             
             if(this._api.config.GetLoggedin())
             {
-                this.LoginButtonText.text = this._api.lang.getString("LOGIN_LOGOUT");
+                this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN_LOGOUT");
             }
             else
             {
-                this.LoginButtonText.text = this._api.lang.getString("LOGIN");
+                this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN");
             }
 
 			// Subscription Layer
-			// FIXME: add translation for SUBSCRIBE_TOGGLE_EMAIL
-			// FIXME: add translation for SUBSCRIBE_TOGGLE_PHONE
-			this.GetNotifiedText.text = this._api.lang.getString("SUBSCRIBE_GET_NOTIFIED");
-			this.PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, this.SubscribtionInfoText, this._api.lang.getString("SUBSCRIBE_EMAIL_QUESTION"));
-			this._EmailInput.placeholder.GetComponent<Text>().text = this._api.lang.getString("SUBSCRIBE_EMAIL_PLACEHOLDER");
-			this.SkipButton.text = this._api.lang.getString("SUBSCRIBE_SKIP");
+			// FIXME: add translation for SDK_SUBSCRIBE_TOGGLE_EMAIL
+			// FIXME: add translation for SDK_SUBSCRIBE_TOGGLE_PHONE
+			this.GetNotifiedText.text = this._api.lang.getString("SDK_SUBSCRIBE_GET_NOTIFIED");
+			this.PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, this.SubscribtionInfoText, this._api.lang.getString("SDK_SUBSCRIBE_EMAIL_QUESTION"));
+			this._EmailInput.placeholder.GetComponent<Text>().text = this._api.lang.getString("SDK_SUBSCRIBE_EMAIL_PLACEHOLDER");
+			this.SkipButton.text = this._api.lang.getString("SDK_SUBSCRIBE_SKIP");
 
 			// Success Layer
-			this.ThankYouText.text = this._api.lang.getString("SUCCESS_THANK_YOU");
-			this.ArrowText.text = this._api.lang.getString("SUCCESS_FIND_YOUR_STOMTS");
-			this.SentLayerMessage.text = this._api.lang.getString("SUCCESS_FIND_ALL_STOMTS");
-			this.CreateButtonText.text = this._api.lang.getString("SUCCESS_CREATE_NEW_WISH");
+			this.ThankYouText.text = this._api.lang.getString("SDK_SUCCESS_THANK_YOU");
+			this.ArrowText.text = this._api.lang.getString("SDK_SUCCESS_FIND_YOUR_STOMTS");
+			this.SentLayerMessage.text = this._api.lang.getString("SDK_SUCCESS_FIND_ALL_STOMTS");
+			this.CreateButtonText.text = this._api.lang.getString("SDK_SUCCESS_CREATE_NEW_WISH");
 
 			// Error Layer
-			this.ReconnectText.text = this._api.lang.getString("NETWORK_RECONNECT");
-			this.ErrorHeaderText.text = this._api.lang.getString("NETWORK_NOT_CONNECTED");
-			this.ErrorMessageText.text = this._api.lang.getString("NETWORK_NO_INTERNET");
+			this.ReconnectText.text = this._api.lang.getString("SDK_NETWORK_RECONNECT");
+			this.ErrorHeaderText.text = this._api.lang.getString("SDK_NETWORK_NOT_CONNECTED");
+			this.ErrorMessageText.text = this._api.lang.getString("SDK_NETWORK_NO_INTERNET");
 
             //Login Layer
-            this.PasswordPlaceholder.text = this._api.lang.getString("LOGIN_PASSWORD");
+            this.PasswordPlaceholder.text = this._api.lang.getString("SDK_LOGIN_PASSWORD");
             
         }
 
@@ -639,7 +639,7 @@ namespace Stomt
 
 			if (StartedTyping && _message.text.Length < 6)
 			{
-				this.ShowErrorMessage(_api.lang.getString("STOMT_ERROR_MORE_TEXT"));
+				this.ShowErrorMessage(_api.lang.getString("SDK_STOMT_ERROR_MORE_TEXT"));
 			}
 
 			if (_characterLimit.GetComponent<Animator>().isInitialized)
@@ -715,7 +715,7 @@ namespace Stomt
 
 			if (!IsMessageLengthCorrect())
 			{
-				this.ShowErrorMessage(_api.lang.getString("STOMT_ERROR_MORE_TEXT"));
+				this.ShowErrorMessage(_api.lang.getString("SDK_STOMT_ERROR_MORE_TEXT"));
 				return;
 			}
 
@@ -1031,16 +1031,16 @@ namespace Stomt
 				toggleItemEMail.color = Color.black;
 				toggleItemSMS.color = Color.gray;
 
-				PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_EMAIL_QUESTION"));
-				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("SUBSCRIBE_EMAIL_PLACEHOLDER");
+				PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_EMAIL_QUESTION"));
+				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("SDK_SUBSCRIBE_EMAIL_PLACEHOLDER");
 			}
 			else
 			{
 				toggleItemEMail.color = Color.gray;
 				toggleItemSMS.color = Color.black;
 
-				PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_PHONE_QUESTION"));
-				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("SUBSCRIBE_PHONE_PLACEHOLDER");
+				PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_PHONE_QUESTION"));
+				_EmailInput.placeholder.GetComponent<Text>().text = _api.lang.getString("SDK_SUBSCRIBE_PHONE_PLACEHOLDER");
 			}
 
 			_EmailInput.ActivateInputField();
@@ -1075,18 +1075,18 @@ namespace Stomt
 
             if ( match.Success )
 			{
-                if ( !SubscribtionInfoText.text.Equals(_api.lang.getString("SUBSCRIBE_VALID_EMAIL")) )
+                if ( !SubscribtionInfoText.text.Equals(_api.lang.getString("SDK_SUBSCRIBE_VALID_EMAIL")) )
                 {
                     _postButtonSubscription.GetComponent<Button>().interactable = true;
-                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(0.0F, 0.9F, 0.265F, 1.0F), SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_VALID_EMAIL"));
+                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(0.0F, 0.9F, 0.265F, 1.0F), SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_VALID_EMAIL"));
                 }
             }
             else if(_EmailInput.text.Length > 3)
 			{
-                if (!SubscribtionInfoText.text.Equals(_api.lang.getString("SUBSCRIBE_NO_VALID_EMAIL")))
+                if (!SubscribtionInfoText.text.Equals(_api.lang.getString("SDK_SUBSCRIBE_NO_VALID_EMAIL")))
                 {
                     _postButtonSubscription.GetComponent<Button>().interactable = false;
-                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(1.0F, 0.089F, 0.089F, 1.0F), SubscribtionInfoText, _api.lang.getString("SUBSCRIBE_NO_VALID_EMAIL"));
+                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(1.0F, 0.089F, 0.089F, 1.0F), SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_NO_VALID_EMAIL"));
                 }
             }
 		}
@@ -1154,9 +1154,9 @@ namespace Stomt
                 this._api.disableContentLog = true;
                 this._api.SendLoginRequest(userName, password, (response) =>
                 {
-                    LoginMessage.text = this._api.lang.getString("LOGIN_SUCCESS");
+                    LoginMessage.text = this._api.lang.getString("SDK_LOGIN_SUCCESS");
 
-                    this.LoginButtonText.text = this._api.lang.getString("LOGIN_LOGOUT");
+                    this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN_LOGOUT");
 
                     password = "";
                     LoginPassword.text = "";
@@ -1172,17 +1172,17 @@ namespace Stomt
 
                     if (response.StatusCode.Equals(System.Net.HttpStatusCode.NotFound))
                     {
-                        LoginMessage.text = this._api.lang.getString("LOGIN_ACCOUNT_WRONG");
+                        LoginMessage.text = this._api.lang.getString("SDK_LOGIN_ACCOUNT_WRONG");
                         this.LoginUser.text = "";
 
                     }
                     else if(response.StatusCode.Equals(System.Net.HttpStatusCode.Forbidden))
                     {
-                        LoginMessage.text = this._api.lang.getString("LOGIN_PASSWORD_WRONG");
+                        LoginMessage.text = this._api.lang.getString("SDK_LOGIN_PASSWORD_WRONG");
                     }
                     else
                     {
-                        LoginMessage.text = this._api.lang.getString("LOGIN_WENT_WRONG");
+                        LoginMessage.text = this._api.lang.getString("SDK_LOGIN_WENT_WRONG");
 
                         Debug.Log("Status Code: " + response.StatusCode);
                     }
@@ -1221,7 +1221,7 @@ namespace Stomt
         {
             if( this._api.config.GetLoggedin() )
             {
-                this.LoginButtonText.text = this._api.lang.getString("LOGIN");
+                this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN");
 
                 // Logout User
                 this._api.config.SetAccessToken("");
@@ -1376,10 +1376,12 @@ namespace Stomt
 
             yield return new WaitForSeconds(delayTime);
 
+            /*
             if (textColor == null)
             {
                 textColor = new Color(0.5625F, 0.07F, 0.95F, 1.0F);
             }
+            */
 
             if(TextToChange != null)
             {
