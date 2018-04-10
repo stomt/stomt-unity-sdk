@@ -453,7 +453,7 @@ namespace Stomt
         public void OpenTargetURL()
 		{
 			string url = this._api.stomtURL + "/" + _api.TargetID;
-			this.OpenStomtUrl(url);
+			this.OpenStomtUrl(url, "link-stomts");
 		}
 
 		public void OpenUserProfileURL()
@@ -468,7 +468,7 @@ namespace Stomt
 				url = url + _api.TargetID; // fallback to target
 			}
 
-			this.OpenStomtUrl(url);
+			this.OpenStomtUrl(url, "link-yours");
 		}
 
 		private void OpenStomtUrl(string url)
@@ -481,7 +481,26 @@ namespace Stomt
 			Application.OpenURL(url);
 		}
 
-		private void RequestTargetAndUser(bool force = false)
+        private void OpenStomtUrl(string url, string utm_content)
+        {
+            url += string.Format("?utm_medium={0}", "sdk");
+            url += string.Format("&utm_campaign={0}", "unity");
+            url += string.Format("&utm_term={0}", Application.productName);
+
+            if (!string.IsNullOrEmpty(utm_content))
+            {
+                url += string.Format("&utm_content={0}", utm_content);
+            }
+
+            if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
+            {
+                url += string.Format("&access_token={0}", this._api.config.GetAccessToken());
+            }
+
+            Application.OpenURL(url);
+        }
+
+        private void RequestTargetAndUser(bool force = false)
 		{
 			// only request them once
 			if (!force && !string.IsNullOrEmpty(_api.TargetID) && !string.IsNullOrEmpty(_api.TargetDisplayname))
@@ -530,7 +549,6 @@ namespace Stomt
 			{
 				_targetText.text = DisplayGameName;
 			}
-
 		}
 
 
@@ -1127,12 +1145,12 @@ namespace Stomt
 
         public void OpenSignupURL()
         {
-            this.OpenStomtUrl("https://www.stomt.com/signup");
+            this.OpenStomtUrl("https://www.stomt.com/signup", "link-signup");
         }
 
         public void OpenForgotPasswordURL()
         {
-            this.OpenStomtUrl("https://www.stomt.com/password/request");
+            this.OpenStomtUrl("https://www.stomt.com/password/request", "link-forgot-password");
         }
 
         public void OpenLoginLayer()
