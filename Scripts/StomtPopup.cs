@@ -483,7 +483,8 @@ namespace Stomt
 
         private void OpenStomtUrl(string url, string utm_content)
         {
-            url += string.Format("?utm_medium={0}", "sdk");
+            url += string.Format("?utm_source={0}", "stomt");
+            url += string.Format("&utm_medium={0}", "sdk");
             url += string.Format("&utm_campaign={0}", "unity");
             url += string.Format("&utm_term={0}", Application.productName);
 
