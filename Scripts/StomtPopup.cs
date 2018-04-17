@@ -281,8 +281,23 @@ namespace Stomt
 			}
 		}
 
-		// Actually shows the widget
-		private IEnumerator Show()
+        public void OpenWidget()
+        {
+            this.Show();
+        }
+
+        public void OpenWidget(string CustomEventLabel)
+        {
+            var track = _api.initStomtTrack();
+            track.event_category = CustomEventLabel;
+            track.event_action = "open";
+            track.save();
+
+            this.OpenWidget();
+        }
+
+        // Actually shows the widget
+        private IEnumerator Show()
 		{
 			yield return new WaitForEndOfFrame();
 
