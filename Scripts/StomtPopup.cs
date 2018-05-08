@@ -79,6 +79,8 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
 
+        public Text MessagePlaceholder;
+
         // Login Layer
         [SerializeField]
         [HideInInspector]
@@ -199,6 +201,8 @@ namespace Stomt
 		private Vector3 placeholderLocalStartPosition;
 		enum UILayer { Input, Subscription, Success, Error, Login, LoginMessage };
 		private UILayer CurrentLayer;
+        private string langPlaceholderText;
+        private string langPlaceholderOffset = " ";
 
 		//////////////////////////////////////////////////////////////////
 		// General (used for all layers)
@@ -358,7 +362,7 @@ namespace Stomt
 
 			// Move Target (Fit with Toggle)
 			MoveTargetBasedOnToggle(_targetObj.GetComponent<RectTransform>().rect);
-			this.MovePlaceholderBasedOnMessage();
+			//this.MovePlaceholderBasedOnMessage();
 		}
 
 		// FIXME: Make this private and use special function on success layer create new stomt
@@ -421,11 +425,11 @@ namespace Stomt
 			this.becauseText = this._api.lang.getString("SDK_STOMT_DEFAULT_TEXT_LIKE") + " ";
 			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_WISH_BUBBLE");
 			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_LIKE_BUBBLE");
-			this.CustomPlaceholderText.GetComponent<Text>().text = this._api.lang.getString("SDK_STOMT_PLACEHOLDER");
-			// FIXME: add translation for SDK_STOMT_SCREENSHOT
+            langPlaceholderText = this._api.lang.getString("SDK_STOMT_PLACEHOLDER");
+            // FIXME: add translation for SDK_STOMT_SCREENSHOT
 
-			// Header
-			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_TARGET_STOMTS");
+            // Header
+            this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_TARGET_STOMTS");
 			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_YOUR_STOMTS");
             
             if(this._api.config.GetLoggedin())
@@ -644,7 +648,10 @@ namespace Stomt
 
 		public void OnMessageChanged()
 		{
-			int limit = CharLimit;
+            
+
+
+            int limit = CharLimit;
 			int reverselength = limit - _message.text.Length;
 
 			if (reverselength <= 0)
@@ -692,12 +699,11 @@ namespace Stomt
 			{
 				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
 				{
-					this.MovePlaceholderBasedOnMessage();
-					this.CustomPlaceholderText.SetActive(true);
+                    MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
 				}
 				else
 				{
-					this.CustomPlaceholderText.SetActive(false);
+                    MessagePlaceholder.text = "";
 				}
 			}
 		}
@@ -1031,9 +1037,8 @@ namespace Stomt
 		private void ResetInputForm()
 		{
 			_message.text = "";
-			this.MovePlaceholderBasedOnMessage();
-			this.CustomPlaceholderText.SetActive(true);
-			this.StartedTyping = false;
+            MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
+            this.StartedTyping = false;
 			_screenshotToggle.isOn = true;
 
 			if (_like.sortingOrder == 2)
@@ -1046,7 +1051,6 @@ namespace Stomt
 			}
 
 			RefreshStartText();
-			MovePlaceholderBasedOnMessage();
 		}
 
 
