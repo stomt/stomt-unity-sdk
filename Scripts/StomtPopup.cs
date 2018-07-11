@@ -520,6 +520,16 @@ namespace Stomt
             Application.OpenURL(url);
         }
 
+        public void OpenTermsUrl()
+        {
+            Application.OpenURL("https://www.stomt.com/terms");
+        }
+    
+        public void OpenPrivacyUrl()
+        {
+            Application.OpenURL("https://www.stomt.com/privacy");
+        }
+
         private void RequestTargetAndUser(bool force = false)
 		{
 			// only request them once
