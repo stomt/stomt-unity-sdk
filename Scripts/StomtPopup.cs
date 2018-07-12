@@ -492,12 +492,7 @@ namespace Stomt
 
 		private void OpenStomtUrl(string url)
 		{
-			if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
-			{
-				url += string.Format("?access_token={0}", this._api.config.GetAccessToken());
-			}
-
-			Application.OpenURL(url);
+			this.OpenStomtUrl(url, null);
 		}
 
         private void OpenStomtUrl(string url, string utm_content)
@@ -522,12 +517,12 @@ namespace Stomt
 
         public void OpenTermsUrl()
         {
-            Application.OpenURL("https://www.stomt.com/terms");
+        	this.OpenStomtUrl("https://www.stomt.com/terms", "link-terms");
         }
     
         public void OpenPrivacyUrl()
         {
-            Application.OpenURL("https://www.stomt.com/privacy");
+        	this.OpenStomtUrl("https://www.stomt.com/privacy", "link-privacy");
         }
 
         private void RequestTargetAndUser(bool force = false)
