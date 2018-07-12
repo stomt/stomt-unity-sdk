@@ -285,6 +285,8 @@ namespace Stomt
 			}
 
 			writerSubscription.Write(addressOrNumber);
+			writerSubscription.WritePropertyName("message");
+			writerSubscription.Write(this.lang.getString("SDK_SUBSCRIBE_GET_NOTIFIED"));
 			writerSubscription.WriteObjectEnd();
 
 			var url = string.Format ("{0}/authentication/subscribe", restServerURL);
