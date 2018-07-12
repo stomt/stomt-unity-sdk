@@ -425,6 +425,7 @@ namespace Stomt
 			this.becauseText = this._api.lang.getString("SDK_STOMT_DEFAULT_TEXT_LIKE") + " ";
 			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_WISH_BUBBLE");
 			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_LIKE_BUBBLE");
+			_wouldBecauseText.text = _api.lang.getString("SDK_STOMT_DEFAULT_TEXT_WISH");
             langPlaceholderText = this._api.lang.getString("SDK_STOMT_PLACEHOLDER");
             // FIXME: add translation for SDK_STOMT_SCREENSHOT
 
@@ -628,7 +629,7 @@ namespace Stomt
 				// I wish
 				_like.sortingOrder = 1;
 				_wish.sortingOrder = 2;
-				_wouldBecauseText.text = "would";
+				_wouldBecauseText.text = _api.lang.getString("SDK_STOMT_DEFAULT_TEXT_WISH");
 
 				if (!this.IsMessageLengthCorrect() && ShowDefaultText)
 				{
@@ -640,7 +641,7 @@ namespace Stomt
 				// I like
 				_like.sortingOrder = 2;
 				_wish.sortingOrder = 1;
-				_wouldBecauseText.text = "because";
+				_wouldBecauseText.text = _api.lang.getString("SDK_STOMT_DEFAULT_TEXT_LIKE");
 
 				if (!this.IsMessageLengthCorrect() && ShowDefaultText)
 				{
@@ -903,7 +904,7 @@ namespace Stomt
 				if (_like.sortingOrder == 1)
 				{
 					// I wish
-					if (_message.text.Equals("because ") || !StartedTyping)
+					if (_message.text.Equals(this.becauseText) || !StartedTyping)
 					{
 						_message.text = this.wouldText;
 					}
