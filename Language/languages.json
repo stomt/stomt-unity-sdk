@@ -15,7 +15,7 @@
 			"SDK_HEADER_TARGET_STOMTS": "STOMTS",
 			"SDK_HEADER_YOUR_STOMTS": "DEINE",
 			
-			"SDK_SUBSCRIBE_GET_NOTIFIED": "Werde benachrichtigt, wenn jemand reagiert.",
+			"SDK_SUBSCRIBE_GET_NOTIFIED": "Abonniere STOMT um über Antworten auf Deinen Wunsch informiert zu werden.",
 			"SDK_SUBSCRIBE_TOGGLE_EMAIL": "E-Mail",
 			"SDK_SUBSCRIBE_TOGGLE_PHONE": "SMS",
 			"SDK_SUBSCRIBE_EMAIL_QUESTION": "Wie lautet deine E-Mail-Adresse?",
@@ -58,7 +58,7 @@
 			"SDK_HEADER_TARGET_STOMTS": "STOMTS",
 			"SDK_HEADER_YOUR_STOMTS": "YOURS",
 			
-			"SDK_SUBSCRIBE_GET_NOTIFIED": "Get notified when someone reacts.",
+			"SDK_SUBSCRIBE_GET_NOTIFIED": "Subscribe to STOMT to get notified about responses to your wish.",
 			"SDK_SUBSCRIBE_TOGGLE_EMAIL": "E-Mail",
 			"SDK_SUBSCRIBE_TOGGLE_PHONE": "SMS",
 			"SDK_SUBSCRIBE_EMAIL_QUESTION": "What's your email address?",
