@@ -80,16 +80,17 @@ namespace Stomt
 			//////////////////////////////////////////////////////////////////
 
 			// LinuxEditor is not available in all unity version (e.g. 5.4.6)
-			RuntimePlatform LinuxEditor = default(RuntimePlatform);
-			if (Enum.IsDefined(typeof(RuntimePlatform), "LinuxEditor"))
-			{
-				LinuxEditor = (RuntimePlatform)Enum.ToObject(typeof(RuntimePlatform), "LinuxEditor");
-			}
-
-			if (Application.platform == LinuxEditor)
-			{
-				logFilePath = "~/.config/unity3d/CompanyName/ProductName/Editor.log";
-			}
+			// FIXME: The following code is not save to use in all versions
+			//RuntimePlatform LinuxEditor = default(RuntimePlatform);
+			//if (Enum.IsDefined(typeof(RuntimePlatform), "LinuxEditor"))
+			//{
+			//	LinuxEditor = (RuntimePlatform)Enum.ToObject(typeof(RuntimePlatform), "LinuxEditor");
+			//}
+			//
+			//if (Application.platform == LinuxEditor)
+			//{
+			//	logFilePath = "~/.config/unity3d/CompanyName/ProductName/Editor.log";
+			//}
 
 			if (Application.platform == RuntimePlatform.LinuxPlayer)
 			{
