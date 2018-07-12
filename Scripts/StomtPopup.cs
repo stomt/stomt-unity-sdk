@@ -1045,7 +1045,7 @@ namespace Stomt
 			_message.text = "";
             MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
             this.StartedTyping = false;
-			_screenshotToggle.isOn = true;
+			_screenshotToggle.isOn = Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork;
 
 			if (_like.sortingOrder == 2)
 			{
