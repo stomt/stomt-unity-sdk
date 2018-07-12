@@ -256,7 +256,7 @@ namespace Stomt
 		{
 			var url = string.Format ("{0}/authentication/session", restServerURL);
 			GetGETResponse (url, (response) => {
-				amountStomtsCreated = (int)response["user"]["stats"][4];
+				amountStomtsCreated = (int)response["user"]["stats"]["amountStomts"];
 				UserDisplayname = (string)response["user"]["displayname"];
 				UserID = (string)response["user"]["id"];
 
