@@ -279,8 +279,10 @@ namespace Stomt
 		// Enables the Widget/Popup when hidden
 		public void ShowWidget()
 		{
+			print(_ui.activeSelf);
 			if (!_ui.activeSelf)
 			{
+			    print("in method ShowWidget");
 				StartCoroutine(Show());
 			}
 		}
