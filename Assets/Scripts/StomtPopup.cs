@@ -1101,20 +1101,20 @@ namespace Stomt
 			_EmailInput.text = "";
 		}
 
-		// public void OnMobileInput()
-		// {
-		// 	if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-		// 	{
-		// 		if (!useEmailOnSubscribe)
-		// 		{
-		// 			TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
-		// 		}
-		// 		else
-		// 		{
-		// 			TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, true, true);
-		// 		}
-		// 	}
-		// }
+		public void OnMobileInput()
+		{
+			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+			{
+				if (!useEmailOnSubscribe)
+				{
+					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
+				}
+				else
+				{
+					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, true, true);
+				}
+			}
+		}
 
 		public void OnSubscriptionInputChanged()
 		{
