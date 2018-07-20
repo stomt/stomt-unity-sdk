@@ -222,6 +222,8 @@ namespace Stomt
 		// Called once when script is enabled
 		void Start()
 		{
+			LoginPassword.contentType = InputField.ContentType.Password;
+			LoginPassword.inputType = InputField.InputType.Password;
 			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
 			{
 				this.onMobile = true;
@@ -1099,20 +1101,20 @@ namespace Stomt
 			_EmailInput.text = "";
 		}
 
-		public void OnMobileInput()
-		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-			{
-				if (!useEmailOnSubscribe)
-				{
-					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
-				}
-				else
-				{
-					TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, false, true);
-				}
-			}
-		}
+		// public void OnMobileInput()
+		// {
+		// 	if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+		// 	{
+		// 		if (!useEmailOnSubscribe)
+		// 		{
+		// 			TouchScreenKeyboard.Open("", TouchScreenKeyboardType.NamePhonePad, false, false, false, true);
+		// 		}
+		// 		else
+		// 		{
+		// 			TouchScreenKeyboard.Open("", TouchScreenKeyboardType.EmailAddress, false, false, true, true);
+		// 		}
+		// 	}
+		// }
 
 		public void OnSubscriptionInputChanged()
 		{
