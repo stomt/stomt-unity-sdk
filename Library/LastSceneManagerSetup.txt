@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/Scenes/Keyboard.unity
-  isLoaded: 1
-  isActive: 1

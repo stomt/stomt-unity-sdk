@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Stomt
 {
+	
 	[RequireComponent(typeof(StomtAPI))]
 	public class StomtPopup : MonoBehaviour
 	{
