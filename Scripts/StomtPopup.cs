@@ -209,10 +209,7 @@ namespace Stomt
 		// Called once when script is enabled
 		void Start()
 		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-			{
-				this.onMobile = true;
-			}
+			this.onMobile = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
 
 			_api = GetComponent<StomtAPI>();
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
@@ -1087,7 +1084,7 @@ namespace Stomt
 
 		public void OnMobileInput()
 		{
-			if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+			if (this.onMobile)
 			{
 				if (!useEmailOnSubscribe)
 				{
