@@ -614,11 +614,12 @@ namespace Stomt
 				wishAnimator.SetBool("OnTop", tmp);
 			}
 
-			if (_like.sortingOrder == 2)
+			if (_like.sortingOrder > _wish.sortingOrder)
 			{
 				// I wish
-				_like.sortingOrder = 1;
-				_wish.sortingOrder = 2;
+				var oldOrder = _like.sortingOrder;
+				_like.sortingOrder = _wish.sortingOrder;
+				_wish.sortingOrder = oldOrder;
 				_wouldBecauseText.text = _api.lang.getString("SDK_STOMT_DEFAULT_TEXT_WISH");
 
 				if (!this.IsMessageLengthCorrect() && ShowDefaultText)
@@ -629,8 +630,9 @@ namespace Stomt
 			else
 			{
 				// I like
-				_like.sortingOrder = 2;
-				_wish.sortingOrder = 1;
+				var oldOrder = _like.sortingOrder;
+				_like.sortingOrder = _wish.sortingOrder;
+				_wish.sortingOrder = oldOrder;
 				_wouldBecauseText.text = _api.lang.getString("SDK_STOMT_DEFAULT_TEXT_LIKE");
 
 				if (!this.IsMessageLengthCorrect() && ShowDefaultText)
@@ -881,14 +883,14 @@ namespace Stomt
 			
 		private void RefreshStartText()
 		{
-			if (!ShowDefaultText || onMobile)
+			if (!ShowDefaultText)
 			{
 				return;
 			}
 
 			if (this.StartedTyping)
 			{
-				if (_like.sortingOrder == 1)
+				if (_wish.sortingOrder > _like.sortingOrder)
 				{
 					// I wish
 					if (_message.text.Equals(this.becauseText) || !StartedTyping)
@@ -909,7 +911,7 @@ namespace Stomt
 			}
 			else
 			{
-				if (_like.sortingOrder == 1)
+				if (_wish.sortingOrder > _like.sortingOrder)
 				{
 					// I wish
 					if (_message.text.Equals(this.becauseText) || !StartedTyping)
@@ -939,7 +941,7 @@ namespace Stomt
 			StomtCreation stomtCreation = _api.initStomtCreation();
 
 			stomtCreation.text = this._message.text;
-			stomtCreation.positive = _like.sortingOrder == 2;
+			stomtCreation.positive = _like.sortingOrder > _wish.sortingOrder;
 
 			// attach screenshot
 			if (this._screenshotToggle.isOn)
@@ -1033,7 +1035,7 @@ namespace Stomt
 			this.StartedTyping = false;
 			_screenshotToggle.isOn = Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork;
 
-			if (_like.sortingOrder == 2)
+			if (_like.sortingOrder > _wish.sortingOrder)
 			{
 				OnToggleButtonPressed();
 			}
