@@ -40,7 +40,7 @@
 			"SDK_LOGIN_PASSWORD_WRONG": "Passwort stimmt nicht.",
 			"SDK_LOGIN_PASSWORD": "Passwort",
 			"SDK_LOGIN": "Login",
-			"SDK_LOGIN_LOGOUT": "Ausloggen",
+			"SDK_LOGIN_LOGOUT": "Logout",
 			"SDK_LOGIN_SUCCESS": "Du bist eingeloggt!",
 			"SDK_LOGIN_WENT_WRONG": "Ups, da lief was schief."
 		},	
@@ -112,7 +112,9 @@
 			"SDK_SUCCESS_CREATE_NEW_WISH": "Crea otra petición",
 			"SDK_NETWORK_NOT_CONNECTED": "No se pudo conectar con STOMT",
 			"SDK_NETWORK_NO_INTERNET": "No hay conexión a Internet",
-			"SDK_NETWORK_RECONNECT": "Reconectar"
+			"SDK_NETWORK_RECONNECT": "Reconectar",
+			"SDK_LOGIN": "Login",
+			"SDK_LOGIN_LOGOUT": "Logout"
 	    },
 	    "it": 
 	    {
@@ -139,7 +141,9 @@
 			"SDK_SUCCESS_CREATE_NEW_WISH": "Crea un altro desiderio",
 			"SDK_NETWORK_NOT_CONNECTED": "Impossibile connettersi a STOMT",
 			"SDK_NETWORK_NO_INTERNET": "Nessuna connessione internet",
-			"SDK_NETWORK_RECONNECT": "Ricollegati"
+			"SDK_NETWORK_RECONNECT": "Ricollegati",
+			"SDK_LOGIN": "Login",
+			"SDK_LOGIN_LOGOUT": "Logout"
 	    },
 	    "pt": 
 	    {
@@ -166,7 +170,9 @@
 			"SDK_SUCCESS_CREATE_NEW_WISH": "Criar outro stomt",
 			"SDK_NETWORK_NOT_CONNECTED": "Não foi possível conectar-se ao STOMT",
 			"SDK_NETWORK_NO_INTERNET": "Sem conexão à internet",
-			"SDK_NETWORK_RECONNECT": "Reconectar"
+			"SDK_NETWORK_RECONNECT": "Reconectar",
+			"SDK_LOGIN": "Login",
+			"SDK_LOGIN_LOGOUT": "Logout"
     	}
 	}
 }

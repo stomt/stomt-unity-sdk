@@ -7,11 +7,10 @@ using System.Collections.Generic;
 
 namespace Stomt
 {
+	[Serializable]
 	public class StomtCreation
 	{
-		private StomtAPI _api;
-
-		public Texture2D screenshot { get; set; }
+		public string screenshot { get; set; }
 		public string logs { get; set; }
 		public string target_id { get; set; }
 		public bool positive { get; set; }
@@ -24,9 +23,8 @@ namespace Stomt
 		public List<List<string> > CustomKeyValuePairs;
 		public bool DisableDefaultLabels;
 
-		public StomtCreation(StomtAPI api)
+		public StomtCreation()
 		{
-			this._api = api;
 			CustomKeyValuePairs = new List<List<string>>();
 		}
 
@@ -36,16 +34,19 @@ namespace Stomt
 			var writerStomt = new LitJsonStomt.JsonWriter(jsonStomt);
 
 			writerStomt.WriteObjectStart();
-			writerStomt.WritePropertyName("anonym");
-			writerStomt.Write(this.anonym);
+			//writerStomt.WritePropertyName("anonym");
+			//writerStomt.Write(this.anonym);
 			writerStomt.WritePropertyName("positive");
 			writerStomt.Write(this.positive);
-			writerStomt.WritePropertyName("target_id");
-			writerStomt.Write(this.target_id);
 			writerStomt.WritePropertyName("text");
 			writerStomt.Write(this.text);
 			writerStomt.WritePropertyName("lang");
 			writerStomt.Write(this.lang);
+
+			if (!string.IsNullOrEmpty(this.target_id)) {
+				writerStomt.WritePropertyName("target_id");
+				writerStomt.Write(this.target_id);
+			}
 
 			// Add labels
 			writerStomt.WritePropertyName("extradata");
@@ -121,9 +122,11 @@ namespace Stomt
 			CustomKeyValuePairs.Add(pair);
 		}
 
-		public void attachScreenshot(Texture2D screenshot)
+		public void attachScreenshot(Texture2D image)
 		{
-			this.screenshot = screenshot;
+			// Convert to Base64
+			byte[] imageBytes = image.EncodeToPNG();
+			this.screenshot = Convert.ToBase64String(imageBytes);
 		}
 
 		public void attachLogs(string logs)
@@ -134,16 +137,6 @@ namespace Stomt
 		public void attachLogs(StomtLog log)
 		{
 			this.logs = log.getFileConent ();
-		}
-
-		public void save()
-		{
-			this.save(null, null);
-		}
-
-		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
-		{
-			this._api.SendStomt(this, callbackSuccess, callbackError);
 		}
 	}
 }

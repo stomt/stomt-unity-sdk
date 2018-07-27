@@ -31,18 +31,16 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject _postButtonSubscription;
 		[HideInInspector]
-		public GameObject _LayerNetworkError;
-		[HideInInspector]
 		public GameObject _LayerSuccessfulSent;
 		[HideInInspector]
 		public GameObject _LayerInput;
 		[HideInInspector]
 		public GameObject _LayerSubscription;
-        [HideInInspector]
-        public GameObject _LayerLogin;
-        [HideInInspector]
-        public GameObject _LayerLoginMessage;
-        [HideInInspector]
+		[HideInInspector]
+		public GameObject _LayerLogin;
+		[HideInInspector]
+		public GameObject _LayerLoginMessage;
+		[HideInInspector]
 		public Text _TargetURL;
 		[HideInInspector]
 		public GameObject _ErrorMessageObject;
@@ -79,27 +77,27 @@ namespace Stomt
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
 
-        public Text MessagePlaceholder;
+		public Text MessagePlaceholder;
 
-        // Login Layer
-        [SerializeField]
-        [HideInInspector]
-        public InputField LoginUser;
-        [SerializeField]
-        [HideInInspector]
-        public InputField LoginPassword;
-        [SerializeField]
-        [HideInInspector]
-        public Text LoginMessage;
-        [SerializeField]
-        [HideInInspector]
-        public Text PasswordPlaceholder;
-        [SerializeField]
-        [HideInInspector]
-        public Text LoginButtonText;
+		// Login Layer
+		[SerializeField]
+		[HideInInspector]
+		public InputField LoginUser;
+		[SerializeField]
+		[HideInInspector]
+		public InputField LoginPassword;
+		[SerializeField]
+		[HideInInspector]
+		public Text LoginMessage;
+		[SerializeField]
+		[HideInInspector]
+		public Text PasswordPlaceholder;
+		[SerializeField]
+		[HideInInspector]
+		public Text LoginButtonText;
 
-        // Subscription Layer
-        [SerializeField]
+		// Subscription Layer
+		[SerializeField]
 		[HideInInspector]
 		public Text SkipButton;
 		[SerializeField]
@@ -119,17 +117,6 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public Text SentLayerMessage;
-
-		// Error Layer
-		[SerializeField]
-		[HideInInspector]
-		public Text ReconnectText;
-		[SerializeField]
-		[HideInInspector]
-		public Text ErrorHeaderText;
-		[SerializeField]
-		[HideInInspector]
-		public Text ErrorMessageText;
 
 		[SerializeField]
 		[HideInInspector]
@@ -201,8 +188,8 @@ namespace Stomt
 		private Vector3 placeholderLocalStartPosition;
 		enum UILayer { Input, Subscription, Success, Error, Login, LoginMessage };
 		private UILayer CurrentLayer;
-        private string langPlaceholderText;
-        private string langPlaceholderOffset = " ";
+		private string langPlaceholderText;
+		private string langPlaceholderOffset = " ";
 
 		//////////////////////////////////////////////////////////////////
 		// General (used for all layers)
@@ -247,17 +234,11 @@ namespace Stomt
 		// is called every frame
 		void Update()
 		{
-			if (_ui.activeSelf)
-			{
-				if (!_LayerNetworkError.activeSelf && _api.NetworkError)
-				{
-					ShowNetworkErrorLayer();
-				}
-				else if (_LayerNetworkError.activeSelf && !_api.NetworkError)
-				{
-					HideNetworkErrorLayer();
-				}
-			}
+			// Update Values
+			SetStomtNumbers();
+			SetTargetName();
+			SetLoginButton();
+			this._TargetURL.text = "stomt.com/" + StomtConfig.TargetID;
 		}
 
 		// OnGUI is called for rendering and handling GUI events.
@@ -285,38 +266,35 @@ namespace Stomt
 			}
 		}
 
-        public void OpenWidget()
-        {
-            this.Show();
-        }
+		public void OpenWidget()
+		{
+			this.Show();
+		}
 
-        public void OpenWidget(string CustomEventLabel)
-        {
-            var track = _api.initStomtTrack();
-            track.event_category = CustomEventLabel;
-            track.event_action = "open";
-            track.save();
+		public void OpenWidget(string CustomEventLabel)
+		{
+			var track = this._api.initStomtTrack();
+			track.event_category = CustomEventLabel;
+			track.event_action = "open";
+			this._api.SendTrack(track);
 
-            this.OpenWidget();
-        }
+			this.OpenWidget();
+		}
 
-        // Actually shows the widget
-        private IEnumerator Show()
+		// Actually shows the widget
+		private IEnumerator Show()
 		{
 			yield return new WaitForEndOfFrame();
 
 			// update UI elements
 			ApplyLanguage();
 			ApplyProfileImageTextureIfAvailable();
-			SetTargetName();
 			RequestTargetAndUser();
 
-			_api.NetworkError = false;
-
-			var track = _api.initStomtTrack();
+			var track = this._api.initStomtTrack();
 			track.event_category = "form";
 			track.event_action = "open";
-			track.save ();
+			this._api.SendTrack(track);
 
 			// Capture screenshot
 			_screenshot.ReadPixels(new Rect(0, 0, Screen.width, Screen.height), 0, 0);
@@ -331,15 +309,8 @@ namespace Stomt
 				this._log = new StomtLog(this._api);
 			}
 
-			if (_api.NetworkError)
-			{
-				ShowNetworkErrorLayer();
-			}
-			else
-			{
-				// Show UI
-				ResetUILayers();
-			}
+			// Show UI
+			ResetUILayers();
 
 			if (this.IsMessageLengthCorrect())
 			{
@@ -380,13 +351,13 @@ namespace Stomt
 			this._LayerSubscription.SetActive(false);
 			_EmailInput.text = "";
 
-            // Reset Login Layer
+			// Reset Login Layer
 
-            this._LayerLogin.SetActive(false);
+			this._LayerLogin.SetActive(false);
 
-            // Reset Login Message Layer
+			// Reset Login Message Layer
 
-            this._LayerLoginMessage.SetActive(false);
+			this._LayerLoginMessage.SetActive(false);
 
 			// Handle Animations
 			_characterLimit.GetComponent<Animator>().SetBool("Active", false);
@@ -426,21 +397,14 @@ namespace Stomt
 			this._wish.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_WISH_BUBBLE");
 			this._like.GetComponentsInChildren<Text>()[0].text = this._api.lang.getString("SDK_STOMT_LIKE_BUBBLE");
 			_wouldBecauseText.text = _api.lang.getString("SDK_STOMT_DEFAULT_TEXT_WISH");
-            langPlaceholderText = this._api.lang.getString("SDK_STOMT_PLACEHOLDER");
-            // FIXME: add translation for SDK_STOMT_SCREENSHOT
+			langPlaceholderText = this._api.lang.getString("SDK_STOMT_PLACEHOLDER");
+			// FIXME: add translation for SDK_STOMT_SCREENSHOT
 
-            // Header
-            this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_TARGET_STOMTS");
+			// Header
+			this._STOMTS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_TARGET_STOMTS");
 			this._YOURS.GetComponent<Text>().text = this._api.lang.getString("SDK_HEADER_YOUR_STOMTS");
-            
-            if(this._api.config.GetLoggedin())
-            {
-                this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN_LOGOUT");
-            }
-            else
-            {
-                this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN");
-            }
+
+			SetLoginButton();
 
 			// Subscription Layer
 			// FIXME: add translation for SDK_SUBSCRIBE_TOGGLE_EMAIL
@@ -456,23 +420,29 @@ namespace Stomt
 			this.SentLayerMessage.text = this._api.lang.getString("SDK_SUCCESS_FIND_ALL_STOMTS");
 			this.CreateButtonText.text = this._api.lang.getString("SDK_SUCCESS_CREATE_NEW_WISH");
 
-			// Error Layer
-			this.ReconnectText.text = this._api.lang.getString("SDK_NETWORK_RECONNECT");
-			this.ErrorHeaderText.text = this._api.lang.getString("SDK_NETWORK_NOT_CONNECTED");
-			this.ErrorMessageText.text = this._api.lang.getString("SDK_NETWORK_NO_INTERNET");
+			//Login Layer
+			this.PasswordPlaceholder.text = this._api.lang.getString("SDK_LOGIN_PASSWORD");
+		}
 
-            //Login Layer
-            this.PasswordPlaceholder.text = this._api.lang.getString("SDK_LOGIN_PASSWORD");
-            
-        }
-
-        //////////////////////////////////////////////////////////////////
-        // HEADER
-        //////////////////////////////////////////////////////////////////
-
-        public void OpenTargetURL()
+		private void SetLoginButton()
 		{
-			string url = this._api.stomtURL + "/" + _api.TargetID;
+			if(StomtConfig.LoggedIn || StomtConfig.Subscribed)
+			{
+				this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN_LOGOUT");
+			}
+			else
+			{
+				this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN");
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////
+		// HEADER
+		//////////////////////////////////////////////////////////////////
+
+		public void OpenTargetURL()
+		{
+            string url = this._api.stomtURL + "/" + StomtConfig.TargetID;
 			this.OpenStomtUrl(url, "link-stomts");
 		}
 
@@ -480,12 +450,12 @@ namespace Stomt
 		{
 			string url = this._api.stomtURL + "/";
 
-			if (!string.IsNullOrEmpty(_api.UserID)) {
-				url = url + _api.UserID; // link to user profile
+            if (!string.IsNullOrEmpty(StomtConfig.UserID)) {
+                url = url + StomtConfig.UserID; // link to user profile
 			}
 			else
 			{
-				url = url + _api.TargetID; // fallback to target
+                url = url + StomtConfig.TargetID; // fallback to target
 			}
 
 			this.OpenStomtUrl(url, "link-yours");
@@ -496,48 +466,45 @@ namespace Stomt
 			this.OpenStomtUrl(url, null);
 		}
 
-        private void OpenStomtUrl(string url, string utm_content)
-        {
-            url += string.Format("?utm_source={0}", "stomt");
-            url += string.Format("&utm_medium={0}", "sdk");
-            url += string.Format("&utm_campaign={0}", "unity");
-            url += string.Format("&utm_term={0}", Application.productName);
+		private void OpenStomtUrl(string url, string utm_content)
+		{
+			url += string.Format("?utm_source={0}", "stomt");
+			url += string.Format("&utm_medium={0}", "sdk");
+			url += string.Format("&utm_campaign={0}", "unity");
+			url += string.Format("&utm_term={0}", Application.productName);
 
-            if (!string.IsNullOrEmpty(utm_content))
-            {
-                url += string.Format("&utm_content={0}", utm_content);
-            }
+			if (!string.IsNullOrEmpty(utm_content))
+			{
+				url += string.Format("&utm_content={0}", utm_content);
+			}
 
-            if (!string.IsNullOrEmpty(this._api.config.GetAccessToken()))
-            {
-                url += string.Format("&access_token={0}", this._api.config.GetAccessToken());
-            }
+            if (!string.IsNullOrEmpty(StomtConfig.AccessToken))
+			{
+                url += string.Format("&access_token={0}", StomtConfig.AccessToken);
+			}
 
-            Application.OpenURL(url);
-        }
+			Application.OpenURL(url);
+		}
 
-        public void OpenTermsUrl()
-        {
-        	this.OpenStomtUrl("https://www.stomt.com/terms", "link-terms");
-        }
-    
-        public void OpenPrivacyUrl()
-        {
-        	this.OpenStomtUrl("https://www.stomt.com/privacy", "link-privacy");
-        }
+		public void OpenTermsUrl()
+		{
+			this.OpenStomtUrl("https://www.stomt.com/terms", "link-terms");
+		}
 
-        private void RequestTargetAndUser(bool force = false)
+		public void OpenPrivacyUrl()
+		{
+			this.OpenStomtUrl("https://www.stomt.com/privacy", "link-privacy");
+		}
+
+		private void RequestTargetAndUser(bool force = false)
 		{
 			// only request them once
-			if (!force && !string.IsNullOrEmpty(_api.TargetID) && !string.IsNullOrEmpty(_api.TargetDisplayname))
+            if (!force && !string.IsNullOrEmpty(StomtConfig.TargetID) && !string.IsNullOrEmpty(StomtConfig.TargetDisplayname))
 			{
 				return;
 			}
 
 			_api.RequestTargetAndUser((response) => {
-				SetStomtNumbers();
-				_TargetURL.text = "stomt.com/" + _api.TargetID;
-				SetTargetName();
 				if (!TargetImageApplied)
 				{
 					StartCoroutine(RefreshTargetIcon());
@@ -547,33 +514,56 @@ namespace Stomt
 
 		private void SetStomtNumbers()
 		{
-			_STOMTS_Number.text = _api.amountStomtsReceived.ToString ();
-			_YOURS_Number.text = _api.amountStomtsCreated.ToString ();
+            _STOMTS_Number.text = StomtConfig.TargetAmountStomts.ToString();
+            _YOURS_Number.text = StomtConfig.UserAmountStomts.ToString();
 		}
 
 		private void SetTargetName()
 		{
-			if (string.IsNullOrEmpty(DisplayGameName))
+			if (!string.IsNullOrEmpty(this.DisplayGameName))
 			{
-				if (_api.TargetDisplayname != null)
-				{
-					if (_api.TargetDisplayname.Length > TargetNameCharLimit)
-					{
-						_targetText.text = _api.TargetDisplayname.Substring (0, TargetNameCharLimit);
-					}
-					else
-					{
-						_targetText.text = _api.TargetDisplayname;
-					}
-				}
-				else
-				{
-					_targetText.text = _api.TargetID;
-				}
+				this._targetText.text = this.DisplayGameName;
+				return;
+			}
+
+            if (string.IsNullOrEmpty(StomtConfig.TargetDisplayname))
+			{
+				return;
+			}
+
+            if (StomtConfig.TargetDisplayname.Length > TargetNameCharLimit)
+			{
+                this._targetText.text = StomtConfig.TargetDisplayname.Substring(0, TargetNameCharLimit);
 			}
 			else
 			{
-				_targetText.text = DisplayGameName;
+                this._targetText.text = StomtConfig.TargetDisplayname;
+			}
+		}
+
+		public void DisableCurrentLayer()
+		{
+			switch (CurrentLayer)
+			{
+				case UILayer.Input:
+					this._LayerInput.SetActive(false);
+					break;
+
+				case UILayer.Subscription:
+					this._LayerSubscription.SetActive(false);
+					break;
+
+				case UILayer.Login:
+					this._LayerLogin.SetActive(false);
+					break;
+
+				case UILayer.LoginMessage:
+					this._LayerLoginMessage.SetActive(false);
+					break;
+
+				case UILayer.Success:
+					this._LayerSuccessfulSent.SetActive(false);
+					break;
 			}
 		}
 
@@ -582,19 +572,19 @@ namespace Stomt
 		// Input Layer
 		//////////////////////////////////////////////////////////////////
 
-        public void OpenInputLayer()
-        {
-            DisableCurrentLayer();
+		public void OpenInputLayer()
+		{
+			DisableCurrentLayer();
 
-            this._LayerInput.SetActive(true);
+			this._LayerInput.SetActive(true);
 
-            // Handle Animations
-            //_characterLimit.GetComponent<Animator>().SetBool("Active", false);
-            _like.GetComponent<Animator>().SetBool("OnTop", false);
-            _wish.GetComponent<Animator>().SetBool("OnTop", true);
+			// Handle Animations
+			//_characterLimit.GetComponent<Animator>().SetBool("Active", false);
+			_like.GetComponent<Animator>().SetBool("OnTop", false);
+			_wish.GetComponent<Animator>().SetBool("OnTop", true);
 
-            CurrentLayer = UILayer.Input;
-        }
+			CurrentLayer = UILayer.Input;
+		}
 
 		public void OnToggleButtonPressed()
 		{
@@ -654,10 +644,7 @@ namespace Stomt
 
 		public void OnMessageChanged()
 		{
-            
-
-
-            int limit = CharLimit;
+			int limit = CharLimit;
 			int reverselength = limit - _message.text.Length;
 
 			if (reverselength <= 0)
@@ -705,11 +692,11 @@ namespace Stomt
 			{
 				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
 				{
-                    MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
+					MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
 				}
 				else
 				{
-                    MessagePlaceholder.text = "";
+					MessagePlaceholder.text = "";
 				}
 			}
 		}
@@ -767,7 +754,7 @@ namespace Stomt
 
 			// Switch UI Layer
 			_LayerInput.SetActive(false);
-			if (this._api.config.GetSubscribed())
+            if (StomtConfig.Subscribed)
 			{
 				_LayerSuccessfulSent.SetActive(true);
 				CurrentLayer = UILayer.Success;
@@ -844,9 +831,9 @@ namespace Stomt
 			if (ImageDownload == null && ProfileImageTexture == null)
 			{
 				// Start download
-				if (this._api.TargetImageURL != null)
+				if (StomtConfig.TargetImageUrl != null)
 				{
-					WWW www = new WWW(this._api.TargetImageURL);
+                    WWW www = new WWW(StomtConfig.TargetImageUrl);
 					while (!www.isDone)
 					{
 						// wait until the download is done
@@ -966,8 +953,7 @@ namespace Stomt
 				stomtCreation.attachLogs(this._log);
 			}
 
-			stomtCreation.save((response) => {
-				SetStomtNumbers();
+			this._api.SendStomt(stomtCreation, (response) => {
 			}, (response) => {
 				if (response == null)
 				{
@@ -1043,8 +1029,8 @@ namespace Stomt
 		private void ResetInputForm()
 		{
 			_message.text = "";
-            MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
-            this.StartedTyping = false;
+			MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
+			this.StartedTyping = false;
 			_screenshotToggle.isOn = Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork;
 
 			if (_like.sortingOrder == 2)
@@ -1114,25 +1100,25 @@ namespace Stomt
 
 		public void OnSubscriptionInputChanged()
 		{
-            Regex regex = new Regex(@"@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,15})$");
-            Match match = regex.Match(_EmailInput.text);
+			Regex regex = new Regex(@"^[a-zA-Z0-9.!#$%&’*+\=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$");
+			Match match = regex.Match(_EmailInput.text);
 
-            if ( match.Success )
+			if ( match.Success )
 			{
-                if ( !SubscribtionInfoText.text.Equals(_api.lang.getString("SDK_SUBSCRIBE_VALID_EMAIL")) )
-                {
-                    _postButtonSubscription.GetComponent<Button>().interactable = true;
-                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(0.0F, 0.9F, 0.265F, 1.0F), SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_VALID_EMAIL"));
-                }
-            }
-            else if(_EmailInput.text.Length > 3)
+				if ( !SubscribtionInfoText.text.Equals(_api.lang.getString("SDK_SUBSCRIBE_VALID_EMAIL")) )
+				{
+					_postButtonSubscription.GetComponent<Button>().interactable = true;
+					PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(0.0F, 0.9F, 0.265F, 1.0F), SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_VALID_EMAIL"));
+				}
+			}
+			else if(_EmailInput.text.Length > 3)
 			{
-                if (!SubscribtionInfoText.text.Equals(_api.lang.getString("SDK_SUBSCRIBE_NO_VALID_EMAIL")))
-                {
-                    _postButtonSubscription.GetComponent<Button>().interactable = false;
-                    PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(1.0F, 0.089F, 0.089F, 1.0F), SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_NO_VALID_EMAIL"));
-                }
-            }
+				if (!SubscribtionInfoText.text.Equals(_api.lang.getString("SDK_SUBSCRIBE_NO_VALID_EMAIL")))
+				{
+					_postButtonSubscription.GetComponent<Button>().interactable = false;
+					PlayShowAnimation(SubscribtionInfoText.GetComponent<Animator>(), 0.4f, new Color(1.0F, 0.089F, 0.089F, 1.0F), SubscribtionInfoText, _api.lang.getString("SDK_SUBSCRIBE_NO_VALID_EMAIL"));
+				}
+			}
 		}
 
 		public void SubmitSubscriptionLayer()
@@ -1152,138 +1138,138 @@ namespace Stomt
 		{
 			if (!string.IsNullOrEmpty(_EmailInput.text))
 			{
-				if (useEmailOnSubscribe)
+				StomtSubscription subscription = new StomtSubscription();
+				subscription.message = this._api.lang.getString("SDK_SUBSCRIBE_GET_NOTIFIED");
+
+				if (this.useEmailOnSubscribe)
 				{
-					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.EMail, null, null);
+					subscription.email = this._EmailInput.text;
 				}
 				else
 				{
-					this._api.SendSubscription(_EmailInput.text, StomtAPI.SubscriptionType.Phone, null, null);
+					subscription.phone = this._EmailInput.text;
 				}
-			}
 
-            SubmitLogin();
+				this._api.SendSubscription(subscription);
+			}
 		}
 
-        //////////////////////////////////////////////////////////////////
-        // Login Layer
-        //////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////
+		// Login Layer
+		//////////////////////////////////////////////////////////////////
 
-        public void OpenSignupURL()
-        {
-            this.OpenStomtUrl("https://www.stomt.com/signup", "link-signup");
-        }
-
-        public void OpenForgotPasswordURL()
-        {
-            this.OpenStomtUrl("https://www.stomt.com/password/request", "link-forgot-password");
-        }
-
-        public void OpenLoginLayer()
-        {
-            DisableCurrentLayer();
-
-            this._LayerLogin.SetActive(true);
-
-            this.CurrentLayer = UILayer.Login;
-        }
-
-        public void SubmitLogin()
-        {
-            string userName = LoginUser.text;
-            string password = LoginPassword.text;
-
-            if (!string.IsNullOrEmpty(LoginUser.text) && !string.IsNullOrEmpty(LoginPassword.text))
-            {
-                this._api.disableContentLog = true;
-                this._api.SendLoginRequest(userName, password, (response) =>
-                {
-                    LoginMessage.text = this._api.lang.getString("SDK_LOGIN_SUCCESS");
-
-                    this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN_LOGOUT");
-
-                    password = "";
-                    LoginPassword.text = "";
-
-                    this._api.disableContentLog = false;
-
-                    this._LayerLogin.SetActive(false);
-                    OpenLoginMessageLayer();
-
-                }, (response) =>
-                {
-                    Debug.Log("Stomt Login failed: " + response.StatusCode);
-
-                    if (response.StatusCode.Equals(System.Net.HttpStatusCode.NotFound))
-                    {
-                        LoginMessage.text = this._api.lang.getString("SDK_LOGIN_ACCOUNT_WRONG");
-                        this.LoginUser.text = "";
-
-                    }
-                    else if(response.StatusCode.Equals(System.Net.HttpStatusCode.Forbidden))
-                    {
-                        LoginMessage.text = this._api.lang.getString("SDK_LOGIN_PASSWORD_WRONG");
-                    }
-                    else
-                    {
-                        LoginMessage.text = this._api.lang.getString("SDK_LOGIN_WENT_WRONG");
-
-                        Debug.Log("Status Code: " + response.StatusCode);
-                    }
-
-                    LoginPassword.text = "";
-                    password = "";
-
-                    this._api.disableContentLog = false;
-
-                    this._LayerLogin.SetActive(false);
-                    OpenLoginMessageLayer();
-                });
-            }
-        }
-
-        public void OpenLoginMessageLayer()
-        {
-            _LayerLoginMessage.SetActive(true);
-
-            this.CurrentLayer = UILayer.LoginMessage;
-        }
-
-        public void SubmitLoginMessageLayer()
-        {
-            _LayerLoginMessage.SetActive(false);
-            this.OpenInputLayer();
-        }
-
-        public void LeaveLoginLayer()
-        {
-            this._LayerLogin.SetActive(false);
-            this.OpenInputLayer();
-        }
-
-        public void OnLoginButtonPressed()
-        {
-            if( this._api.config.GetLoggedin() )
-            {
-                this.LoginButtonText.text = this._api.lang.getString("SDK_LOGIN");
-
-                // Logout User
-                this._api.config.SetAccessToken("");
-                this._api.config.SetLoggedin(false);
-            }
-            else
-            {
-                this.OpenLoginLayer();
-            }
-        }
-
-
-        //////////////////////////////////////////////////////////////////
-        // Successful Sent Layer
-        //////////////////////////////////////////////////////////////////
-
-        public void OnSwitchToSuccessLayer()
+		public void OpenSignupURL()
 		{
+			this.OpenStomtUrl("https://www.stomt.com/signup", "link-signup");
+		}
+
+		public void OpenForgotPasswordURL()
+		{
+			this.OpenStomtUrl("https://www.stomt.com/password/request", "link-forgot-password");
+		}
+
+		public void OpenLoginLayer()
+		{
+			DisableCurrentLayer();
+
+			this._LayerLogin.SetActive(true);
+
+			this.CurrentLayer = UILayer.Login;
+		}
+
+		public void SubmitLogin()
+		{
+			string userName = LoginUser.text;
+			string password = LoginPassword.text;
+
+			if (!string.IsNullOrEmpty(LoginUser.text) && !string.IsNullOrEmpty(LoginPassword.text))
+			{
+				this._api.disableContentLog = true;
+				this._api.SendLoginRequest(userName, password, (response) =>
+				{
+					LoginMessage.text = this._api.lang.getString("SDK_LOGIN_SUCCESS");
+
+					password = "";
+					LoginPassword.text = "";
+
+					this._api.disableContentLog = false;
+
+					this._LayerLogin.SetActive(false);
+					OpenLoginMessageLayer();
+
+				}, (response) =>
+				{
+					Debug.Log("Stomt Login failed: " + response.StatusCode);
+
+					if (response.StatusCode.Equals(System.Net.HttpStatusCode.NotFound))
+					{
+						LoginMessage.text = this._api.lang.getString("SDK_LOGIN_ACCOUNT_WRONG");
+						this.LoginUser.text = "";
+
+					}
+					else if(response.StatusCode.Equals(System.Net.HttpStatusCode.Forbidden))
+					{
+						LoginMessage.text = this._api.lang.getString("SDK_LOGIN_PASSWORD_WRONG");
+					}
+					else
+					{
+						LoginMessage.text = this._api.lang.getString("SDK_LOGIN_WENT_WRONG");
+
+						Debug.Log("Status Code: " + response.StatusCode);
+					}
+
+					LoginPassword.text = "";
+					password = "";
+
+					this._api.disableContentLog = false;
+
+					this._LayerLogin.SetActive(false);
+					OpenLoginMessageLayer();
+				});
+			}
+		}
+
+		public void OpenLoginMessageLayer()
+		{
+			_LayerLoginMessage.SetActive(true);
+
+			this.CurrentLayer = UILayer.LoginMessage;
+		}
+
+		public void SubmitLoginMessageLayer()
+		{
+			_LayerLoginMessage.SetActive(false);
+			this.OpenInputLayer();
+		}
+
+		public void LeaveLoginLayer()
+		{
+			this._LayerLogin.SetActive(false);
+			this.OpenInputLayer();
+		}
+
+		public void OnLoginButtonPressed()
+		{
+            if (StomtConfig.LoggedIn || StomtConfig.Subscribed)
+			{
+                // Logout User
+                StomtConfig.DeleteUser();
+                this._api.RequestSession();
+			}
+			else
+			{
+				this.OpenLoginLayer();
+			}
+		}
+
+
+		//////////////////////////////////////////////////////////////////
+		// Successful Sent Layer
+		//////////////////////////////////////////////////////////////////
+
+		public void OnSwitchToSuccessLayer()
+		{
+            StomtConfig.UserAmountStomts += 1;
 			PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
 			CurrentLayer = UILayer.Success;
 		}
@@ -1293,110 +1279,6 @@ namespace Stomt
 			this.HideWidget();
 		}
 
-
-		//////////////////////////////////////////////////////////////////
-		// Network Error Layer
-		//////////////////////////////////////////////////////////////////
-
-        public void DisableCurrentLayer()
-        {
-            switch (CurrentLayer)
-            {
-                case UILayer.Input:
-                    this._LayerInput.SetActive(false);
-                    break;
-
-                case UILayer.Subscription:
-                    this._LayerSubscription.SetActive(false);
-                    break;
-
-                case UILayer.Login:
-                    this._LayerLogin.SetActive(false);
-                    break;
-
-                case UILayer.Error:
-                    this._LayerNetworkError.SetActive(false);
-                    break;
-
-                case UILayer.LoginMessage:
-                    this._LayerLoginMessage.SetActive(false);
-                    break;
-
-                case UILayer.Success:
-                    this._LayerSuccessfulSent.SetActive(false);
-                    break;
-            }
-        }
-
-		public void Reconnect()
-		{
-			switch (CurrentLayer)
-			{
-				case UILayer.Input:
-					this.HideWidget();
-					this.ShowWidget();
-					break;
-
-				case UILayer.Subscription:
-					handleStomtSending();
-					break;
-
-				case UILayer.Success:
-					if (this._api.config.GetSubscribed())
-					{
-						handleStomtSending();
-					}
-					else
-					{
-						SubmitSubscription();
-					}
-				    break;
-			}
-
-			this.RequestTargetAndUser();
-		}
-
-		private void ShowNetworkErrorLayer()
-		{
-			_LayerNetworkError.SetActive(true);
-
-			switch (CurrentLayer)
-			{
-				case UILayer.Input:
-					_LayerInput.SetActive(false);
-					break;
-
-				case UILayer.Subscription:
-					_LayerSubscription.SetActive(false);
-					break;
-
-				case UILayer.Success:
-					_LayerSuccessfulSent.SetActive(false);
-					break;
-			}
-		}
-
-		private void HideNetworkErrorLayer()
-		{
-			_LayerNetworkError.SetActive(false);
-
-			switch (CurrentLayer)
-			{
-				case UILayer.Input:
-					_LayerInput.SetActive(true);
-					break;
-
-				case UILayer.Subscription:
-					_LayerSubscription.SetActive(true);
-					break;
-
-				case UILayer.Success:
-					_LayerSuccessfulSent.SetActive(true);
-					break;
-			}
-		}
-
-
 		//////////////////////////////////////////////////////////////////
 		// Helpers
 		//////////////////////////////////////////////////////////////////
@@ -1404,35 +1286,35 @@ namespace Stomt
 		private void PlayShowAnimation(Animator animator, float delayTime, Text TextToChange = null, string NewText = null)
 		{
 			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText, new Color(0.5625F, 0.07F, 0.95F, 1.0F)));
-        }
+		}
 
-        private void PlayShowAnimation(Animator animator, float delayTime, Color textColor, Text TextToChange = null, string NewText = null)
-        {
-            StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText, textColor));
-        }
-
-        private IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText, Color textColor)
+		private void PlayShowAnimation(Animator animator, float delayTime, Color textColor, Text TextToChange = null, string NewText = null)
 		{
-            if (animator.isInitialized)
-            {
-                animator.SetBool("Show", false);
-            }
+			StartCoroutine(PlayShowAnimationAsync(animator, delayTime, TextToChange, NewText, textColor));
+		}
 
-            yield return new WaitForSeconds(delayTime);
+		private IEnumerator PlayShowAnimationAsync(Animator animator, float delayTime, Text TextToChange, string NewText, Color textColor)
+		{
+			if (animator.isInitialized)
+			{
+				animator.SetBool("Show", false);
+			}
 
-            /*
-            if (textColor == null)
-            {
-                textColor = new Color(0.5625F, 0.07F, 0.95F, 1.0F);
-            }
-            */
+			yield return new WaitForSeconds(delayTime);
 
-            if(TextToChange != null)
-            {
-                TextToChange.color = textColor;
-            }
+			/*
+			if (textColor == null)
+			{
+				textColor = new Color(0.5625F, 0.07F, 0.95F, 1.0F);
+			}
+			*/
 
-            if (animator.isInitialized)
+			if(TextToChange != null)
+			{
+				TextToChange.color = textColor;
+			}
+
+			if (animator.isInitialized)
 			{
 				animator.SetBool("Show", true);
 			}

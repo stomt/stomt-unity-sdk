@@ -27,62 +27,21 @@ namespace Stomt
 		public TextAsset languageFile;
 		#endregion
 
-		// The ID of the target page for your game on https://www.stomt.com/.
-		string _targetId = "";
 		private string restServerURL = "https://rest.stomt.com";
 
 		[HideInInspector]
 		public string stomtURL = "https://www.stomt.com";
 
-        [HideInInspector]
-        public bool disableContentLog = false;
+		[HideInInspector]
+		public bool disableContentLog = false;
 
-        [HideInInspector]
+		[HideInInspector]
 		public StomtLang lang;
 		public string defaultLanguage;
 		public bool ForceDefaultLanguage;
 		public bool SendDefaultLabels = true;
-		public bool DebugMode = false;
-		private StomtConfig _config = null;
-		public StomtConfig config {
-			get {
-				if (this._config == null)
-				{
-					this._config = new StomtConfig();
-				}
-				return this._config;
-			}
-		}
 
 		public enum SubscriptionType { EMail, Phone };
-
-		/// <summary>
-		/// The targets amount of received stomts.
-		/// </summary>
-		public int amountStomtsReceived {
-			get; set;
-		}
-
-		/// <summary>
-		/// The users amount of created stomts.
-		/// </summary>
-		public int amountStomtsCreated {
-			get; set;
-		}
-
-		/// <summary>
-		/// The stomt username.
-		/// </summary>
-		public string UserDisplayname {
-			get; set;
-		}
-
-		/// <summary>
-		/// The stomt user ID.
-		/// </summary>
-		public string UserID {
-			get; set;
-		}
 
 		/// <summary>
 		/// Flag if client is offline.
@@ -97,28 +56,6 @@ namespace Stomt
 		public string AppId
 		{
 			get { return _appId; }
-		}
-
-		/// <summary>
-		/// The target page ID for your game.
-		/// </summary>
-		public string TargetID
-		{
-			get { return _targetId; }
-		}
-
-		/// <summary>
-		/// The name of your target page.
-		/// </summary>
-		public string TargetDisplayname {
-			get; set;
-		}
-
-		/// <summary>
-		/// The image url of your target page.
-		/// </summary>
-		public string TargetImageURL {
-			get; set;
 		}
 
 		/// <summary>
@@ -151,10 +88,10 @@ namespace Stomt
 			{
 				this.restServerURL = "https://rest.stomt.com";
 				this.stomtURL = "https://stomt.com";
-				this.DebugMode = false;
 			}
 
-			NetworkError = false;
+			// Defaults
+			this.NetworkError = false;
 
 			this.lang = new StomtLang(this, defaultLanguage);
 
@@ -165,23 +102,10 @@ namespace Stomt
 
 		void Start()
 		{
-			if (DebugMode)
-			{
-				this.config.SetLoggedin(false);
-				this.config.SetSubscribed(false);
-			}
-			else
-			{
-				this.config.Load();
-			}
-
 			if (string.IsNullOrEmpty(_appId))
 			{
-				throw new ArgumentException("The stomt application ID variable cannot be empty.");
+				throw new ArgumentException("The STOMT App Id variable cannot be empty.");
 			}
-
-			// TargetDisplayname = _targetId;
-			TargetDisplayname = "Loading";
 		}
 
 		public void SetUserLanguage(string languageCode)
@@ -189,35 +113,69 @@ namespace Stomt
 			this.lang.setLanguage(languageCode);
 		}
 
+		private void checkQueue()
+		{
+			StomtCreation stomtCreation = StomtOfflineQueue<StomtCreation>.pop();
+			if (stomtCreation != null) {
+				Debug.Log("Send queued Stomt: " +  stomtCreation);
+				this.SendStomt(stomtCreation);
+				return;
+			}
+
+			StomtSubscription stomtSubscription = StomtOfflineQueue<StomtSubscription>.pop();
+			if (stomtSubscription != null) {
+				Debug.Log("Send queued Subscription: " +  stomtSubscription);
+				this.SendSubscription(stomtSubscription);
+				return;
+			}
+
+			StomtTrack stomtTrack = StomtOfflineQueue<StomtTrack>.pop();
+			if (stomtTrack != null) {
+				Debug.Log("Send queued Track: " +  stomtTrack);
+				this.SendTrack(stomtTrack);
+				return;
+			}
+		}
+
+		public void cleanConfig()
+		{
+			StomtConfig.Delete();
+			StomtOfflineQueue<StomtCreation>.clear();
+			StomtOfflineQueue<StomtSubscription>.clear();
+			StomtOfflineQueue<StomtTrack>.clear();
+			Debug.Log("Local config cleaned.");
+		}
 
 		// Track Handling
 		public StomtTrack initStomtTrack()
 		{
-			StomtTrack stomtTrack = new StomtTrack(this);
+			StomtTrack stomtTrack = new StomtTrack();
 
 			stomtTrack.device_platform = Application.platform.ToString();
 			stomtTrack.device_id = SystemInfo.deviceUniqueIdentifier;
 			stomtTrack.sdk_type = "Unity" + Application.unityVersion;
 			stomtTrack.sdk_version = this.Version;
 			stomtTrack.sdk_integration = Application.productName;
-			stomtTrack.target_id = this.TargetID;
+            stomtTrack.target_id = StomtConfig.TargetID;
 
 			return stomtTrack;
 		}
 
-		public void SendTrack(StomtTrack track, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendTrack(StomtTrack track, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
 			var url = string.Format("{0}/tracks", restServerURL);
-			GetPOSTResponse (url, track.ToString(), callbackSuccess, callbackError);
+            GetPOSTResponse (url, track.ToString(), callbackSuccess, callbackError, () => {
+                StomtOfflineQueue<StomtTrack>.add(track);
+            });
 		}
 
 
 		// Target / Session Handling
 		public void RequestTargetAndUser(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
-			RequestTarget (_targetId, callbackSuccess, callbackError);
+			RequestTarget ("", callbackSuccess, callbackError);
 
-			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
+            if (!string.IsNullOrEmpty(StomtConfig.AccessToken))
 			{
 				RequestSession (callbackSuccess, callbackError);
 			}
@@ -227,10 +185,10 @@ namespace Stomt
 		{
 			var url = string.Format ("{0}/targets/", restServerURL, target);
 			GetGETResponse (url, (response) => {
-				this._targetId = (string)response["id"];
-				TargetDisplayname = (string)response["displayname"];
-				TargetImageURL = (string)response["images"]["profile"]["url"];
-				amountStomtsReceived = (int)response["stats"]["amountStomtsReceived"];
+                StomtConfig.TargetID = (string)response["id"];
+                StomtConfig.TargetDisplayname = (string)response["displayname"];
+				StomtConfig.TargetImageUrl = (string)response["images"]["profile"]["url"];
+				StomtConfig.TargetAmountStomts = (int)response["stats"]["amountStomtsReceived"];
 
 				if (callbackSuccess != null)
 				{
@@ -252,13 +210,13 @@ namespace Stomt
 			});
 		}
 
-		public void RequestSession(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void RequestSession(Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
 			var url = string.Format ("{0}/authentication/session", restServerURL);
 			GetGETResponse (url, (response) => {
-				amountStomtsCreated = (int)response["user"]["stats"]["amountStomts"];
-				UserDisplayname = (string)response["user"]["displayname"];
-				UserID = (string)response["user"]["id"];
+                StomtConfig.UserAmountStomts = (int)response["user"]["stats"]["amountStomts"];
+                StomtConfig.UserDisplayname = (string)response["user"]["displayname"];
+                StomtConfig.UserID = (string)response["user"]["id"];
 
 				if (callbackSuccess != null)
 				{
@@ -267,38 +225,58 @@ namespace Stomt
 			}, callbackError);
 		}
 
-		public void SendSubscription(string addressOrNumber, SubscriptionType type, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendSubscription(StomtSubscription subscription, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
+		{
+			var url = string.Format ("{0}/authentication/subscribe", restServerURL);
+			GetPOSTResponse (url, subscription.ToString(), (response) => {
+                StomtConfig.Subscribed = true;
+
+				var track = this.initStomtTrack();
+				track.event_category = "auth";
+				track.event_action = "subscribed";
+				this.SendTrack(track);
+
+				if (callbackSuccess != null)
+				{
+					callbackSuccess(response);
+				}
+			}, callbackError, () => {
+				// save and send later
+				StomtOfflineQueue<StomtSubscription>.add(subscription);
+			});
+		}
+
+		public void SendLoginRequest(string userName, string password, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
 		{
 			var jsonSubscription = new StringBuilder();
 			var writerSubscription = new LitJsonStomt.JsonWriter(jsonSubscription);
+
 			writerSubscription.WriteObjectStart();
 
-			switch (type)
-			{
-				case SubscriptionType.EMail:
-					writerSubscription.WritePropertyName("email");
-					break;
+			writerSubscription.WritePropertyName("login_method");
+			writerSubscription.Write("normal");
 
-				case SubscriptionType.Phone:
-					writerSubscription.WritePropertyName("phone");
-					break;
-			}
+			writerSubscription.WritePropertyName("emailusername");
+			writerSubscription.Write(userName);
 
-			writerSubscription.Write(addressOrNumber);
-			writerSubscription.WritePropertyName("message");
-			writerSubscription.Write(this.lang.getString("SDK_SUBSCRIBE_GET_NOTIFIED"));
+			writerSubscription.WritePropertyName("password");
+			writerSubscription.Write(password);
+
 			writerSubscription.WriteObjectEnd();
 
-			var url = string.Format ("{0}/authentication/subscribe", restServerURL);
-			GetPOSTResponse (url, jsonSubscription.ToString(), (response) => {
-				this.config.SetSubscribed(true);
+			var url = string.Format("{0}/authentication/session", restServerURL);
 
-				var track = initStomtTrack();
+			GetPOSTResponse(url, jsonSubscription.ToString(), (response) => 
+			{
+                StomtConfig.Subscribed = true;
+                StomtConfig.LoggedIn = true;
+
+				var track = this.initStomtTrack();
 				track.event_category = "auth";
-				track.event_action = "subscribed";
-				track.event_label = type.ToString();
-				track.save ();
-
+				track.event_action = "login";
+				track.event_label = "normal";
+				this.SendTrack(track);
+				
 				if (callbackSuccess != null)
 				{
 					callbackSuccess(response);
@@ -306,52 +284,14 @@ namespace Stomt
 			}, callbackError);
 		}
 
-        public void SendLoginRequest(string userName, string password, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
-        {
-            var jsonSubscription = new StringBuilder();
-            var writerSubscription = new LitJsonStomt.JsonWriter(jsonSubscription);
-
-            writerSubscription.WriteObjectStart();
-
-            writerSubscription.WritePropertyName("login_method");
-            writerSubscription.Write("normal");
-
-            writerSubscription.WritePropertyName("emailusername");
-            writerSubscription.Write(userName);
-
-            writerSubscription.WritePropertyName("password");
-            writerSubscription.Write(password);
-
-            writerSubscription.WriteObjectEnd();
-
-            var url = string.Format("{0}/authentication/session", restServerURL);
-
-            GetPOSTResponse(url, jsonSubscription.ToString(), (response) => 
-            {
-                this.config.SetSubscribed(true);
-                this.config.SetLoggedin(true);
-
-                var track = initStomtTrack();
-                track.event_category = "auth";
-                track.event_action = "login";
-                track.event_label = "normal";
-                track.save();
-                
-                if (callbackSuccess != null)
-                {
-                    callbackSuccess(response);
-                }
-            }, callbackError);
-        }
-
-        // Stomt Handling
-        public StomtCreation initStomtCreation()
+		// Stomt Handling
+		public StomtCreation initStomtCreation()
 		{
-			StomtCreation stomtCreation = new StomtCreation(this);
+			StomtCreation stomtCreation = new StomtCreation();
 
 			stomtCreation.DisableDefaultLabels = !SendDefaultLabels;
 
-			stomtCreation.target_id = this.TargetID;
+            stomtCreation.target_id = StomtConfig.TargetID;
 			stomtCreation.lang = this.lang.getLanguage();
 			stomtCreation.anonym = false;
 			stomtCreation.labels = Labels;
@@ -360,7 +300,7 @@ namespace Stomt
 			return stomtCreation;
 		}
 
-		public void SendStomt(StomtCreation stomtCreation, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void SendStomt(StomtCreation stomtCreation, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
 			// Upload file if pressent (and call function again)
 			if (stomtCreation.screenshot != null)
@@ -374,6 +314,9 @@ namespace Stomt
 					// upload even when scrennshot upload failed
 					stomtCreation.screenshot = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
+				}, () => {
+					// save and send later
+					StomtOfflineQueue<StomtCreation>.add(stomtCreation);
 				});
 				return;
 			}
@@ -390,6 +333,9 @@ namespace Stomt
 					// upload even when logs upload failed
 					stomtCreation.logs = null;
 					SendStomt(stomtCreation, callbackSuccess, callbackError);
+				}, () => {
+					// save and send later
+					StomtOfflineQueue<StomtCreation>.add(stomtCreation);
 				});
 				return;
 			}
@@ -399,23 +345,25 @@ namespace Stomt
 
 			// Send Stomt
 			GetPOSTResponse (url, stomtCreation.ToString(), (response) => {
-				amountStomtsCreated += 1;
 				string stomt_id = (string)response["id"];
 
-				var track = initStomtTrack();
+				var track = this.initStomtTrack();
 				track.event_category = "stomt";
 				track.event_action = "submit";
 				track.stomt_id = stomt_id;
-				track.save ();
+				this.SendTrack(track);
 
 				if (callbackSuccess != null)
 				{
 					callbackSuccess(response);
 				}
-			}, callbackError);
+			}, callbackError, () => {
+				// save and send later
+				StomtOfflineQueue<StomtCreation>.add(stomtCreation);
+			});
 		}
 
-		private void SendFile(string fileContent, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
+		private void SendFile(string fileContent, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline) {
 			// Convert to Base64
 			var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(fileContent);
 			var file = System.Convert.ToBase64String(plainTextBytes);
@@ -441,14 +389,10 @@ namespace Stomt
 
 			// Send Request
 			var url = string.Format("{0}/files", restServerURL);
-			GetPOSTResponse (url, jsonFileUpload.ToString(), callbackSuccess, callbackError);
+			GetPOSTResponse (url, jsonFileUpload.ToString(), callbackSuccess, callbackError, callbackOffline);
 		}
 
-		private void SendImage(Texture2D image, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
-			// Convert to Base64
-			byte[] imageBytes = image.EncodeToPNG();
-			var imageContent = Convert.ToBase64String (imageBytes);
-
+		private void SendImage(string image, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline) {
 			// Build Body
 			var jsonImage = new StringBuilder();
 			var writerImage = new LitJsonStomt.JsonWriter(jsonImage);
@@ -460,7 +404,7 @@ namespace Stomt
 			writerImage.WriteArrayStart();
 			writerImage.WriteObjectStart();
 			writerImage.WritePropertyName("data");
-			writerImage.Write(imageContent);
+			writerImage.Write(image);
 			writerImage.WriteObjectEnd();
 			writerImage.WriteArrayEnd();
 			writerImage.WriteObjectEnd();
@@ -468,7 +412,7 @@ namespace Stomt
 
 			// Send Request
 			var url = string.Format("{0}/images", restServerURL);
-			GetPOSTResponse (url, jsonImage.ToString(), callbackSuccess, callbackError);
+			GetPOSTResponse (url, jsonImage.ToString(), callbackSuccess, callbackError, callbackOffline);
 		}
 
 
@@ -506,30 +450,30 @@ namespace Stomt
 			request.UserAgent = string.Format("Unity/{0} ({1})", Application.unityVersion, Application.platform);
 			request.Headers["appid"] = _appId;
 
-			if (!string.IsNullOrEmpty(this.config.GetAccessToken()))
+			if (!string.IsNullOrEmpty(StomtConfig.AccessToken))
 			{
-				request.Headers ["accesstoken"] = this.config.GetAccessToken();
+                request.Headers ["accesstoken"] = StomtConfig.AccessToken;
 			}
 
 			return request;
 		}
 
-		private void GetGETResponse(string uri, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		private void GetGETResponse(string uri, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline = null)
 		{
 			HttpWebRequest request = WebRequest ("GET", uri);
 
-			this.StartCoroutine(ExecuteRequest(request, uri, null, callbackSuccess, callbackError));
+			this.StartCoroutine(ExecuteRequest(request, uri, null, callbackSuccess, callbackError, callbackOffline));
 		}
 
-		private void GetPOSTResponse(string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		private void GetPOSTResponse(string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline = null)
 		{
 			HttpWebRequest request = WebRequest ("POST", uri);
 
-			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError));
+			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError, callbackOffline));
 		}
 
-		private IEnumerator ExecuteRequest(HttpWebRequest request, string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
-
+		private IEnumerator ExecuteRequest(HttpWebRequest request, string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline)
+		{
 			//////////////////////////////////////////////////////////////////
 			// Add data
 			//////////////////////////////////////////////////////////////////
@@ -551,6 +495,11 @@ namespace Stomt
 				} catch (WebException ex) {
 					Debug.Log (ex);
 					this.NetworkError = true;
+
+					if (callbackOffline != null)
+					{
+						callbackOffline();
+					}
 					yield break;
 				}
 			}
@@ -579,40 +528,47 @@ namespace Stomt
 				if (errorResponse != null)
 				{
 					statusCode = errorResponse.StatusCode.ToString();
-				}
-				else
-				{
 					this.NetworkError = false;
 				}
 
 				Debug.Log (ex);
 				Debug.Log ("ExecuteRequest exception " + statusCode);
 
-                if(disableContentLog)
-                {
-                    Debug.Log("Request: " + "****** Content logging was disabled ******");
-                }
-                else
-                {
-                    Debug.Log("Request: " + data);
-                }
+				if(disableContentLog)
+				{
+					Debug.Log("Request: " + "****** Content logging was disabled ******");
+				}
+				else
+				{
+					Debug.Log("Request: " + data);
+				}
 
 				// Handle invalid Session
 				if (statusCode.Equals ("419"))
 				{
-					this.config.SetAccessToken("");
+                    StomtConfig.AccessToken = "";
 				}
 
 				// Handle Offline
 				if (errorResponse == null)
 				{
 					this.NetworkError = true;
+
+					if (callbackOffline != null)
+					{
+						callbackOffline();
+					}
+
+					yield break;
 				}
 
 				if (callbackError != null)
 				{
 					callbackError (errorResponse);
 				}
+
+				// look for pending tasks
+				this.checkQueue();
 
 				yield break;
 			}
@@ -657,9 +613,9 @@ namespace Stomt
 				if (responseData["meta"].Keys.Contains("accesstoken"))
 				{
 					string accesstoken = (string)responseData["meta"]["accesstoken"];
-					string oldAccessToken = this.config.GetAccessToken();
+                    string oldAccessToken = StomtConfig.AccessToken;
 					if (!oldAccessToken.Equals(accesstoken)) {
-						this.config.SetAccessToken(accesstoken);
+                        StomtConfig.AccessToken = accesstoken;
 						this.RequestSession(null, null); // set/update user
 					}
 				}
@@ -669,6 +625,9 @@ namespace Stomt
 			{
 				callbackSuccess(responseData["data"]);
 			}
+
+			// look for pending tasks
+			this.checkQueue();
 		}
 
 

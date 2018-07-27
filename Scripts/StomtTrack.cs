@@ -8,10 +8,9 @@ namespace Stomt
 	/// <summary>
 	/// A single stomt-track.
 	/// </summary>
+	[Serializable]
 	public class StomtTrack
 	{
-		private StomtAPI _api;
-
 		public string device_platform { get; set; }
 		public string device_id { get; set; }
 		public string sdk_type { get; set; }
@@ -23,9 +22,7 @@ namespace Stomt
 		public string event_action { get; set; }
 		public string event_label { get; set; }
 
-		public StomtTrack(StomtAPI api) {
-			this._api = api;
-		}
+		public StomtTrack() {}
 
 		public override string ToString() {
 			var jsonTrack = new StringBuilder();
@@ -69,14 +66,6 @@ namespace Stomt
 			writerTrack.WriteObjectEnd();
 
 			return jsonTrack.ToString();
-		}
-
-		public void save() {
-			this.save(null, null);
-		}
-
-		public void save(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError) {
-			this._api.SendTrack(this, callbackSuccess, callbackError);
 		}
 	}
 }
