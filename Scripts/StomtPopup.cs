@@ -76,7 +76,7 @@ namespace Stomt
 		[SerializeField]
 		[HideInInspector]
 		public GameObject CustomPlaceholderText;
-
+		[HideInInspector]
 		public Text MessagePlaceholder;
 
 		// Login Layer
@@ -689,7 +689,7 @@ namespace Stomt
 
 			if (StartedTyping)
 			{
-				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText))
+				if (_message.text.Equals(this.wouldText) || _message.text.Equals(this.becauseText) || _message.text.Equals(""))
 				{
 					MessagePlaceholder.text = _wouldBecauseText.text + langPlaceholderOffset + langPlaceholderText;
 				}
