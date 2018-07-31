@@ -42,7 +42,7 @@ TextureImporter:
   spriteBorder: {x: 129, y: 129, z: 130, w: 130}
   spritePixelsToUnits: 100
   alphaUsage: 1
-  alphaIsTransparency: 0
+  alphaIsTransparency: 1
   spriteTessellationDetail: -1
   textureType: 8
   textureShape: 1
