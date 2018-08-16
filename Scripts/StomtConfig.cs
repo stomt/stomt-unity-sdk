@@ -21,6 +21,8 @@ namespace Stomt
 		private static string StomtUserDisplaynameKey = "StomtUserDisplayname";
 		private static string StomtUserImageUrlKey = "StomtUserImageUrl";
 		private static string StomtUserAmountStomtsKey = "StomtUserAmountStomts";
+		private static string StomtUserAmountNotificationsKey = "StomtUserAmountNotifications";
+
 
 		public static string AccessToken
 		{
@@ -152,6 +154,18 @@ namespace Stomt
 			}
 		}
 
+		public static int UserAmountNotifications
+		{
+			get
+			{
+				return PlayerPrefs.GetInt(StomtConfig.StomtUserAmountNotificationsKey, 0);
+			}
+			set
+			{
+				StomtConfig.SetInt(StomtConfig.StomtUserAmountNotificationsKey, value);
+			}
+		}
+
 		//// Helpers
 
 		public static void Delete()
@@ -169,6 +183,7 @@ namespace Stomt
 			PlayerPrefs.DeleteKey(StomtConfig.StomtUserDisplaynameKey);
 			PlayerPrefs.DeleteKey(StomtConfig.StomtUserImageUrlKey);
 			PlayerPrefs.DeleteKey(StomtConfig.StomtUserAmountStomtsKey);
+			PlayerPrefs.DeleteKey(StomtConfig.StomtUserAmountNotificationsKey);
 
 			PlayerPrefs.Save();
 
@@ -188,6 +203,7 @@ namespace Stomt
 			PlayerPrefs.DeleteKey(StomtConfig.StomtUserDisplaynameKey);
 			PlayerPrefs.DeleteKey(StomtConfig.StomtUserImageUrlKey);
 			PlayerPrefs.DeleteKey(StomtConfig.StomtUserAmountStomtsKey);
+			PlayerPrefs.DeleteKey(StomtConfig.StomtUserAmountNotificationsKey);
 			PlayerPrefs.Save();
 
 			if (OnStomtConfigUpdate != null)

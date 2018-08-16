@@ -106,7 +106,119 @@ namespace Stomt
 			{
 				throw new ArgumentException("The STOMT App Id variable cannot be empty.");
 			}
+			initNotifications();
 		}
+
+
+		//
+		// NOTIFICATIONS START
+		//
+
+		private List<StomtNotification> Notifications = new List<StomtNotification>();
+
+		private void initNotifications()
+		{
+			Debug.Log("initNotifications");
+			// If has Session?
+			if (string.IsNullOrEmpty(StomtConfig.AccessToken))
+			{
+				return;
+			}
+
+			// Get Session
+			RequestSession((response) => {
+				// If has Notifications?
+				if (this.hasNotifications()) {
+					Debug.Log("Has notifications");
+					this.LoadNotifications(null, null);
+					this.GetFirstNotification();
+				}
+			}, null);
+		}
+
+		public void LoadNotifications(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		{
+			var url = string.Format("{0}/notifications", restServerURL);
+			GetGETResponse(url, (response) => {
+				this.Notifications = new List<StomtNotification>();
+				for (int i = 0; i < response.Count; i++)
+				{
+					StomtNotification notification = new StomtNotification(response[i]);
+					Debug.Log(notification.fullText);
+					this.Notifications.Add(notification);
+				}
+
+				if (callbackSuccess != null)
+				{
+					callbackSuccess(response);
+				}
+			}, (response) => {
+				if (response == null)
+				{
+					return;
+				}
+				if (callbackError != null)
+				{
+					callbackError(response);
+				}
+			});
+		}
+
+		public bool hasNotifications()
+		{
+			return this.getNotificationCounter() > 0;
+		}
+
+		public int getNotificationCounter()
+		{
+			return StomtConfig.UserAmountNotifications;
+		}
+
+		public StomtNotification GetFirstNotification(bool markAsDisplayed = true)
+		{
+			if (this.Notifications.Count == 0)
+			{
+				return null;
+			}
+			else
+			{
+				if (markAsDisplayed)
+				{
+					this.markNotificationAsDisplayed(this.Notifications[0]);
+				}
+				return this.Notifications[0];
+			}
+		}
+
+		public List<StomtNotification> GetNotifications()
+		{
+			return Notifications;
+		}
+
+		public StomtNotification GetNotificationSummary(bool markAllAsDisplayed = true)
+		{
+			if (Notifications.Count == 0)
+			{
+				return null;
+			}
+			else
+			{
+				StomtNotification stomtNotification = new StomtNotification();
+				// TODO: mark notifications as displayed
+				// TODO: generate Notification
+				return stomtNotification;
+			}
+		}
+
+		public void markNotificationAsDisplayed(StomtNotification notification)
+		{
+			
+		}
+
+
+		//
+		// NOTIFICATIONS END
+		//
 
 		public void SetUserLanguage(string languageCode)
 		{
@@ -217,6 +329,7 @@ namespace Stomt
                 StomtConfig.UserAmountStomts = (int)response["user"]["stats"]["amountStomts"];
                 StomtConfig.UserDisplayname = (string)response["user"]["displayname"];
                 StomtConfig.UserID = (string)response["user"]["id"];
+				StomtConfig.UserAmountNotifications = (int)response["user"]["amountNotifications"];
 
 				if (callbackSuccess != null)
 				{
