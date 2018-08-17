@@ -106,7 +106,7 @@ namespace Stomt
 			{
 				throw new ArgumentException("The STOMT App Id variable cannot be empty.");
 			}
-			initNotifications();
+			InitNotifications();
 		}
 
 
@@ -116,9 +116,8 @@ namespace Stomt
 
 		private List<StomtNotification> Notifications = new List<StomtNotification>();
 
-		private void initNotifications()
+		private void InitNotifications()
 		{
-			Debug.Log("initNotifications");
 			// If has Session?
 			if (string.IsNullOrEmpty(StomtConfig.AccessToken))
 			{
@@ -128,23 +127,22 @@ namespace Stomt
 			// Get Session
 			RequestSession((response) => {
 				// If has Notifications?
-				if (this.hasNotifications()) {
-					Debug.Log("Has notifications");
-					this.LoadNotifications(null, null);
-					this.GetFirstNotification();
+				if (this.HasNotifications()) {
+					this.LoadNotifications((notifications) => {
+						// trigger callback
+					});
 				}
 			}, null);
 		}
 
-		public void LoadNotifications(Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError)
+		public void LoadNotifications(Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
 			var url = string.Format("{0}/notifications", restServerURL);
 			GetGETResponse(url, (response) => {
 				this.Notifications = new List<StomtNotification>();
 				for (int i = 0; i < response.Count; i++)
 				{
-					StomtNotification notification = new StomtNotification(response[i]);
-					Debug.Log(notification.fullText);
+					StomtNotification notification = new StomtNotification(this, response[i]);
 					this.Notifications.Add(notification);
 				}
 
@@ -152,24 +150,15 @@ namespace Stomt
 				{
 					callbackSuccess(response);
 				}
-			}, (response) => {
-				if (response == null)
-				{
-					return;
-				}
-				if (callbackError != null)
-				{
-					callbackError(response);
-				}
-			});
+			}, callbackError);
 		}
 
-		public bool hasNotifications()
+		public bool HasNotifications()
 		{
-			return this.getNotificationCounter() > 0;
+			return this.GetNotificationCounter() > 0;
 		}
 
-		public int getNotificationCounter()
+		public int GetNotificationCounter()
 		{
 			return StomtConfig.UserAmountNotifications;
 		}
@@ -184,7 +173,7 @@ namespace Stomt
 			{
 				if (markAsDisplayed)
 				{
-					this.markNotificationAsDisplayed(this.Notifications[0]);
+					this.MarkNotificationAsDisplayed(this.Notifications[0]);
 				}
 				return this.Notifications[0];
 			}
@@ -203,22 +192,102 @@ namespace Stomt
 			}
 			else
 			{
-				StomtNotification stomtNotification = new StomtNotification();
-				// TODO: mark notifications as displayed
-				// TODO: generate Notification
+				StomtNotification stomtNotification = this.GetFirstNotification(markAllAsDisplayed);
+				// TODO: generate Notification (mark notifications as displayed)
 				return stomtNotification;
 			}
 		}
 
-		public void markNotificationAsDisplayed(StomtNotification notification)
+		public void MarkNotificationAsDisplayed(StomtNotification notification, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
-			
+			var list = new List<StomtNotification>();
+			list.Add(notification);
+			MarkNotificationsAsDisplayed(list, callbackSuccess, callbackError);
 		}
 
+		public void MarkNotificationsAsDisplayed(List<StomtNotification> notifications, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
+		{
+			var url = string.Format("{0}/notifications", restServerURL);
+
+			// Build Body
+			var stringBuilder = new StringBuilder();
+			var writer = new LitJsonStomt.JsonWriter(stringBuilder);
+			writer.WriteArrayStart();
+			foreach(var notification in notifications)
+			{
+				writer.WriteObjectStart();
+				writer.WritePropertyName("id");
+				writer.Write(notification.id);
+				writer.WritePropertyName("seen");
+				writer.Write(true);
+				writer.WriteObjectEnd();
+			}
+			writer.WriteArrayEnd();
+
+			GetPUTResponse(url, stringBuilder.ToString(), callbackSuccess, callbackError);
+		}
+
+		public void MarkNotificationAsClicked(StomtNotification notification, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
+		{
+			var list = new List<StomtNotification>();
+			list.Add(notification);
+			MarkNotificationsAsClicked(list, callbackSuccess, callbackError);
+		}
+
+		public void MarkNotificationsAsClicked(List<StomtNotification> notifications, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
+		{
+			var url = string.Format("{0}/notifications", restServerURL);
+
+			// Build Body
+			var stringBuilder = new StringBuilder();
+			var writer = new LitJsonStomt.JsonWriter(stringBuilder);
+			writer.WriteArrayStart();
+			foreach (var notification in notifications)
+			{
+				writer.WriteObjectStart();
+				writer.WritePropertyName("id");
+				writer.Write(notification.id);
+				writer.WritePropertyName("clicked");
+				writer.Write(true);
+				writer.WriteObjectEnd();
+			}
+			writer.WriteArrayEnd();
+
+			GetPUTResponse(url, stringBuilder.ToString(), callbackSuccess, callbackError);
+		}
+
+		public void OpenFirstNotification()
+		{
+			StomtNotification notification = this.GetFirstNotification(false);
+			if (notification != null)
+			{
+				notification.OpenLink();
+			}
+		}
 
 		//
 		// NOTIFICATIONS END
 		//
+
+		public void OpenStomtUrl(string url, string utm_content)
+		{
+			url += string.Format("?utm_source={0}", "stomt");
+			url += string.Format("&utm_medium={0}", "sdk");
+			url += string.Format("&utm_campaign={0}", "unity");
+			url += string.Format("&utm_term={0}", WWW.EscapeURL(Application.productName));
+
+			if (!string.IsNullOrEmpty(utm_content))
+			{
+				url += string.Format("&utm_content={0}", WWW.EscapeURL(utm_content));
+			}
+
+			if (!string.IsNullOrEmpty(StomtConfig.AccessToken))
+			{
+				url += string.Format("&access_token={0}", StomtConfig.AccessToken);
+			}
+
+			Application.OpenURL(url);
+		}
 
 		public void SetUserLanguage(string languageCode)
 		{
@@ -276,6 +345,7 @@ namespace Stomt
 		public void SendTrack(StomtTrack track, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
 			var url = string.Format("{0}/tracks", restServerURL);
+
             GetPOSTResponse (url, track.ToString(), callbackSuccess, callbackError, () => {
                 StomtOfflineQueue<StomtTrack>.add(track);
             });
@@ -585,6 +655,13 @@ namespace Stomt
 			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError, callbackOffline));
 		}
 
+		private void GetPUTResponse(string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline = null)
+		{
+			HttpWebRequest request = WebRequest("PUT", uri);
+
+			this.StartCoroutine(ExecuteRequest(request, uri, data, callbackSuccess, callbackError, callbackOffline));
+		}
+
 		private IEnumerator ExecuteRequest(HttpWebRequest request, string uri, string data, Action<LitJsonStomt.JsonData> callbackSuccess, Action<HttpWebResponse> callbackError, Action callbackOffline)
 		{
 			//////////////////////////////////////////////////////////////////
@@ -659,7 +736,7 @@ namespace Stomt
 				// Handle invalid Session
 				if (statusCode.Equals ("419"))
 				{
-                    StomtConfig.AccessToken = "";
+					StomtConfig.Delete();
 				}
 
 				// Handle Offline

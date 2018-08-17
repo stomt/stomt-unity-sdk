@@ -10,6 +10,7 @@ namespace Stomt
 	/// </summary>
 	public class StomtNotification
 	{
+		private StomtAPI api;
 		public string id { get; set; }
 		public string target_id { get; set; }
 		public string title { get; set; }
@@ -23,13 +24,15 @@ namespace Stomt
 		public bool clicked { get; set; }
 
 
-		public StomtNotification()
+		public StomtNotification(StomtAPI api)
 		{
-			
+			this.api = api;
 		}
 
-		public StomtNotification(JsonData json)
+		public StomtNotification(StomtAPI api, JsonData json)
 		{
+			this.api = api;
+
 			this.id = (string)json["id"];
 			this.target_id = (string)json["target_id"];
 			this.title = (string)json["title"];
@@ -41,6 +44,12 @@ namespace Stomt
 			this.created_at = (string)json["created_at"];
 			this.seen = (bool)json["seen"];
 			this.clicked = (bool)json["clicked"];
+		}
+
+		public void OpenLink()
+		{
+			this.api.MarkNotificationAsClicked(this);
+			this.api.OpenStomtUrl(this.url, "notification");
 		}
 	}
 }
