@@ -134,7 +134,7 @@ namespace Stomt
 
 		public void LoadNotifications(Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
-			var url = string.Format("{0}/notifications", restServerURL);
+			var url = string.Format("{0}/notifications?unseen=true", restServerURL);
 			GetGETResponse(url, (response) => {
 				this.Notifications = new List<StomtNotification>();
 				for (int i = 0; i < response.Count; i++)
@@ -204,6 +204,14 @@ namespace Stomt
 
 		public void MarkNotificationsAsDisplayed(List<StomtNotification> notifications, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
+			// Update locally
+			foreach (var notification in notifications)
+			{
+				notification.seen = true;
+				StomtConfig.UserAmountNotifications -= 1;
+			}
+
+			// Update on server
 			var url = string.Format("{0}/notifications", restServerURL);
 
 			// Build Body
@@ -233,6 +241,20 @@ namespace Stomt
 
 		public void MarkNotificationsAsClicked(List<StomtNotification> notifications, Action<LitJsonStomt.JsonData> callbackSuccess = null, Action<HttpWebResponse> callbackError = null)
 		{
+			// Update locally
+			foreach (var notification in notifications)
+			{
+				if (!notification.seen)
+				{
+					notification.seen = true;
+					StomtConfig.UserAmountNotifications -= 1;
+				}
+
+				notification.clicked = true;
+				this.Notifications.Remove(notification);
+			}
+
+			// Update on server
 			var url = string.Format("{0}/notifications", restServerURL);
 
 			// Build Body
