@@ -13,7 +13,7 @@ namespace Stomt
 	/// <summary>
 	/// Low-level stomt API component.
 	/// </summary>
-	public class StomtAPI : MonoBehaviour
+	public class StomtAPI : Singleton<StomtAPI>
 	{
 		[HideInInspector]
 		private string Version = "2.4.1";
@@ -66,13 +66,10 @@ namespace Stomt
 		/// <summary>
 		/// AdditionalData attached to the stomt.
 		/// </summary>
-		private List<List<string> > CustomKeyValuePairs;
+		private List<List<string>> CustomKeyValuePairs = new List<List<string>>();
 
-		// Called once at initialization
-		public StomtAPI()
-		{
-			CustomKeyValuePairs = new List<List<string> >();
-		}
+		// guarantee this will be always a singleton only - can't use the constructor!
+		protected StomtAPI() {}
 
 		// Called once when script is enabled
 		void Awake()

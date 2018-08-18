@@ -211,7 +211,7 @@ namespace Stomt
 		{
 			this.onMobile = Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer;
 
-			_api = GetComponent<StomtAPI>();
+			_api = StomtAPI.Instance;
 			_screenshot = new Texture2D(Screen.width, Screen.height, TextureFormat.RGB24, false);
 
 			CurrentLayer = UILayer.Input;

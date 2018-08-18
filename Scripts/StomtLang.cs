@@ -45,7 +45,7 @@ namespace Stomt
 			this.Currentlanguage = languageCode;
 
 			// Check Language
-			if (!this.languages["data"].Keys.Contains(this.Currentlanguage))
+			if (languages != null && !this.languages["data"].Keys.Contains(this.Currentlanguage))
 			{
 				Debug.Log(string.Format("Language {0} not supported (does not exist in language file) falling back to english.", this.Currentlanguage));
 				this.Currentlanguage = "en";
@@ -59,6 +59,11 @@ namespace Stomt
 
 		public string getString(string stringDefinition)
 		{
+			if (languages == null)
+			{
+				return "";
+			}
+
 			if (!this.languages["data"].Keys.Contains(this.Currentlanguage))
 			{
 				Debug.Log(string.Format("Language {0} not supported (does not exist in language file) falling back to english.", this.Currentlanguage));
