@@ -72,7 +72,7 @@ GameObject:
   - component: {fileID: 224478779172703482}
   - component: {fileID: 222852241000281694}
   m_Layer: 5
-  m_Name: UI
+  m_Name: CounterUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5386bad68f9e2474e9dce9c41ed8d98d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UI: {fileID: 0}
+  UI: {fileID: 1679751355337882}
   NotificationCount: {fileID: 114033964048117492}
 --- !u!114 &114761612151589970
 MonoBehaviour:
@@ -209,7 +209,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -90, y: -910}
+  m_AnchoredPosition: {x: -534, y: -639.65}
   m_SizeDelta: {x: -1820, y: -2780}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224478779172703482
