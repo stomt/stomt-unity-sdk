@@ -191,12 +191,14 @@ namespace Stomt
 		private string langPlaceholderText;
 		private string langPlaceholderOffset = " ";
 
-		//////////////////////////////////////////////////////////////////
-		// General (used for all layers)
-		//////////////////////////////////////////////////////////////////
+        public bool isToggleKeyActive { get; private set; }
 
-		// Called once at initialization
-		void Awake()
+        //////////////////////////////////////////////////////////////////
+        // General (used for all layers)
+        //////////////////////////////////////////////////////////////////
+
+        // Called once at initialization
+        void Awake()
 		{
 			_ui.SetActive(false);
 
@@ -226,32 +228,38 @@ namespace Stomt
 			{
 				this.ShowWidget();
 			}
-		}
 
-		// is called every frame
-		void Update()
+            SetStomtNumbers();
+            SetTargetName();
+            SetLoginButton();
+            this._TargetURL.text = "stomt.com/" + StomtConfig.TargetID;
+        }
+
+        // is called every frame
+        void Update()
 		{
-			// Update Values
-			SetStomtNumbers();
-			SetTargetName();
-			SetLoginButton();
-			this._TargetURL.text = "stomt.com/" + StomtConfig.TargetID;
-		}
+            // Update Values // Not here pls
+
+            if (Input.GetKeyUp(this._toggleKey))
+                isToggleKeyActive = true;
+        }
 
 		// OnGUI is called for rendering and handling GUI events.
 		void OnGUI()
 		{
-			if (this._toggleKey != KeyCode.None && Event.current.Equals(Event.KeyboardEvent(this._toggleKey.ToString())))
-			{
-				if (_ui.activeSelf)
-				{
-					this.HideWidget();
-				}
-				else
-				{
-					this.ShowWidget();
-				}
-			}
+            if(isToggleKeyActive)
+            {
+			    if (_ui.activeSelf)
+			    {
+				    this.HideWidget();
+			    }
+			    else
+			    {
+				    this.ShowWidget();
+			    }
+
+                isToggleKeyActive = false;
+            }
 		}
 
 		// Enables the Widget/Popup when hidden
@@ -1042,7 +1050,9 @@ namespace Stomt
 			}
 
 			RefreshStartText();
-		}
+
+            SetStomtNumbers();
+        }
 
 
 		//////////////////////////////////////////////////////////////////
@@ -1233,13 +1243,15 @@ namespace Stomt
 			_LayerLoginMessage.SetActive(true);
 
 			this.CurrentLayer = UILayer.LoginMessage;
-		}
+            SetLoginButton();
+        }
 
 		public void SubmitLoginMessageLayer()
 		{
 			_LayerLoginMessage.SetActive(false);
 			this.OpenInputLayer();
-		}
+            SetLoginButton();
+        }
 
 		public void LeaveLoginLayer()
 		{
@@ -1259,7 +1271,9 @@ namespace Stomt
 			{
 				this.OpenLoginLayer();
 			}
-		}
+
+            SetLoginButton();
+        }
 
 
 		//////////////////////////////////////////////////////////////////
