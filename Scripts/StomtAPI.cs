@@ -16,7 +16,7 @@ namespace Stomt
 	public class StomtAPI : MonoBehaviour
 	{
 		[HideInInspector]
-		private string Version = "2.4.1";
+		private string Version = "2.4.3";
 
 		#region Inspector Variables
 		[SerializeField]
