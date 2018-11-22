@@ -229,9 +229,7 @@ namespace Stomt
 				this.ShowWidget();
 			}
 
-            SetStomtNumbers();
-            SetTargetName();
-            SetLoginButton();
+			UpdateDynamicText();
             this._TargetURL.text = "stomt.com/" + StomtConfig.TargetID;
         }
 
@@ -260,6 +258,13 @@ namespace Stomt
 
                 isToggleKeyActive = false;
             }
+		}
+
+		void UpdateDynamicText()
+		{
+			SetStomtNumbers();
+			SetTargetName();
+			SetLoginButton();
 		}
 
 		// Enables the Widget/Popup when hidden
@@ -869,6 +874,7 @@ namespace Stomt
 				// already loaded, apply now
 				ApplyProfileImageTextureIfAvailable();
 			}
+			UpdateDynamicText();
 		}
 
 		private void ApplyProfileImageTextureIfAvailable()
@@ -1050,8 +1056,7 @@ namespace Stomt
 			}
 
 			RefreshStartText();
-
-            SetStomtNumbers();
+			UpdateDynamicText();
         }
 
 
@@ -1283,6 +1288,7 @@ namespace Stomt
 		public void OnSwitchToSuccessLayer()
 		{
             StomtConfig.UserAmountStomts += 1;
+			UpdateDynamicText();
 			PlayShowAnimation(ArrowFindStomt.GetComponent<Animator>(), 0.5f);
 			CurrentLayer = UILayer.Success;
 		}
